@@ -4,9 +4,12 @@ import Navbar from './Navbar'
 function App() {
 
   return (
-      <div className="flex flex-wrap w-full h-100vh" >
-        <Navbar/>
+      <>
+      <div className=" flex flex-col w-full">
+      <Navbar/>
       </div>
+      </>
+
   )
 }
 
