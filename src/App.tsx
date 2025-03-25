@@ -1,5 +1,5 @@
 
-import { IconHome, IconSettings, IconUser } from "@tabler/icons-react";
+import { IconArrowBack, IconHome, IconSettings, IconUser } from "@tabler/icons-react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import './App.css';
 import { Sidebar, SidebarBody, SidebarLink } from "./Sidebar";
@@ -9,6 +9,7 @@ const links = [
   { label: "Home", href: "/", icon: <IconHome /> },
   { label: "Profile", href: "/profile", icon: <IconUser /> },
   { label: "Settings", href: "/settings", icon: <IconSettings /> },
+  { label: "Logout", href: "/logout", icon: <IconArrowBack />}
 ];
 
 

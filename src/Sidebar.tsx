@@ -96,7 +96,7 @@ export const DesktopSidebar = ({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       {...props}
-    >
+    > 
       {children}
     </motion.div>
   );
