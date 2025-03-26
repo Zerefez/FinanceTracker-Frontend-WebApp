@@ -1,4 +1,7 @@
-import AnimatedLink from './ui/animatedLink'
+// src/components/Header.tsx
+
+import AnimatedLink from './ui/animatedLink';
+import Clock from './ui/clock';
 
 export default function Header() {
   return (
@@ -7,20 +10,20 @@ export default function Header() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-[100px] text-md">
           {/* First Column */}
           <div className="space-y-1">
-            <p className="text-muted-foreground font-medium">App</p>
+            <p className="text-muted font-medium">App</p>
             <AnimatedLink className="font-bold" href="/">FINANCE TRACKER</AnimatedLink>
-            <p className="text-muted-foreground">GMT+1 (07:18 PM, DK)</p>
+            <p className="text-muted"><Clock /></p>
           </div>
 
           {/* Second Column */}
           <div className="space-y-1">
-            <p className="text-muted-foreground font-medium">Status</p>
-            <p className="uppercase">New generated paycheck Currently available for viewing</p>
+            <p className="text-muted font-medium">Status</p>
+            <p className="uppercase font-semibold">New generated paycheck Currently available for viewing</p>
           </div>
 
           {/* Third Column */}
           <div className="space-y-1">
-            <p className="text-muted-foreground font-medium">Sitemap</p>
+            <p className="text-muted font-medium">Sitemap</p>
             <div className="flex flex-wrap gap-2">
               <AnimatedLink href="/">HOME</AnimatedLink>
               <span className="text-muted-foreground">,</span>
@@ -34,7 +37,7 @@ export default function Header() {
 
           {/* Fourth Column */}
           <div className="space-y-1">
-            <p className="text-muted-foreground font-medium">User</p>
+            <p className="text-muted font-medium">User</p>
             <div className="flex flex-wrap gap-2">
               <AnimatedLink href="/login">LOGIN</AnimatedLink>
               <span className="text-muted-foreground">,</span>
@@ -46,5 +49,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

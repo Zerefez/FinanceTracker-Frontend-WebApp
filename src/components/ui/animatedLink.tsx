@@ -13,7 +13,7 @@ const AnimatedLink = ({
     <Component 
       to={href || "#"} 
       className={cn(
-        "relative uppercase font-medium group inline-block", 
+        "relative uppercase font-semibold group inline-block", 
         className
       )}
     >
