@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion"
 import { useEffect, useRef } from "react"
 import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
+import JobDetailPage from "./pages/JobPage"
 import Paycheck from "./pages/Paycheck"
 import StudentGrant from "./pages/StudentGrant"
 
@@ -15,6 +16,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/paycheck" element={<Paycheck />} />
         <Route path="/student-grant" element={<StudentGrant />} />
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
       </Routes>
     </AnimatePresence>
   )
