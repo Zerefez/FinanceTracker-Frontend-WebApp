@@ -4,7 +4,7 @@ import AnimatedText from "../components/ui/animatedText";
 
 export default function Home() {
   return (
-    <section className="py-5">
+    <section>
       <Inner>
         <div className="mx-8 px-4 md:px-6">
           <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
