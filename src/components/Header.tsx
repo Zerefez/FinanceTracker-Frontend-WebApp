@@ -8,7 +8,7 @@ export default function Header() {
           {/* First Column */}
           <div className="space-y-1">
             <p className="text-muted-foreground font-medium">App</p>
-            <AnimatedLink className="font-bold">FINANCE TRACKER</AnimatedLink>
+            <AnimatedLink className="font-bold" href="/">FINANCE TRACKER</AnimatedLink>
             <p className="text-muted-foreground">GMT+1 (07:18 PM, DK)</p>
           </div>
 
