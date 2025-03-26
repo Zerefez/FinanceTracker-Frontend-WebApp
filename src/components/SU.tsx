@@ -1,14 +1,56 @@
 import { useState } from 'react';
 import AnimatedText from "../components/ui/animatedText";
 
+interface SUData {
+  incomeCeiling: number;
+  currentIncome: number;
+  maxEarnable: number;
+  updatedDate: string;
+}
+
 export default function SUSection() {
   const [selectedYear, setSelectedYear] = useState('2025');
+  const [suData, setSUData] = useState<SUData>({
+    incomeCeiling: 247976,
+    currentIncome: 10000,
+    maxEarnable: 228138,
+    updatedDate: '17/03-2025'
+  });
+
+  // Calculate percentage dynamically
+  const calculatePercentage = () => {
+    return Math.min(
+      Math.round((suData.currentIncome / suData.incomeCeiling) * 100), 
+      100
+    );
+  };
+
+  // Generate SVG path for dynamic progress
+  const generateProgressPath = (percentage: number) => {
+    const radius = 15.9155;
+    const circumference = 2 * Math.PI * radius;
+    const dashOffset = circumference * (1 - percentage / 100);
+
+    return {
+      backgroundPath: `M18 2.0845
+        a ${radius} ${radius} 0 0 1 0 31.831
+        a ${radius} ${radius} 0 0 1 0 -31.831`,
+      progressPath: `M18 2.0845
+        a ${radius} ${radius} 0 0 1 0 31.831
+        a ${radius} ${radius} 0 0 1 0 -31.831`,
+      strokeDasharray: `${circumference}`,
+      strokeDashoffset: dashOffset
+    };
+  };
+
+  const percentage = calculatePercentage();
+  const progressPaths = generateProgressPath(percentage);
 
   return (
     <div className="w-full rounded-lg border-2 border-gray-200 p-5">
       <AnimatedText
-        phrases={["Student Grant Overview [SU]"]}
-        accentWords={["[SU]"]}
+        phrases={["Student Grant Overview"]}
+        accentWords={["Grant"]}
         className="mb-4 text-center text-2xl font-bold md:text-3xl lg:text-4xl"
         accentClassName="text-accent"
       />
@@ -23,7 +65,7 @@ export default function SUSection() {
           <option value="2024">2024</option>
           <option value="2023">2023</option>
         </select>
-        <p className="text-sm text-gray-500">Updated 17/03-2025</p>
+        <p className="text-sm text-gray-500">Updated {suData.updatedDate}</p>
       </div>
       
       <div className="relative flex justify-center items-center mb-4">
@@ -32,26 +74,25 @@ export default function SUSection() {
         </div>
         <div className="w-56 h-56 relative">
           <svg viewBox="0 0 36 36" className="w-full h-full">
+            {/* Background circle */}
             <path 
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
+              d={progressPaths.backgroundPath}
               fill="none"
               stroke="#eee"
               strokeWidth="3"
             />
+            {/* Progress arc */}
             <path 
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
+              d={progressPaths.backgroundPath}
               fill="none"
               stroke="#FF6B6B"
               strokeWidth="3"
-              strokeDasharray="4, 100"
+              strokeDasharray={progressPaths.strokeDasharray}
+              strokeDashoffset={progressPaths.strokeDashoffset}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col justify-center items-center">
-            <span className="text-3xl font-bold">4%</span>
+            <span className="text-3xl font-bold">{percentage}%</span>
             <AnimatedText
               phrases={["of your income ceiling"]}
               className="text-sm text-gray-500"
@@ -69,16 +110,10 @@ export default function SUSection() {
               className="text-sm text-gray-600"
               accentClassName="text-accent"
             />
-            <AnimatedText
-              phrases={["228.138 kr."]}
-              accentWords={["228.138", "kr."]}
-              className="font-semibold"
-              accentClassName="text-accent"
-            />
-            <AnimatedText
-              phrases={["Amount for AM contribution: 247.976 kr."]}
-              className="text-xs text-gray-500"
-            />
+            <p className="font-semibold">{suData.maxEarnable.toLocaleString()} kr.</p>
+            <p className="text-xs text-gray-500">
+              Amount for AM contribution: {suData.incomeCeiling.toLocaleString()} kr.
+            </p>
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
@@ -92,19 +127,49 @@ export default function SUSection() {
               className="text-sm text-gray-600"
               accentClassName="text-accent"
             />
-            <AnimatedText
-              phrases={["-"]}
-              className="font-semibold"
-            />
-            <AnimatedText
-              phrases={["Enter your timesheet to see remaining hours"]}
-              className="text-xs text-gray-500"
-            />
+            <p className="font-semibold">-</p>
+            <p className="text-xs text-gray-500">Enter your timesheet to see remaining hours</p>
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
           </svg>
         </div>
+      </div>
+
+      {/* Slider with accent styling and filled progress */}
+      <div className="mt-4 px-2">
+        <div className="flex justify-between items-center mb-2">
+          <label className="text-sm text-gray-700">Current Income</label>
+          <span className="text-sm font-semibold text-accent">
+            {suData.currentIncome.toLocaleString()} kr.
+          </span>
+        </div>
+        <input 
+          type="range" 
+          min="0" 
+          max={suData.incomeCeiling} 
+          value={suData.currentIncome}
+          onChange={(e) => setSUData(prev => ({
+            ...prev, 
+            currentIncome: Number(e.target.value)
+          }))}
+          style={{
+            background: `linear-gradient(to right, 
+              #FF6B6B 0%, 
+              #FF6B6B ${(suData.currentIncome / suData.incomeCeiling) * 100}%, 
+              #e5e7eb ${(suData.currentIncome / suData.incomeCeiling) * 100}%, 
+              #e5e7eb 100%)`
+          }}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer 
+            [&::-webkit-slider-thumb]:appearance-none 
+            [&::-webkit-slider-thumb]:w-4 
+            [&::-webkit-slider-thumb]:h-4 
+            [&::-webkit-slider-thumb]:bg-accent 
+            [&::-webkit-slider-thumb]:rounded-full 
+            [&::-webkit-slider-track]:w-full 
+            [&::-webkit-slider-track]:h-2 
+            [&::-webkit-slider-track]:bg-transparent"
+        />
       </div>
     </div>
   );
