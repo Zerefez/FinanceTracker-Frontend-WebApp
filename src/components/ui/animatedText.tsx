@@ -1,22 +1,21 @@
-// components/AnimatedText.tsx
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function AnimatedText({
   phrases,
   accentWords = [],
-  className,
-  accentClassName,
+  className = "",
+  accentClassName = "text-accent",
 }: {
   phrases: string[];
-  accentWords?: string[]; // List of words or phrases to be accented
+  accentWords?: string[];
   className?: string;
   accentClassName?: string;
 }) {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true); // Trigger animation once the component is mounted
+    setHasMounted(true);
   }, []);
 
   const animation = {
@@ -31,21 +30,10 @@ export default function AnimatedText({
     }),
   };
 
-  // Split phrases and identify accent words
-  const processedPhrases = phrases.map((phrase) => {
-    const parts = phrase.split(/(\s+)/).map((part) => {
-      const isAccent = accentWords.some((accentWord) =>
-        part.toLowerCase().includes(accentWord.toLowerCase())
-      );
-      return { text: part, isAccent };
-    });
-    return parts;
-  });
-
   return (
     <div>
-      {processedPhrases.map((phraseParts, index) => (
-        <div key={index} className="lineMask overflow-hidden">
+      {phrases.map((phrase, index) => (
+        <div key={index} className="overflow-hidden">
           <motion.p
             custom={index}
             variants={animation}
@@ -53,9 +41,12 @@ export default function AnimatedText({
             animate={hasMounted ? "enter" : ""}
             className={className}
           >
-            {phraseParts.map((part, partIndex) => (
-              <span key={partIndex} className={part.isAccent ? accentClassName : ''}>
-                {part.text}
+            {phrase.split(" ").map((word, wordIndex) => (
+              <span
+                key={wordIndex}
+                className={accentWords.includes(word) ? accentClassName : ""}
+              >
+                {word}{" "}
               </span>
             ))}
           </motion.p>

@@ -15,7 +15,7 @@ export default function Home() {
                   "Keep track of your finances with ease.",
                   "Here is your economy overview.",
                 ]}
-                accentWords={["finance", "tracker", "economy"]} // Define which words to accent
+                accentWords={["finance", "tracker", "economy"]}
                 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
                 accentClassName="text-accent"
               />
