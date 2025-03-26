@@ -1,8 +1,11 @@
+import Inner from "../components/Inner";
 
 export default function StudentGrant() {
   return (
-    <div>
-      sadfasdsa
-    </div>
-  )
+    <section>
+      <Inner>
+        <div>sadfasdsa</div>
+      </Inner>
+    </section>
+  );
 }

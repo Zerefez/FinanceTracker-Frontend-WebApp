@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
-    <header className="w-[100wh] border-b-2 border-black mx-8 pt-6 pb-4 top-0 bg-white z-10">
+    <header className="w-[100wh] border-b-2 border-black mx-8 pt-6 pb-4 bg-white z-10 ">
       <div className="px-2 md:px-4 items-stretch justify-items-stretch">
         <div className=" grid grid-cols-1 md:grid-cols-4 gap-[100px] text-md ">
           {/* First Column */}
