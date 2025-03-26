@@ -1,5 +1,3 @@
-"use client"
-
 import { AnimatePresence } from "framer-motion"
 import { useEffect, useRef } from "react"
 import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom"

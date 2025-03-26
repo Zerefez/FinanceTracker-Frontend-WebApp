@@ -1,40 +1,50 @@
-import { Link } from 'react-router-dom';
+import AnimatedLink from './ui/animatedLink'
 
 export default function Header() {
   return (
-    <header className="w-[100wh] border-b-2 border-black mx-8 pt-6 pb-4 bg-white z-10 ">
+    <header className="w-full border-b-2 border-black mx-8 pt-6 pb-4 bg-white z-10">
       <div className="px-2 md:px-4 items-stretch justify-items-stretch">
-        <div className=" grid grid-cols-1 md:grid-cols-4 gap-[100px] text-md ">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-[100px] text-md">
           {/* First Column */}
-          <div className="space-y-1 ">
-            <p className="text-muted font-medium">App</p>
-            <button className="uppercase font-bold">Finance Tracker</button>
-            <p className="text-muted">GMT+1 (07:18 PM, DK)</p>
+          <div className="space-y-1">
+            <p className="text-muted-foreground font-medium">App</p>
+            <AnimatedLink className="font-bold">FINANCE TRACKER</AnimatedLink>
+            <p className="text-muted-foreground">GMT+1 (07:18 PM, DK)</p>
           </div>
 
-          {/* Second Column */} 
+          {/* Second Column */}
           <div className="space-y-1">
-            <p className="text-muted first-line:font-medium">Status</p>
+            <p className="text-muted-foreground font-medium">Status</p>
             <p className="uppercase">New generated paycheck Currently available for viewing</p>
           </div>
 
-          {/* Third Column */} 
+          {/* Third Column */}
           <div className="space-y-1">
-            <p className="text-muted font-medium">Sitemap</p>
-            <p className="uppercase">
-              <Link to="/">Home</Link>, <Link to="/paycheck">Paycheck</Link>, <Link to="/student-grant">Student Grant</Link>, <Link to="/vacation-pay">Vacation Pay</Link>
-            </p>
+            <p className="text-muted-foreground font-medium">Sitemap</p>
+            <div className="flex flex-wrap gap-2">
+              <AnimatedLink href="/">HOME</AnimatedLink>
+              <span className="text-muted-foreground">,</span>
+              <AnimatedLink href="/paycheck">PAYCHECK</AnimatedLink>
+              <span className="text-muted-foreground">,</span>
+              <AnimatedLink href="/student-grant">STUDENT GRANT</AnimatedLink>
+              <span className="text-muted-foreground">,</span>
+              <AnimatedLink href="/vacation-pay">VACATION PAY</AnimatedLink>
+            </div>
           </div>
 
           {/* Fourth Column */}
           <div className="space-y-1">
-            <p className="text-muted font-medium">User</p>
-            <p className="uppercase">
-              Login, Service, Contact Us
-            </p>
+            <p className="text-muted-foreground font-medium">User</p>
+            <div className="flex flex-wrap gap-2">
+              <AnimatedLink href="/login">LOGIN</AnimatedLink>
+              <span className="text-muted-foreground">,</span>
+              <AnimatedLink href="/service">SERVICE</AnimatedLink>
+              <span className="text-muted-foreground">,</span>
+              <AnimatedLink href="/contact">CONTACT US</AnimatedLink>
+            </div>
           </div>
         </div>
       </div>
     </header>
-  );
+  )
 }

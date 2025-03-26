@@ -1,8 +1,6 @@
-"use client"
-
 import { motion, type Variants } from "framer-motion";
 import type * as React from "react";
-import Header from "./Header"; // Import the Header component
+import Header from "./Header";
 import { opacity, perspective, slide } from "./ui/anim";
 
 const anim = (variants: Variants) => ({
