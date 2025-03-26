@@ -1,4 +1,5 @@
 
+
 export default function Home() {
   return (
     <section className="py-5">
@@ -12,20 +13,20 @@ export default function Home() {
               Keep track of your finances with ease.
             </p>
             <p className="text-3xl md:text-4xl lg:text-5xl font-normal mb-4">
-              Here is your <span className="text-accent"> latest Paycheck </span> overview.
+              Here is your <span className="text-accent"> economy </span> overview.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[100px] items-center md:items-start my-5 md:my-10 md:gap-20">
           <div className="w-[50wh] border-2 border-gray-200 rounded-lg p-5">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
-              <span className="text-accent"> Latest generated paycheck </span>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-center">
+              <span className="text-accent"> Your Jobs </span>
             </h1>
           </div>
           <div className="w-[50wh] border-2 border-gray-200 rounded-lg p-5">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
-              <span className="text-accent"> Latest user upload paycheck </span>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-center ">
+              <span className="text-accent"> Student Grant [SU] </span>
             </h1>
           </div>
         </div>
