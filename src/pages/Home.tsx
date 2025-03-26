@@ -16,6 +16,19 @@ export default function Home() {
             </p>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[100px] items-center md:items-start my-5 md:my-10 md:gap-20">
+          <div className="w-[50wh] border-2 border-gray-200 rounded-lg p-5">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+              <span className="text-accent"> Latest generated paycheck </span>
+            </h1>
+          </div>
+          <div className="w-[50wh] border-2 border-gray-200 rounded-lg p-5">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+              <span className="text-accent"> Latest user upload paycheck </span>
+            </h1>
+          </div>
+        </div>
       </div>
     </section>
   );
