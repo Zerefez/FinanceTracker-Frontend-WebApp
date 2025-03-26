@@ -69,8 +69,16 @@ export default function SUSection() {
               className="text-sm text-gray-600"
               accentClassName="text-accent"
             />
-            <p className="font-semibold">228.138 kr.</p>
-            <p className="text-xs text-gray-500">Amount for AM contribution: 247.976 kr.</p>
+            <AnimatedText
+              phrases={["228.138 kr."]}
+              accentWords={["228.138", "kr."]}
+              className="font-semibold"
+              accentClassName="text-accent"
+            />
+            <AnimatedText
+              phrases={["Amount for AM contribution: 247.976 kr."]}
+              className="text-xs text-gray-500"
+            />
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
@@ -84,8 +92,14 @@ export default function SUSection() {
               className="text-sm text-gray-600"
               accentClassName="text-accent"
             />
-            <p className="font-semibold">-</p>
-            <p className="text-xs text-gray-500">Enter your timesheet to see remaining hours</p>
+            <AnimatedText
+              phrases={["-"]}
+              className="font-semibold"
+            />
+            <AnimatedText
+              phrases={["Enter your timesheet to see remaining hours"]}
+              className="text-xs text-gray-500"
+            />
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
