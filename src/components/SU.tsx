@@ -49,8 +49,8 @@ export default function SUSection() {
   return (
     <div className="w-full rounded-lg border-2 border-gray-200 p-5">
       <AnimatedText
-        phrases={["Student Grant Overview"]}
-        accentWords={["Grant"]}
+        phrases={["Student Grant Overview [SU]"]}
+        accentWords={["[SU]"]}
         className="mb-4 text-center text-2xl font-bold md:text-3xl lg:text-4xl"
         accentClassName="text-accent"
       />
@@ -110,7 +110,7 @@ export default function SUSection() {
               className="text-sm text-gray-600"
               accentClassName="text-accent"
             />
-            <p className="font-semibold">{suData.maxEarnable.toLocaleString()} kr.</p>
+            <p className="font-semibold text-accent">{suData.maxEarnable.toLocaleString()} kr.</p>
             <p className="text-xs text-gray-500">
               Amount for AM contribution: {suData.incomeCeiling.toLocaleString()} kr.
             </p>
