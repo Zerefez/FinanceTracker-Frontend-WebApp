@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Job } from "../types/Job";
 
 export default function Paycheck() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   // Mock job data - in a real app, this would come from an API
   const jobs: Job[] = [
     {
