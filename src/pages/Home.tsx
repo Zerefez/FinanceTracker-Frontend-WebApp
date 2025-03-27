@@ -41,7 +41,7 @@ export default function Home() {
                   "Here is your economy overview.",
                 ]}
                 accentWords={["economy"]}
-                className="mb-4 text-4xl md:text-5xl lg:text-6xl"
+                className="mb-4 text-2xl md:text-3xl lg:text-4xl"
                 accentClassName="text-accent"
               />
             </div>

@@ -1,6 +1,7 @@
 // src/components/PDFUploadComponent/PDFUploadComponent.tsx
 import { Eye, FileText, Upload, X } from 'lucide-react';
 import React, { useState } from 'react';
+import { Job } from '../types/Job';
 import PDFViewer from './PDFViewer';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -8,12 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 interface PDFUploadComponentProps {
   title: string;
   type: 'generated' | 'uploaded';
+  jobId?: string;
+  jobs?: Job[];
 }
 
-const PDFUploadComponent: React.FC<PDFUploadComponentProps> = ({ title, type }) => {
+const PDFUploadComponent: React.FC<PDFUploadComponentProps> = ({ title, type, jobId, jobs }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isViewing, setIsViewing] = useState(false);
+
+  const selectedJob = jobs?.find(job => job.id === jobId);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -36,6 +41,12 @@ const PDFUploadComponent: React.FC<PDFUploadComponentProps> = ({ title, type }) 
         <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-bold">
           <span className="text-black">{title}</span>
         </CardTitle>
+        {selectedJob && (
+          <div className="mt-2 text-sm text-gray-600">
+            <p className="font-semibold">{selectedJob.title}</p>
+            <p>{selectedJob.company}</p>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center w-full">
