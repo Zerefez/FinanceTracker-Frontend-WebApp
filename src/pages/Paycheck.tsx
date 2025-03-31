@@ -30,7 +30,7 @@ export default function Paycheck() {
   return (
     <section>
       <Inner>
-        <div className="mx-8 px-4 md:px-6 h-full">
+        <div className="md:px-6 h-full">
           <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
             <div className="w-full ">
               <AnimatedText

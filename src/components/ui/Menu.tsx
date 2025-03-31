@@ -27,7 +27,7 @@ export default function Menu() {
 
   const menu = {
     open: {
-      width: "480px",
+      width: "340px",
       height: "650px",
       bottom: "-25px",
       right: "-25px",

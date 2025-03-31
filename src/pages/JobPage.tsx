@@ -39,7 +39,7 @@ export default function JobDetailPage() {
   return (
     <section>
       <Inner>
-        <div className="mx-8 px-4 md:px-6 h-[100vh] ">
+        <div className="md:px-6 h-[100vh] ">
           <div className="max-w-2xl mx-auto">
             <AnimatedText
               phrases={[job.title]}
