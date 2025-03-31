@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import AnimatedText from "../components/ui/animatedText";
+import AnimatedText from "../components/ui/animation/animatedText";
 
 interface SUData {
   incomeCeiling: number;

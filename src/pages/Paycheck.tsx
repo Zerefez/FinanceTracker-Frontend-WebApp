@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Inner from "../components/Inner";
 import PDFUploadComponent from "../components/PDFUpload";
-import AnimatedText from "../components/ui/animatedText";
+import AnimatedText from "../components/ui/animation/animatedText";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Job } from "../types/Job";
 

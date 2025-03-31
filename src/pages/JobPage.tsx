@@ -2,7 +2,7 @@
 import { useParams } from 'react-router-dom';
 import Inner from "../components/Inner";
 import { Job } from '../components/Job';
-import AnimatedText from "../components/ui/animatedText";
+import AnimatedText from "../components/ui/animation/animatedText";
 
 // Mock job data - in a real app, this would come from an API
 const jobs: Job[] = [

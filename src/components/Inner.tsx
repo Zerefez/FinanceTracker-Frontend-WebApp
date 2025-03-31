@@ -1,7 +1,7 @@
 import { motion, type Variants } from "framer-motion";
 import type * as React from "react";
 import Header from "./Header";
-import { opacity, perspective, slide } from "./ui/anim";
+import { opacity, perspective, slide } from "./ui/animation/anim";
 
 const anim = (variants: Variants) => ({
   initial: "initial",

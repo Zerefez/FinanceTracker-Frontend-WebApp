@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import Inner from "../components/Inner";
 import { Job } from "../components/Job";
 import SUSection from "../components/SU";
-import AnimatedText from "../components/ui/animatedText";
+import AnimatedText from "../components/ui/animation/animatedText";
 
 export default function Home() {
   // Mock job data - in a real app, this would come from an API or database
