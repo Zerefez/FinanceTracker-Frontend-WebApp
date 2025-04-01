@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react"
 import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
 import JobDetailPage from "./pages/JobPage"
+import { LoginPage } from "./pages/LoginPage"
 import Paycheck from "./pages/Paycheck"
 import StudentGrant from "./pages/StudentGrant"
 
@@ -17,6 +18,7 @@ function AnimatedRoutes() {
         <Route path="/paycheck" element={<Paycheck />} />
         <Route path="/student-grant" element={<StudentGrant />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </AnimatePresence>
   )
