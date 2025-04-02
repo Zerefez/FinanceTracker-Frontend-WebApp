@@ -1,9 +1,14 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Inner from '../components/Inner';
 import { Login } from '../components/Login';
 
-export function LoginPage() {
+interface LoginPageProps {
+  setIsAuthenticated: (value: boolean) => void;
+}
+
+export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -11,8 +16,13 @@ export function LoginPage() {
       // For now, we'll just simulate a successful login
       console.log('Logging in with:', email);
       
-      // After successful login, redirect to home page
-      navigate('/');
+      // Store authentication token
+      localStorage.setItem('authToken', 'dummy-token'); // Replace with actual token from your backend
+      setIsAuthenticated(true);
+      
+      // Redirect to the page the user tried to visit, or home page
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (error) {
       console.error('Login failed:', error);
       // TODO: Show error message to user
@@ -21,11 +31,11 @@ export function LoginPage() {
 
   return (
     <section>
-        <Inner>
+      <Inner>
         <div className="min-h-screen flex items-center justify-center">
-            <Login onLogin={handleLogin} />
+          <Login onLogin={handleLogin} />
         </div>
-        </Inner>
+      </Inner>
     </section>
   );
 } 
