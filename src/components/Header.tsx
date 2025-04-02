@@ -1,14 +1,34 @@
-import { Fragment, useState } from 'react';
-import { mainLinks, userLinks } from '../data/navigationLinks';
+import { Fragment, useEffect, useState } from 'react';
+import { loginLink, logoutLink, mainLinks, userLinks } from '../data/navigationLinks';
+import { authUtils } from '../utils';
 import AnimatedLink from './ui/animation/animatedLink';
 import Clock from './ui/clock';
 import Menu from './ui/Menu';
 
 export default function Header() {
   const [isMenuActive, setIsMenuActive] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication status when component mounts
+  useEffect(() => {
+    setIsAuthenticated(authUtils.isAuthenticated());
+    
+    // Setup event listener for storage changes (for multi-tab support)
+    const handleStorageChange = () => {
+      setIsAuthenticated(authUtils.isAuthenticated());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuActive(!isMenuActive);
+  };
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    authUtils.logout();
   };
 
   return (
@@ -48,6 +68,24 @@ export default function Header() {
               <div className="hidden lg:block space-y-1">
                 <p className="text-muted font-medium">User</p>
                 <div className="flex flex-wrap gap-2">
+                  {/* Conditional login/logout link */}
+                  {isAuthenticated ? (
+                    <Fragment key="logout">
+                      <AnimatedLink href="#" onClick={handleLogout}>
+                        {logoutLink.title}
+                      </AnimatedLink>
+                      <span>,</span>
+                    </Fragment>
+                  ) : (
+                    <Fragment key="login">
+                      <AnimatedLink href={loginLink.href}>
+                        {loginLink.title}
+                      </AnimatedLink>
+                      <span>,</span>
+                    </Fragment>
+                  )}
+                  
+                  {/* Other user links */}
                   {userLinks.map((link, index) => (
                     <Fragment key={link.href}>
                       <AnimatedLink href={link.href}>{link.title}</AnimatedLink>

@@ -13,13 +13,29 @@ function AnimatedRoutes() {
   const location = useLocation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Check if user is authenticated (you can modify this based on your auth logic)
+  // Check if user is authenticated
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('authToken') // or however you store your auth token
       setIsAuthenticated(!!token)
     }
+    
+    // Check auth on mount
     checkAuth()
+    
+    // Listen for auth events
+    const handleLogin = () => setIsAuthenticated(true);
+    const handleLogout = () => setIsAuthenticated(false);
+    
+    window.addEventListener('auth:login', handleLogin);
+    window.addEventListener('auth:logout', handleLogout);
+    window.addEventListener('storage', checkAuth); // For cross-tab state sync
+    
+    return () => {
+      window.removeEventListener('auth:login', handleLogin);
+      window.removeEventListener('auth:logout', handleLogout);
+      window.removeEventListener('storage', checkAuth);
+    }
   }, [])
 
   return (

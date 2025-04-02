@@ -2,16 +2,25 @@ import { Link } from 'react-router-dom';
 
 import { cn } from "../../../lib/utils";
 
+interface AnimatedLinkProps {
+  href?: string;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+}
+
 const AnimatedLink = ({
   href,
   children,
   className,
-}: { href?: string; children: React.ReactNode; className?: string }) => {
+  onClick,
+}: AnimatedLinkProps) => {
   const Component = href ? Link : "button"
 
   return (
     <Component 
       to={href || "#"} 
+      onClick={onClick}
       className={cn(
         "relative uppercase font-semibold group inline-block", 
         className

@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import Inner from '../components/Inner';
 import { Login } from '../components/Login';
+import { AUTH_EVENTS } from '../utils';
 
 interface LoginPageProps {
   setIsAuthenticated: (value: boolean) => void;
@@ -18,7 +19,12 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
       
       // Store authentication token
       localStorage.setItem('authToken', 'dummy-token'); // Replace with actual token from your backend
+      
+      // Update authentication state
       setIsAuthenticated(true);
+      
+      // Dispatch custom event for login
+      window.dispatchEvent(new Event(AUTH_EVENTS.LOGIN));
       
       // Redirect to the page the user tried to visit, or home page
       const from = (location.state as any)?.from?.pathname || '/';
