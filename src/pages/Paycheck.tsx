@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { Job } from "../components/Job";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Job } from "../types/Job";
 
 export default function Paycheck() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
