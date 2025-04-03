@@ -1,5 +1,4 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { authUtils } from '../utils';
 import Inner from './Inner';
 
 /**
@@ -8,7 +7,9 @@ import Inner from './Inner';
  */
 const ProtectedRoutes = () => {
   const location = useLocation();
-  const isAuthenticated = authUtils.isAuthenticated();
+  
+  // Check auth status directly from localStorage
+  const isAuthenticated = !!localStorage.getItem('authToken');
 
   // If not authenticated, redirect to login while saving the attempted location
   if (!isAuthenticated) {
@@ -17,7 +18,7 @@ const ProtectedRoutes = () => {
 
   // Render child routes using Outlet wrapped with Inner component that includes Header
   return (
-    <Inner>
+    <Inner showHeader={true}>
       <Outlet />
     </Inner>
   );

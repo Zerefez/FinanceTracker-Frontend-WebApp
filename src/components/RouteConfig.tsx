@@ -1,12 +1,13 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { AUTH_EVENTS } from "../lib/utils";
 import Home from "../pages/Home";
 import JobDetailPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
+import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import StudentGrant from "../pages/StudentGrant";
-import { AUTH_EVENTS } from "../utils";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {
@@ -24,8 +25,13 @@ const RouteConfig = () => {
     checkAuth();
     
     // Listen for auth events
-    const handleLogin = () => setIsAuthenticated(true);
-    const handleLogout = () => setIsAuthenticated(false);
+    const handleLogin = () => {
+      setIsAuthenticated(true);
+    };
+    
+    const handleLogout = () => {
+      setIsAuthenticated(false);
+    };
     
     window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
     window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
@@ -38,14 +44,23 @@ const RouteConfig = () => {
     };
   }, []);
 
+  // Check if the current path is the logout page
+  const isLogoutPage = location.pathname === '/logout';
+  
   // Dynamic routing key helps ensure proper redirects when auth state changes
-  const routingKey = `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
+  // Skip changing the key for logout page to prevent re-rendering during logout
+  const routingKey = isLogoutPage 
+    ? 'logout-page' 
+    : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
 
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={routingKey}>
-        {/* Public routes */}
-        <Route path="/login" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+        {/* Public routes - accessible whether logged in or not */}
+        <Route path="/login" element={
+          isAuthenticated && !isLogoutPage ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
+        } />
+        <Route path="/logout" element={<LogoutPage />} />
         
         {/* Protected routes - nested under ProtectedRoutes with Outlet */}
         <Route path="/" element={<ProtectedRoutes />}>

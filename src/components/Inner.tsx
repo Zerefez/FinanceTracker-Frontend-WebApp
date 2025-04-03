@@ -10,17 +10,22 @@ const anim = (variants: Variants) => ({
   variants,
 })
 
-export default function Inner({ children }: { children: React.ReactNode }) {
+interface InnerProps {
+  children: React.ReactNode;
+  showHeader?: boolean;
+}
+
+export default function Inner({ children, showHeader = true }: InnerProps) {
   return (
     <div className="bg-black min-h-screen relative overflow-hidden">
       {/* Background animation */}
       <motion.div className="fixed inset-0 bg-white z-10" {...anim(slide)} />
 
-      {/* Content animation - now includes Header */}
+      {/* Content animation - conditionally includes Header */}
       <motion.div className="relative z-1 bg-white " {...anim(perspective)}>
         <motion.div {...anim(opacity)}>
-          {/* Header is now inside the animation wrapper */}
-          <Header />
+          {/* Header is now conditionally rendered */}
+          {showHeader && <Header />}
 
           {/* Page content */}
           <div className="p-6">{children}</div>

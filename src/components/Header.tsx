@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginLink, logoutLink, mainLinks, userLinks } from '../data/navigationLinks';
-import { authUtils } from '../utils';
+import { AUTH_EVENTS, authUtils } from '../lib/utils';
 import AnimatedLink from './ui/animation/animatedLink';
 import Clock from './ui/clock';
 import Menu from './ui/Menu';
@@ -8,18 +9,30 @@ import Menu from './ui/Menu';
 export default function Header() {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   // Check authentication status when component mounts
   useEffect(() => {
-    setIsAuthenticated(authUtils.isAuthenticated());
-    
-    // Setup event listener for storage changes (for multi-tab support)
-    const handleStorageChange = () => {
+    const checkAuth = () => {
       setIsAuthenticated(authUtils.isAuthenticated());
     };
     
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    // Check initially
+    checkAuth();
+    
+    // Setup event listeners
+    const handleLogin = () => checkAuth();
+    const handleLogout = () => checkAuth();
+    
+    window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
+    window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
+    window.addEventListener('storage', checkAuth);
+    
+    return () => {
+      window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
+      window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
+      window.removeEventListener('storage', checkAuth);
+    };
   }, []);
 
   const toggleMenu = () => {
@@ -28,7 +41,9 @@ export default function Header() {
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
-    authUtils.logout();
+    
+    // Navigate to logout page to show transition animation
+    navigate('/logout');
   };
 
   return (
