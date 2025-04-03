@@ -1,6 +1,5 @@
 // src/pages/jobs/[id].tsx
 import { useParams } from 'react-router-dom';
-import Inner from "../components/Inner";
 import { Job } from '../components/Job';
 import AnimatedText from "../components/ui/animation/animatedText";
 
@@ -38,40 +37,38 @@ export default function JobDetailPage() {
 
   return (
     <section>
-      <Inner>
-        <div className="md:px-6 h-[100vh] ">
-          <div className="max-w-2xl mx-auto">
-            <AnimatedText
-              phrases={[job.title]}
-              className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl text-center"
-              accentClassName="text-accent"
-            />
-            <div className="bg-white shadow-md rounded-lg p-6 mt-6">
-              <div className="mb-4">
-                <AnimatedText
-                  phrases={[job.company]}
-                  className="text-2xl font-semibold text-gray-800"
-                />
-                <p className="text-gray-600">
-                  {job.startDate} - {job.endDate || 'Present'}
-                </p>
-              </div>
-              {/* Add more job details here */}
-              <div className="mt-6">
-                <AnimatedText
-                  phrases={["Job Description"]}
-                  className="text-xl font-semibold mb-2"
-                />
-                <AnimatedText
-                  phrases={[`Additional job details would be displayed here. In a real application,
-                  you would fetch comprehensive job information from your backend`]}
-                  className="text-gray-700"
-                />
-              </div>
+      <div className="md:px-6 h-[100vh] ">
+        <div className="max-w-2xl mx-auto">
+          <AnimatedText
+            phrases={[job.title]}
+            className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl text-center"
+            accentClassName="text-accent"
+          />
+          <div className="bg-white shadow-md rounded-lg p-6 mt-6">
+            <div className="mb-4">
+              <AnimatedText
+                phrases={[job.company]}
+                className="text-2xl font-semibold text-gray-800"
+              />
+              <p className="text-gray-600">
+                {job.startDate} - {job.endDate || 'Present'}
+              </p>
+            </div>
+            {/* Add more job details here */}
+            <div className="mt-6">
+              <AnimatedText
+                phrases={["Job Description"]}
+                className="text-xl font-semibold mb-2"
+              />
+              <AnimatedText
+                phrases={[`Additional job details would be displayed here. In a real application,
+                you would fetch comprehensive job information from your backend`]}
+                className="text-gray-700"
+              />
             </div>
           </div>
         </div>
-      </Inner>
+      </div>
     </section>
   );
 }

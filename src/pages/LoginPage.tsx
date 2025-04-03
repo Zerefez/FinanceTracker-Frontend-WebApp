@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import Inner from '../components/Inner';
 import { Login } from '../components/Login';
 import { AUTH_EVENTS } from '../utils';
 
@@ -37,11 +36,9 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
 
   return (
     <section>
-      <Inner>
         <div className="min-h-screen flex items-center justify-center">
           <Login onLogin={handleLogin} />
-        </div>
-      </Inner>
+        </div> 
     </section>
   );
 } 
