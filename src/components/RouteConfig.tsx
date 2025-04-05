@@ -9,6 +9,7 @@ import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import StudentGrant from "../pages/StudentGrant";
 import ProtectedRoutes from "./ProtectedRoutes";
+import { RegisterPage } from "../pages/RegisterPage";
 
 const RouteConfig = () => {
   const location = useLocation();
@@ -20,23 +21,23 @@ const RouteConfig = () => {
       const token = localStorage.getItem('authToken');
       setIsAuthenticated(!!token);
     };
-    
+
     // Check auth on mount
     checkAuth();
-    
+
     // Listen for auth events
     const handleLogin = () => {
       setIsAuthenticated(true);
     };
-    
+
     const handleLogout = () => {
       setIsAuthenticated(false);
     };
-    
+
     window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
     window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
     window.addEventListener('storage', checkAuth);
-    
+
     return () => {
       window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
       window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
@@ -46,11 +47,11 @@ const RouteConfig = () => {
 
   // Check if the current path is the logout page
   const isLogoutPage = location.pathname === '/logout';
-  
+
   // Dynamic routing key helps ensure proper redirects when auth state changes
   // Skip changing the key for logout page to prevent re-rendering during logout
-  const routingKey = isLogoutPage 
-    ? 'logout-page' 
+  const routingKey = isLogoutPage
+    ? 'logout-page'
     : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
 
   return (
@@ -60,8 +61,9 @@ const RouteConfig = () => {
         <Route path="/login" element={
           isAuthenticated && !isLogoutPage ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
         } />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
-        
+
         {/* Protected routes - nested under ProtectedRoutes with Outlet */}
         <Route path="/" element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
@@ -72,8 +74,8 @@ const RouteConfig = () => {
 
         {/* Catch all route - redirect to login if not authenticated, home if authenticated */}
         <Route path="*" element={
-          isAuthenticated ? 
-            <Navigate to="/" replace /> : 
+          isAuthenticated ?
+            <Navigate to="/" replace /> :
             <Navigate to="/login" replace />
         } />
       </Routes>
