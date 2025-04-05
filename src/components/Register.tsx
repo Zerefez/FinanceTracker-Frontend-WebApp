@@ -6,6 +6,7 @@ export function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [hourlyRate, setHourlyRate] = useState('');
+    const [fullName, setFullName] = useState('');
     return (
         <Card className="w-[350px] border-gray-500 border-2 rounded-lg ">
             <CardHeader>
@@ -13,6 +14,16 @@ export function Register() {
                 <CardDescription>Enter your information to create an account</CardDescription>
             </CardHeader>
             <form className="space-y-4">
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700"> Full Name</label>
+                <input
+                    id="fullName"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
+                    required
+                >
+                </input >
                 <input
                     id="email"
                     type="email"
@@ -44,6 +55,7 @@ export function Register() {
                 </button>
 
             </form>
+
         </Card>
     );
 }
