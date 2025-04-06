@@ -23,7 +23,7 @@ export const authUtils = {
     await authService.logout();
     
     // Dispatch custom event for logout
-    window.dispatchEvent(new Event(AUTH_EVENTS.LOGOUT));
+    window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGOUT));
   },
   
   // Async version for more secure verification
@@ -33,6 +33,6 @@ export const authUtils = {
   
   // Sync version for quick UI checks (less secure)
   isAuthenticatedSync: (): boolean => {
-    return authService.isAuthenticatedSync();
+    return authService.isAuthenticated();
   }
 }; 

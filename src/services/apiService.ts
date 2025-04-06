@@ -1,7 +1,7 @@
 import { authService } from './authService';
 
-// API URL - ensure it matches the URL used in authService
-const API_URL = 'http://localhost:5140';
+// API URL - Use relative URL to leverage the Vite proxy
+const API_URL = '/api';
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -31,6 +31,7 @@ export const apiService = {
     // Prepare headers
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...headers
     };
     
@@ -48,8 +49,7 @@ export const apiService = {
     // Prepare request options
     const requestOptions: RequestInit = {
       method,
-      headers: requestHeaders,
-      credentials: 'include'
+      headers: requestHeaders
     };
     
     // Add body if provided

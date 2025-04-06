@@ -44,10 +44,12 @@ const RouteConfig = () => {
     // Listen for auth events
     const handleLogin = () => {
       setIsAuthenticated(true);
+      console.log('Auth state updated: User is now authenticated');
     };
     
     const handleLogout = () => {
       setIsAuthenticated(false);
+      console.log('Auth state updated: User is now logged out');
     };
     
     window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);

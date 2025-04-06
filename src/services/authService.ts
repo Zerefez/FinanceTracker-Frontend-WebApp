@@ -14,8 +14,8 @@ interface RegisterResponse {
   message: string;
 }
 
-// API URL - replace with your actual backend URL
-const API_URL = 'http://localhost:5140'; // Updated to use the correct local development server
+// API URL - Use relative URL to leverage the Vite proxy
+const API_URL = '/api';
 
 // Security constants
 const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires in 15 mins)
@@ -23,21 +23,38 @@ const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires i
 export const authService = {
   // Login with username and password - validates user against database
   login: async (username: string, password: string): Promise<LoginResponse> => {
+    console.log('Sending login request with:', { Username: username, Password: password });
+    
     const response = await fetch(`${API_URL}/Account`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      body: JSON.stringify({ username, password }),
-      credentials: 'include'
+      body: JSON.stringify({ 
+        // Match the C# model property names exactly
+        Username: username, 
+        Password: password 
+      })
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Login failed');
+      const errorText = await response.text();
+      let errorMessage = 'Login failed';
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.detail || errorData.message || errorMessage;
+      } catch (e) {
+        console.error('Error parsing error response:', e);
+        errorMessage = errorText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const token = await response.text();
+    console.log('Received token:', token.substring(0, 20) + '...');
     
     // Store token in localStorage
     localStorage.setItem('token', token);
@@ -61,14 +78,27 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
+        body: JSON.stringify({ 
+          Email: email, 
+          Password: password 
+        })
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Registration failed');
+        const errorText = await response.text();
+        let errorMessage = 'Registration failed';
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorData.message || errorMessage;
+        } catch (e) {
+          console.error('Error parsing error response:', e);
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const message = await response.text();
@@ -89,9 +119,9 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({ email }),
-        credentials: 'include'
+        body: JSON.stringify({ Email: email })
       });
 
       if (response.ok) {

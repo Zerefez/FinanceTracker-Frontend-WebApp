@@ -59,14 +59,7 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
       setErrorMessage(null);
       setSuccessMessage(null);
       
-      /* 
-      // Validation now happens on the server side
-      const isValidUser = await authService.validateUser(username);
-      if (!isValidUser) {
-        setErrorMessage('User does not exist. Please check your credentials or register.');
-        return;
-      }
-      */
+      console.log('Attempting login with:', { username });
       
       // Call the auth service to login with JWT
       const response = await authService.login(username, password);
@@ -75,19 +68,27 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
         throw new Error('Login failed');
       }
       
+      console.log('Login successful');
+      
       // Update authentication state
       setIsAuthenticated(true);
       
       // Dispatch custom event for login
-      window.dispatchEvent(new Event(AUTH_EVENTS.LOGIN));
+      window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGIN));
       
       // Redirect to the page the user tried to visit, or home page
       const state = location.state as LocationState;
       const from = state?.from?.pathname || '/';
-      navigate(from, { replace: true });
-    } catch (error) {
+      
+      console.log('Redirecting to:', from);
+      
+      // Use a short timeout to ensure state updates complete before navigation
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
+    } catch (error: any) {
       console.error('Login failed:', error);
-      setErrorMessage('Login failed. Please check your credentials and try again.');
+      setErrorMessage(error.message || 'Login failed. Please check your credentials and try again.');
     } finally {
       setIsLoading(false);
     }
