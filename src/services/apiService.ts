@@ -8,113 +8,101 @@ interface ApiOptions {
   body?: any;
   headers?: Record<string, string>;
   skipAuth?: boolean;
+  parseAsJson?: boolean;
 }
 
 export const apiService = {
   /**
    * Make an authenticated API request
-   * @param endpoint The API endpoint to call (without the base URL)
-   * @param options Request options
-   * @returns Promise with the response data
    */
   request: async <T>(endpoint: string, options: ApiOptions = {}): Promise<T> => {
     const {
       method = 'GET',
       body,
       headers = {},
-      skipAuth = false
+      skipAuth = false,
+      parseAsJson = true
     } = options;
 
-    // Prepare the request URL
+    // Build URL
     const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     
-    // Prepare headers
+    // Setup headers with auth token
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...headers
     };
     
-    // Add authorization header if not skipping auth
     if (!skipAuth) {
       const token = authService.getToken();
       if (token) {
         requestHeaders['Authorization'] = `Bearer ${token}`;
       } else {
-        // Token is missing but required - reject
         return Promise.reject(new Error('Authentication required'));
       }
     }
     
-    // Prepare request options
+    // Build request
     const requestOptions: RequestInit = {
       method,
-      headers: requestHeaders
+      headers: requestHeaders,
+      body: body ? JSON.stringify(body) : undefined
     };
     
-    // Add body if provided
-    if (body) {
-      requestOptions.body = JSON.stringify(body);
-    }
-    
-    const response = await fetch(url, requestOptions);
-    
-    // Handle unauthorized response - could trigger logout
-    if (response.status === 401) {
-      // Unauthorized - clear auth state
-      await authService.logout();
-      // Optionally redirect to login page
-      window.location.href = '/login';
-      return Promise.reject(new Error('Session expired or unauthorized'));
-    }
-    
-    // Handle successful response
-    if (response.ok) {
-      // Check content type to determine how to parse the response
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType && contentType.includes('application/json')) {
-        return response.json();
-      } else {
-        // For non-JSON responses (like plain text)
-        const text = await response.text();
-        try {
-          // Try to parse as JSON anyway
-          return JSON.parse(text) as T;
-        } catch {
-          // If not JSON, return as is
-          return text as unknown as T;
-        }
-      }
-    }
-    
-    // Handle error responses
-    const errorText = await response.text();
-    let errorData;
-    
+    // Execute request
     try {
-      errorData = JSON.parse(errorText);
-    } catch {
-      errorData = { message: errorText };
+      const response = await fetch(url, requestOptions);
+      
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        authService.logout();
+        window.location.href = '/login';
+        return Promise.reject(new Error('Session expired'));
+      }
+      
+      // Handle other errors
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = 'Request failed';
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorData.message || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Parse response
+      if (parseAsJson) {
+        try {
+          return await response.json();
+        } catch {
+          // Handle empty responses that should be JSON
+          return {} as T;
+        }
+      } else {
+        return await response.text() as unknown as T;
+      }
+    } catch (error) {
+      console.error(`API Error (${method} ${endpoint}):`, error);
+      throw error;
     }
-    
-    throw new Error(errorData.detail || errorData.message || 'Request failed');
   },
   
   // Convenience methods
-  get: <T>(endpoint: string, options: Omit<ApiOptions, 'method' | 'body'> = {}) => {
-    return apiService.request<T>(endpoint, { ...options, method: 'GET' });
-  },
+  get: <T>(endpoint: string, options: Omit<ApiOptions, 'method' | 'body'> = {}) => 
+    apiService.request<T>(endpoint, { ...options, method: 'GET' }),
   
-  post: <T>(endpoint: string, body: any, options: Omit<ApiOptions, 'method'> = {}) => {
-    return apiService.request<T>(endpoint, { ...options, method: 'POST', body });
-  },
+  post: <T>(endpoint: string, body: any, options: Omit<ApiOptions, 'method'> = {}) => 
+    apiService.request<T>(endpoint, { ...options, method: 'POST', body }),
   
-  put: <T>(endpoint: string, body: any, options: Omit<ApiOptions, 'method'> = {}) => {
-    return apiService.request<T>(endpoint, { ...options, method: 'PUT', body });
-  },
+  put: <T>(endpoint: string, body: any, options: Omit<ApiOptions, 'method'> = {}) => 
+    apiService.request<T>(endpoint, { ...options, method: 'PUT', body }),
   
-  delete: <T>(endpoint: string, options: Omit<ApiOptions, 'method'> = {}) => {
-    return apiService.request<T>(endpoint, { ...options, method: 'DELETE' });
-  }
+  delete: <T>(endpoint: string, options: Omit<ApiOptions, 'method'> = {}) => 
+    apiService.request<T>(endpoint, { ...options, method: 'DELETE' })
 }; 

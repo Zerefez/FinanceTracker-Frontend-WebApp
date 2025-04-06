@@ -20,156 +20,139 @@ const API_URL = '/api';
 // Security constants
 const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires in 15 mins)
 
-export const authService = {
-  // Login with username and password - validates user against database
-  login: async (username: string, password: string): Promise<LoginResponse> => {
-    console.log('Sending login request with:', { Username: username, Password: password });
+// Common fetch helper function to reduce redundancy
+const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, parseAsJson = false): Promise<any> => {
+  const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  
+  // Default headers for all requests
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...(options.headers || {})
+  };
+  
+  const requestOptions = {
+    ...options,
+    headers
+  };
+  
+  const response = await fetch(url, requestOptions);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMessage = 'Request failed';
     
-    const response = await fetch(`${API_URL}/Account`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ 
-        // Match the C# model property names exactly
-        Username: username, 
-        Password: password 
-      })
-    });
+    try {
+      const errorData = JSON.parse(errorText);
+      errorMessage = errorData.detail || errorData.message || errorMessage;
+    } catch (e) {
+      errorMessage = errorText || errorMessage;
+    }
+    
+    throw new Error(errorMessage);
+  }
+  
+  // Parse response based on content type or requested format
+  return parseAsJson ? response.json() : response.text();
+};
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = 'Login failed';
+// Helper function to parse user data from JWT token
+const parseUserFromToken = (token: string): User | null => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      id: payload.nameid || '',
+      email: payload.name || '',
+    };
+  } catch (e) {
+    console.error('Failed to parse token', e);
+    return null;
+  }
+};
+
+export const authService = {
+  // Login with username and password
+  login: async (username: string, password: string): Promise<LoginResponse> => {
+    try {
+      const token = await fetchWithAuth('/Account', {
+        method: 'POST',
+        body: JSON.stringify({ Username: username, Password: password })
+      });
       
-      try {
-        const errorData = JSON.parse(errorText);
-        errorMessage = errorData.detail || errorData.message || errorMessage;
-      } catch (e) {
-        console.error('Error parsing error response:', e);
-        errorMessage = errorText || errorMessage;
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      
+      // Parse and store user data
+      const userData = parseUserFromToken(token);
+      if (userData) {
+        localStorage.setItem('user', JSON.stringify(userData));
       }
       
-      throw new Error(errorMessage);
+      return { token, success: true };
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
     }
-
-    const token = await response.text();
-    console.log('Received token:', token.substring(0, 20) + '...');
-    
-    // Store token in localStorage
-    localStorage.setItem('token', token);
-
-    // Parse user from token (JWT)
-    const userData = parseUserFromToken(token);
-    if (userData) {
-      localStorage.setItem('user', JSON.stringify(userData));
-    }
-
-    return {
-      token,
-      success: true
-    };
   },
 
   // Register a new user
   register: async (email: string, password: string): Promise<RegisterResponse> => {
     try {
-      const response = await fetch(`${API_URL}/Account/register`, {
+      const message = await fetchWithAuth('/Account/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ 
-          Email: email, 
-          Password: password 
-        })
+        body: JSON.stringify({ Email: email, Password: password })
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = 'Registration failed';
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.detail || errorData.message || errorMessage;
-        } catch (e) {
-          console.error('Error parsing error response:', e);
-          errorMessage = errorText || errorMessage;
-        }
-        
-        throw new Error(errorMessage);
-      }
-
-      const message = await response.text();
-      return {
-        success: true,
-        message
-      };
+      
+      return { success: true, message };
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
     }
   },
 
-  // Validates if user exists in database with given credentials
+  // Validate if user exists
   validateUser: async (email: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_URL}/Account/validate`, {
+      const data = await fetchWithAuth('/Account/validate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
         body: JSON.stringify({ Email: email })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.success === true;
-      }
-      return false;
+      }, true);
+      
+      return data.success === true;
     } catch (error) {
       console.error('User validation failed:', error);
       return false;
     }
   },
 
-  // Logout - clears local storage
-  logout: async (): Promise<void> => {
-    try {
-      // No server-side logout needed as we're using JWT
-      // Just clear local storage
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+  // Logout - clear local storage
+  logout: (): void => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   },
 
   // Get current user from localStorage
   getCurrentUser: (): User | null => {
     const userJson = localStorage.getItem('user');
-    if (userJson) {
-      try {
-        return JSON.parse(userJson);
-      } catch (e) {
-        console.error('Failed to parse user data', e);
-        localStorage.removeItem('user');
-      }
+    if (!userJson) return null;
+    
+    try {
+      return JSON.parse(userJson);
+    } catch {
+      localStorage.removeItem('user');
+      return null;
     }
-    return null;
   },
 
-  // Check if user is authenticated based on presence of token
+  // Check if user is authenticated
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem('token');
     if (!token) return false;
     
-    // Check if token is expired
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expiry = payload.exp * 1000; // Convert to milliseconds
+      
       if (Date.now() >= expiry) {
         // Token expired, clear it
         localStorage.removeItem('token');
@@ -177,28 +160,11 @@ export const authService = {
         return false;
       }
       return true;
-    } catch (e) {
-      console.error('Failed to parse token', e);
+    } catch {
       return false;
     }
   },
 
   // Get the authentication token
-  getToken: (): string | null => {
-    return localStorage.getItem('token');
-  }
-};
-
-// Helper function to parse user data from JWT token
-function parseUserFromToken(token: string): User | null {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return {
-      id: payload.nameid || '',
-      email: payload.name || '', // Using 'name' claim which contains the username (email in this case)
-    };
-  } catch (e) {
-    console.error('Failed to parse token', e);
-    return null;
-  }
-} 
+  getToken: (): string | null => localStorage.getItem('token')
+}; 

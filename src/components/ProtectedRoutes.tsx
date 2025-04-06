@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { authUtils } from '../lib/utils';
 import Inner from './Inner';
 
 /**
@@ -9,41 +9,35 @@ import Inner from './Inner';
  */
 const ProtectedRoutes = () => {
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isVerifying, setIsVerifying] = useState(true);
+  const [authState, setAuthState] = useState<{
+    isAuthenticated: boolean | null;
+    isVerifying: boolean;
+  }>({
+    isAuthenticated: null,
+    isVerifying: true
+  });
   
-  // Check authentication status on mount and location change
+  // Check authentication on mount and location change
   useEffect(() => {
-    let isMounted = true;
-    
-    const verifyAuth = () => {
-      setIsVerifying(true);
-      try {
-        // Check if token is valid and not expired
-        const isAuth = authService.isAuthenticated();
-        
-        if (isMounted) {
-          setIsAuthenticated(isAuth);
-          setIsVerifying(false);
-        }
-      } catch (error) {
-        console.error('Auth verification failed:', error);
-        if (isMounted) {
-          setIsAuthenticated(false);
-          setIsVerifying(false);
-        }
-      }
-    };
-    
-    verifyAuth();
-    
-    return () => {
-      isMounted = false;
-    };
+    try {
+      const isAuth = authUtils.isAuthenticated();
+      console.log('Protected route auth check:', isAuth);
+      
+      setAuthState({
+        isAuthenticated: isAuth,
+        isVerifying: false
+      });
+    } catch (error) {
+      console.error('Auth verification failed:', error);
+      setAuthState({
+        isAuthenticated: false,
+        isVerifying: false
+      });
+    }
   }, [location.pathname]);
 
   // Show loading state while verifying
-  if (isVerifying) {
+  if (authState.isVerifying) {
     return (
       <Inner showHeader={false}>
         <div className="min-h-screen flex items-center justify-center">
@@ -55,12 +49,14 @@ const ProtectedRoutes = () => {
     );
   }
 
-  // If not authenticated, redirect to login while saving the attempted location
-  if (!isAuthenticated) {
+  // Redirect to login if not authenticated
+  if (!authState.isAuthenticated) {
+    console.log('User not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Render child routes using Outlet wrapped with Inner component that includes Header
+  // Render child routes with header
+  console.log('User authenticated, rendering protected content');
   return (
     <Inner showHeader={true}>
       <Outlet />

@@ -14,8 +14,8 @@ export default function Header() {
   // Check authentication status when component mounts
   useEffect(() => {
     const checkAuth = () => {
-      // Use the sync version for the header to avoid unnecessary async complexity
-      const authState = authUtils.isAuthenticatedSync();
+      // Use the auth utility for authentication check
+      const authState = authUtils.isAuthenticated();
       console.log('Current auth state in Header:', authState);
       setIsAuthenticated(authState);
     };
@@ -58,7 +58,7 @@ export default function Header() {
     
     try {
       // Use the authUtils to handle logout properly
-      await authUtils.logout();
+      authUtils.logout();
       console.log('Logout triggered from Header');
       
       // Navigate to logout page to show transition animation

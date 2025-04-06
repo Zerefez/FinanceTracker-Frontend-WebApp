@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Inner from '../components/Inner';
 import { Login } from '../components/Login';
-import { AUTH_EVENTS } from '../lib/utils';
+import { authUtils } from '../lib/utils';
 import { authService } from '../services/authService';
 
 interface LocationState {
@@ -20,106 +20,96 @@ interface LoginPageProps {
 export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [initialEmail, setInitialEmail] = useState<string>('');
+  const [state, setState] = useState({
+    isLoading: false,
+    errorMessage: null as string | null,
+    successMessage: null as string | null,
+    initialEmail: ''
+  });
   
-  // Check if there's a success message or email from registration
+  // Process location state on mount and redirect if already authenticated
   useEffect(() => {
-    const state = location.state as LocationState;
-    if (state?.message) {
-      setSuccessMessage(state.message);
-    }
-    if (state?.email) {
-      setInitialEmail(state.email);
-    }
-    // Clean up the location state
-    navigate(location.pathname, { replace: true, state: { from: state?.from } });
-  }, [location, navigate]);
-  
-  // Check if already authenticated on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      const isAuth = authService.isAuthenticated();
-      if (isAuth) {
-        // Already authenticated, redirect to home
-        const state = location.state as LocationState;
-        const from = state?.from?.pathname || '/';
-        navigate(from, { replace: true });
-      }
-    };
+    console.log('LoginPage mounted, checking auth state');
     
-    checkAuth();
-  }, [navigate, location]);
+    const locState = location.state as LocationState;
+    if (locState) {
+      setState(prev => ({
+        ...prev,
+        successMessage: locState.message || null,
+        initialEmail: locState.email || ''
+      }));
+      
+      // Preserve only redirect path in location state
+      navigate(location.pathname, { 
+        replace: true, 
+        state: locState.from ? { from: locState.from } : undefined 
+      });
+    }
+    
+    // Redirect if already authenticated
+    const isAuth = authService.isAuthenticated();
+    console.log('User authenticated?', isAuth);
+    if (isAuth) {
+      const from = locState?.from?.pathname || '/';
+      console.log('Already authenticated, redirecting to:', from);
+      setIsAuthenticated(true); // Make sure we update parent state
+      navigate(from, { replace: true });
+    }
+  }, [location, navigate, setIsAuthenticated]);
 
   const handleLogin = async (username: string, password: string) => {
+    console.log('Login attempt with username:', username);
     try {
-      setIsLoading(true);
-      setErrorMessage(null);
-      setSuccessMessage(null);
+      setState(prev => ({ ...prev, isLoading: true, errorMessage: null, successMessage: null }));
       
-      console.log('Attempting login with:', { username });
-      
-      // Call the auth service to login with JWT
       const response = await authService.login(username, password);
+      console.log('Login response:', response.success ? 'Success' : 'Failed');
       
-      if (!response.success) {
+      if (response.success) {
+        // Update auth state in parent component
+        setIsAuthenticated(true);
+        
+        // Dispatch login event
+        authUtils.loginSuccess();
+        console.log('Login event dispatched');
+        
+        // Get redirect destination
+        const locState = location.state as LocationState;
+        const from = locState?.from?.pathname || '/';
+        console.log('Login successful, redirecting to:', from);
+        
+        // Redirect
+        navigate(from, { replace: true });
+      } else {
         throw new Error('Login failed');
       }
-      
-      console.log('Login successful');
-      
-      // Update authentication state
-      setIsAuthenticated(true);
-      
-      // Dispatch custom event for login
-      window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGIN));
-      
-      // Redirect to the page the user tried to visit, or home page
-      const state = location.state as LocationState;
-      const from = state?.from?.pathname || '/';
-      
-      console.log('Redirecting to:', from);
-      
-      // Use a short timeout to ensure state updates complete before navigation
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 100);
     } catch (error: any) {
-      console.error('Login failed:', error);
-      setErrorMessage(error.message || 'Login failed. Please check your credentials and try again.');
+      console.error('Login error:', error.message);
+      setState(prev => ({ 
+        ...prev, 
+        errorMessage: error.message || 'Login failed. Please check your credentials.'
+      }));
     } finally {
-      setIsLoading(false);
+      setState(prev => ({ ...prev, isLoading: false }));
     }
-  };
-
-  const handleForgotPassword = () => {
-    // TODO: Implement forgot password functionality
-    alert('Forgot password functionality not implemented yet.');
-  };
-
-  const handleRegister = () => {
-    // Navigate to registration page
-    navigate('/register', { replace: false });
   };
 
   return (
     <Inner showHeader={false}>
       <section>
         <div className="min-h-screen flex items-center justify-center flex-col">
-          {successMessage && (
+          {state.successMessage && (
             <div className="p-3 mb-4 bg-green-100 border border-green-400 text-green-700 rounded w-[350px]">
-              {successMessage}
+              {state.successMessage}
             </div>
           )}
           <Login 
             onLogin={handleLogin} 
-            isLoading={isLoading} 
-            errorMessage={errorMessage}
-            onForgotPassword={handleForgotPassword}
-            onRegister={handleRegister}
-            initialEmail={initialEmail}
+            isLoading={state.isLoading} 
+            errorMessage={state.errorMessage}
+            onForgotPassword={() => alert('Forgot password not implemented')}
+            onRegister={() => navigate('/register')}
+            initialEmail={state.initialEmail}
           />
         </div> 
       </section>

@@ -1,14 +1,13 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { AUTH_EVENTS } from "../lib/utils";
+import { AUTH_EVENTS, authUtils } from "../lib/utils";
 import Home from "../pages/Home";
 import JobDetailPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import StudentGrant from "../pages/StudentGrant";
-import { authService } from "../services/authService";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {
@@ -16,48 +15,28 @@ const RouteConfig = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // Check authentication status
+  // Check authentication and setup auth event listeners
   useEffect(() => {
-    let isMounted = true;
+    // Initial auth check
+    const initialAuth = authUtils.isAuthenticated();
+    console.log('Initial auth check in RouteConfig:', initialAuth);
+    setIsAuthenticated(initialAuth);
+    setIsInitializing(false);
     
-    const checkAuth = () => {
-      try {
-        // Now using the synchronous method since JWT validation is done on the client
-        const isAuth = authService.isAuthenticated();
-        if (isMounted) {
-          setIsAuthenticated(isAuth);
-          setIsInitializing(false);
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        if (isMounted) {
-          setIsAuthenticated(false);
-          setIsInitializing(false);
-        }
-      }
+    // Event handlers for login/logout events
+    const handleAuthEvent = (event: Event) => {
+      const newAuthState = event.type === AUTH_EVENTS.LOGIN;
+      console.log('Auth event received:', event.type, 'New state:', newAuthState);
+      setIsAuthenticated(newAuthState);
     };
     
-    // Check auth on mount
-    checkAuth();
-    
-    // Listen for auth events
-    const handleLogin = () => {
-      setIsAuthenticated(true);
-      console.log('Auth state updated: User is now authenticated');
-    };
-    
-    const handleLogout = () => {
-      setIsAuthenticated(false);
-      console.log('Auth state updated: User is now logged out');
-    };
-    
-    window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-    window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
+    // Setup event listeners
+    window.addEventListener(AUTH_EVENTS.LOGIN, handleAuthEvent);
+    window.addEventListener(AUTH_EVENTS.LOGOUT, handleAuthEvent);
     
     return () => {
-      isMounted = false;
-      window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-      window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
+      window.removeEventListener(AUTH_EVENTS.LOGIN, handleAuthEvent);
+      window.removeEventListener(AUTH_EVENTS.LOGOUT, handleAuthEvent);
     };
   }, []);
 
@@ -70,26 +49,24 @@ const RouteConfig = () => {
     );
   }
 
-  // Check if the current path is the logout page
-  const isLogoutPage = location.pathname === '/logout';
-  
-  // Dynamic routing key helps ensure proper redirects when auth state changes
-  // Skip changing the key for logout page to prevent re-rendering during logout
-  const routingKey = isLogoutPage 
-    ? 'logout-page' 
+  // Generate a key for route transitions
+  const routingKey = location.pathname === '/logout'
+    ? 'logout-page'
     : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
+  
+  console.log('Rendering routes with key:', routingKey, 'Auth state:', isAuthenticated);
 
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={routingKey}>
-        {/* Public routes - accessible whether logged in or not */}
+        {/* Public routes */}
         <Route path="/login" element={
-          isAuthenticated && !isLogoutPage ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
+          isAuthenticated ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
         } />
 
         <Route path="/logout" element={<LogoutPage />} />
         
-        {/* Protected routes - nested under ProtectedRoutes with Outlet */}
+        {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
           <Route path="paycheck" element={<Paycheck />} />
@@ -97,7 +74,7 @@ const RouteConfig = () => {
           <Route path="jobs/:id" element={<JobDetailPage />} />
         </Route>
 
-        {/* Catch all route - redirect to login if not authenticated, home if authenticated */}
+        {/* Catch all route */}
         <Route path="*" element={
           isAuthenticated ? 
             <Navigate to="/" replace /> : 

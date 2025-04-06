@@ -18,21 +18,14 @@ export const AUTH_EVENTS = {
 
 // Authentication utilities
 export const authUtils = {
-  logout: async (): Promise<void> => {
-    // Use auth service to handle logout
-    await authService.logout();
-    
-    // Dispatch custom event for logout
+  logout: (): void => {
+    authService.logout();
     window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGOUT));
   },
   
-  // Async version for more secure verification
-  isAuthenticated: async (): Promise<boolean> => {
-    return await authService.isAuthenticated();
+  loginSuccess: (): void => {
+    window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGIN));
   },
   
-  // Sync version for quick UI checks (less secure)
-  isAuthenticatedSync: (): boolean => {
-    return authService.isAuthenticated();
-  }
+  isAuthenticated: (): boolean => authService.isAuthenticated()
 }; 
