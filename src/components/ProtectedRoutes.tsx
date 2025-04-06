@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { authService } from '../services/authService';
 import Inner from './Inner';
 
 /**
@@ -7,9 +9,51 @@ import Inner from './Inner';
  */
 const ProtectedRoutes = () => {
   const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isVerifying, setIsVerifying] = useState(true);
   
-  // Check auth status directly from localStorage
-  const isAuthenticated = !!localStorage.getItem('authToken');
+  // Check authentication status on mount and location change
+  useEffect(() => {
+    let isMounted = true;
+    
+    const verifyAuth = () => {
+      setIsVerifying(true);
+      try {
+        // Check if token is valid and not expired
+        const isAuth = authService.isAuthenticated();
+        
+        if (isMounted) {
+          setIsAuthenticated(isAuth);
+          setIsVerifying(false);
+        }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setIsVerifying(false);
+        }
+      }
+    };
+    
+    verifyAuth();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [location.pathname]);
+
+  // Show loading state while verifying
+  if (isVerifying) {
+    return (
+      <Inner showHeader={false}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-lg font-medium mb-4">Verifying your session...</h2>
+          </div>
+        </div>
+      </Inner>
+    );
+  }
 
   // If not authenticated, redirect to login while saving the attempted location
   if (!isAuthenticated) {

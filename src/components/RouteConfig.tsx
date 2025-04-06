@@ -7,18 +7,35 @@ import JobDetailPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
+import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
+import { authService } from "../services/authService";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // Check authentication status
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      setIsAuthenticated(!!token);
+      try {
+        // Now using the synchronous method since JWT validation is done on the client
+        const isAuth = authService.isAuthenticated();
+        if (isMounted) {
+          setIsAuthenticated(isAuth);
+          setIsInitializing(false);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setIsInitializing(false);
+        }
+      }
     };
     
     // Check auth on mount
@@ -35,14 +52,22 @@ const RouteConfig = () => {
     
     window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
     window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-    window.addEventListener('storage', checkAuth);
     
     return () => {
+      isMounted = false;
       window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
       window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-      window.removeEventListener('storage', checkAuth);
     };
   }, []);
+
+  // Show loading screen while initializing
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   // Check if the current path is the logout page
   const isLogoutPage = location.pathname === '/logout';
@@ -59,6 +84,9 @@ const RouteConfig = () => {
         {/* Public routes - accessible whether logged in or not */}
         <Route path="/login" element={
           isAuthenticated && !isLogoutPage ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
+        } />
+        <Route path="/register" element={
+          isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
         } />
         <Route path="/logout" element={<LogoutPage />} />
         

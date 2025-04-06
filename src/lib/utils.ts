@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { authService } from "../services/authService";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -17,15 +18,21 @@ export const AUTH_EVENTS = {
 
 // Authentication utilities
 export const authUtils = {
-  logout: () => {
-    // Remove auth token
-    localStorage.removeItem('authToken');
+  logout: async (): Promise<void> => {
+    // Use auth service to handle logout
+    await authService.logout();
     
     // Dispatch custom event for logout
     window.dispatchEvent(new Event(AUTH_EVENTS.LOGOUT));
   },
   
-  isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('authToken');
+  // Async version for more secure verification
+  isAuthenticated: async (): Promise<boolean> => {
+    return await authService.isAuthenticated();
+  },
+  
+  // Sync version for quick UI checks (less secure)
+  isAuthenticatedSync: (): boolean => {
+    return authService.isAuthenticatedSync();
   }
 }; 
