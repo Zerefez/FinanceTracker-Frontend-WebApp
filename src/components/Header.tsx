@@ -14,21 +14,35 @@ export default function Header() {
   // Check authentication status when component mounts
   useEffect(() => {
     const checkAuth = () => {
-      setIsAuthenticated(authUtils.isAuthenticated());
+      // Use the sync version for the header to avoid unnecessary async complexity
+      const authState = authUtils.isAuthenticatedSync();
+      console.log('Current auth state in Header:', authState);
+      setIsAuthenticated(authState);
     };
     
     // Check initially
     checkAuth();
     
+    // Setup interval to periodically check auth state
+    const intervalId = setInterval(checkAuth, 3000); // Check every 3 seconds
+    
     // Setup event listeners
-    const handleLogin = () => checkAuth();
-    const handleLogout = () => checkAuth();
+    const handleLogin = () => {
+      console.log('Login event received in Header');
+      checkAuth();
+    };
+    
+    const handleLogout = () => {
+      console.log('Logout event received in Header');
+      checkAuth();
+    };
     
     window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
     window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
     window.addEventListener('storage', checkAuth);
     
     return () => {
+      clearInterval(intervalId);
       window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
       window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
       window.removeEventListener('storage', checkAuth);
@@ -39,11 +53,19 @@ export default function Header() {
     setIsMenuActive(!isMenuActive);
   };
 
-  const handleLogout = (e: React.MouseEvent) => {
+  const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Navigate to logout page to show transition animation
-    navigate('/logout');
+    try {
+      // Use the authUtils to handle logout properly
+      await authUtils.logout();
+      console.log('Logout triggered from Header');
+      
+      // Navigate to logout page to show transition animation
+      navigate('/logout');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -79,7 +101,7 @@ export default function Header() {
                 </div>
               </div>
 
-              {/* Desktop User Links - Hidden on Mobile */}
+              {/* Desktop User Links - Hidden on Mobile */} 
               <div className="hidden lg:block space-y-1">
                 <p className="text-muted font-medium">User</p>
                 <div className="flex flex-wrap gap-2">
