@@ -7,7 +7,6 @@ import JobDetailPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
-import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
 import { authService } from "../services/authService";
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -87,9 +86,7 @@ const RouteConfig = () => {
         <Route path="/login" element={
           isAuthenticated && !isLogoutPage ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
         } />
-        <Route path="/register" element={
-          isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
-        } />
+
         <Route path="/logout" element={<LogoutPage />} />
         
         {/* Protected routes - nested under ProtectedRoutes with Outlet */}
