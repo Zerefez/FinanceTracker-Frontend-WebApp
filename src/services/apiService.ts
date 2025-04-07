@@ -1,3 +1,4 @@
+import { logger } from '../services/logger';
 import { authService } from './authService';
 
 // API URL - Use relative URL to leverage the Vite proxy
@@ -105,4 +106,43 @@ export const apiService = {
   
   delete: <T>(endpoint: string, options: Omit<ApiOptions, 'method'> = {}) => 
     apiService.request<T>(endpoint, { ...options, method: 'DELETE' })
-}; 
+};
+
+// Configure the logger
+logger.configure({
+  minLevel: 'info', // Only show info and above in production
+  includeTimestamp: true,
+  includeStacktrace: true,
+  performanceTracking: true
+});
+
+// Basic logging
+logger.debug('Debug message');
+logger.info('Info message');
+logger.warn('Warning message');
+logger.error('Error message');
+
+// With additional data
+logger.info('User action', { userId: '123', action: 'login' });
+
+// Track performance of a function or operation
+logger.startPerformanceMark('fetchData');
+try {
+  const data = await fetchData();
+  logger.endPerformanceMark('fetchData');
+} catch (error) {
+  logger.error('Failed to fetch data', error);
+}
+
+async function fetchData() {
+  logger.logApiRequest('GET', '/api/data');
+  try {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    logger.logApiResponse('GET', '/api/data', response.status, data);
+    return data;
+  } catch (error) {
+    logger.logApiError('GET', '/api/data', error);
+    throw error;
+  }
+} 
