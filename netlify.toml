@@ -2,7 +2,7 @@
   remote_images = ["https://source.unsplash.com/.*", "https://images.unsplash.com/.*", "https://ext.same-assets.com/.*", "https://ugc.same-assets.com/.*"]
 
 [build]
-  command = "bun run build"
+  command = "tsc -b && vite build --outDir dist"
   publish = "dist"
 
 [[redirects]]
