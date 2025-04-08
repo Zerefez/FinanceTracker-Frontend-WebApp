@@ -63,8 +63,6 @@ const RouteConfig = () => {
         <Route path="/login" element={
           isAuthenticated ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />
         } />
-
-        <Route path="/logout" element={<LogoutPage />} />
         
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -72,6 +70,7 @@ const RouteConfig = () => {
           <Route path="paycheck" element={<Paycheck />} />
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:id" element={<JobDetailPage />} />
+          <Route path="/logout" element={<LogoutPage />} />
         </Route>
 
         {/* Catch all route */}

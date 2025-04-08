@@ -83,11 +83,12 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
       } else {
         throw new Error('Login failed');
       }
-    } catch (error: any) {
-      console.error('Login error:', error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      console.error('Login error:', errorMessage);
       setState(prev => ({ 
         ...prev, 
-        errorMessage: error.message || 'Login failed. Please check your credentials.'
+        errorMessage: errorMessage || 'Login failed. Please check your credentials.'
       }));
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
