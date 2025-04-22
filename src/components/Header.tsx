@@ -1,72 +1,14 @@
-import { Fragment, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Fragment } from 'react';
 import { loginLink, logoutLink, mainLinks, userLinks } from '../data/navigationLinks';
-import { AUTH_EVENTS, authUtils } from '../lib/utils';
+import { useAuth, useMenu, useNavigation } from '../lib/hooks';
 import AnimatedLink from './ui/animation/animatedLink';
 import Clock from './ui/clock';
 import Menu from './ui/Menu';
 
 export default function Header() {
-  const [isMenuActive, setIsMenuActive] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
-
-  // Check authentication status when component mounts
-  useEffect(() => {
-    const checkAuth = () => {
-      // Use the auth utility for authentication check
-      const authState = authUtils.isAuthenticated();
-      console.log('Current auth state in Header:', authState);
-      setIsAuthenticated(authState);
-    };
-    
-    // Check initially
-    checkAuth();
-    
-    // Setup interval to periodically check auth state
-    const intervalId = setInterval(checkAuth, 3000); // Check every 3 seconds
-    
-    // Setup event listeners
-    const handleLogin = () => {
-      console.log('Login event received in Header');
-      checkAuth();
-    };
-    
-    const handleLogout = () => {
-      console.log('Logout event received in Header');
-      checkAuth();
-    };
-    
-    window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-    window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-    window.addEventListener('storage', checkAuth);
-    
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-      window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-      window.removeEventListener('storage', checkAuth);
-    };
-  }, []);
-
-  const toggleMenu = () => {
-    setIsMenuActive(!isMenuActive);
-  };
-
-  const handleLogout = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    try {
-      // Use the authUtils to handle logout properly
-      authUtils.logout();
-      console.log('Logout triggered from Header');
-      
-      // Navigate to logout page to show transition animation
-      navigate('/logout');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  const { isAuthenticated } = useAuth();
+  const { isMenuActive, toggleMenu } = useMenu();
+  const { handleLogout } = useNavigation();
 
   return (
     <>

@@ -1,26 +1,50 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Job } from "../components/Job";
 import SUSection from "../components/SU";
 import AnimatedText from "../components/ui/animation/animatedText";
+import { jobService } from '../services/jobService';
+
+// Weekday options for reference
+const weekdays = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+];
+
+// Helper function to format weekdays
+const formatWeekdays = (job: Job): string => {
+  if (job.weekdays && job.weekdays.length > 0) {
+    if (job.weekdays.length === weekdays.length) {
+      return 'All weekdays';
+    } else if (job.weekdays.length > 2) {
+      return `${job.weekdays[0]}-${job.weekdays[job.weekdays.length - 1]}`;
+    } else {
+      return job.weekdays.join(', ');
+    }
+  } else if (job.weekday) {
+    return job.weekday;
+  }
+  return '';
+};
 
 export default function Home() {
-  // Mock job data - in a real app, this would come from an API or database
-  const jobs: Job[] = [
-    {
-      id: '1',
-      title: 'Software Engineer',
-      company: 'Nvidia Inc.',
-      startDate: 'January 2023',
-      endDate: 'Present'
-    },
-    {
-      id: '2',
-      title: 'Data Analyst',
-      company: 'Data Insights LLC',
-      startDate: 'June 2022',
-      endDate: 'December 2022'
-    }
-  ];
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const data = await jobService.getJobs();
+        setJobs(data);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
 
   return (
     <section>
@@ -52,7 +76,17 @@ export default function Home() {
               className="mb-4 text-center text-2xl font-bold md:text-3xl lg:text-4xl"
               accentClassName="text-accent"
             />
-            {jobs.length === 0 ? (
+            <div className="mb-4 flex justify-end">
+              <Link 
+                to="/jobs/new"
+                className="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Add New Job
+              </Link>
+            </div>
+            {loading ? (
+              <p className="text-center text-gray-500">Loading jobs...</p>
+            ) : jobs.length === 0 ? (
               <p className="text-center text-gray-500">No jobs found</p>
             ) : (
               <div className="space-y-4">
@@ -64,11 +98,12 @@ export default function Home() {
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-lg font-semibold">{job.title}</h3>
-                        <p className="text-gray-600">{job.company}</p>
+                        <h3 className="text-lg font-semibold">{job.title || job.companyName}</h3>
+                        <p className="text-gray-600">{job.company || job.companyName}</p>
                       </div>
                       <div className="text-right text-sm text-gray-500">
-                        {job.startDate} - {job.endDate || 'Present'}
+                        {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` : 
+                         (job.weekdays || job.weekday ? `${formatWeekdays(job)} ${job.startTime}-${job.endTime}` : '')}
                       </div>
                     </div>
                   </Link>

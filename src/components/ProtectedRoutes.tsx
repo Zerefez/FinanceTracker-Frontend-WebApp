@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { authUtils } from '../lib/utils';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useProtectedRoute } from '../lib/hooks';
 import Inner from './Inner';
 
 /**
@@ -8,36 +7,10 @@ import Inner from './Inner';
  * and takes care of proper redirections based on auth state.
  */
 const ProtectedRoutes = () => {
-  const location = useLocation();
-  const [authState, setAuthState] = useState<{
-    isAuthenticated: boolean | null;
-    isVerifying: boolean;
-  }>({
-    isAuthenticated: null,
-    isVerifying: true
-  });
+  const { isAuthenticated, isVerifying, location } = useProtectedRoute();
   
-  // Check authentication on mount and location change
-  useEffect(() => {
-    try {
-      const isAuth = authUtils.isAuthenticated();
-      console.log('Protected route auth check:', isAuth);
-      
-      setAuthState({
-        isAuthenticated: isAuth,
-        isVerifying: false
-      });
-    } catch (error) {
-      console.error('Auth verification failed:', error);
-      setAuthState({
-        isAuthenticated: false,
-        isVerifying: false
-      });
-    }
-  }, [location.pathname]);
-
   // Show loading state while verifying
-  if (authState.isVerifying) {
+  if (isVerifying) {
     return (
       <Inner showHeader={false}>
         <div className="min-h-screen flex items-center justify-center">
@@ -50,7 +23,7 @@ const ProtectedRoutes = () => {
   }
 
   // Redirect to login if not authenticated
-  if (!authState.isAuthenticated) {
+  if (!isAuthenticated) {
     console.log('User not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

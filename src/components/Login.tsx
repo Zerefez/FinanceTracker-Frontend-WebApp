@@ -1,45 +1,33 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 
 interface LoginProps {
-  onLogin: (username: string, password: string) => void;
+  username: string;
+  password: string;
+  isLoading: boolean;
+  errorMessage: string | null;
+  onUsernameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onReset: () => void;
   onForgotPassword?: () => void;
   onRegister?: () => void;
-  isLoading?: boolean;
-  errorMessage?: string | null;
-  initialEmail?: string;
 }
 
 export function Login({ 
-  onLogin, 
+  username,
+  password,
+  isLoading,
+  errorMessage,
+  onUsernameChange,
+  onPasswordChange,
+  onSubmit,
+  onReset,
   onForgotPassword, 
-  onRegister, 
-  isLoading = false, 
-  errorMessage = null,
-  initialEmail = ''
+  onRegister
 }: LoginProps) {
-  const [username, setUsername] = useState(initialEmail);
-  const [password, setPassword] = useState('');
-
-  // Update username if initialEmail changes
-  useEffect(() => {
-    if (initialEmail) {
-      setUsername(initialEmail);
-    }
-  }, [initialEmail]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onLogin(username, password);
-  };
-
-  const handleReset = () => {
-    setUsername('');
-    setPassword('');
-  };
-
   return (
     <Card className="w-[350px] border-gray-500 border-2 rounded-lg ">
       <CardHeader>
@@ -47,7 +35,7 @@ export function Login({
         <CardDescription>Enter your credentials to access your account</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           {errorMessage && (
             <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {errorMessage}
@@ -62,7 +50,7 @@ export function Login({
               type="text"
               placeholder="Enter your username or email"
               value={username}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              onChange={onUsernameChange}
               disabled={isLoading}
               required
             />
@@ -76,7 +64,7 @@ export function Login({
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+              onChange={onPasswordChange}
               disabled={isLoading}
               required
             />
