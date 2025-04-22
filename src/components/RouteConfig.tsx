@@ -41,6 +41,7 @@ const RouteConfig = () => {
         <Route path="/" element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
           <Route path="paycheck" element={<Paycheck />} />
+          <Route path="paycheck/:jobId" element={<Paycheck />} />
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:id" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />

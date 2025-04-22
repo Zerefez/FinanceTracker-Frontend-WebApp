@@ -1,10 +1,22 @@
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
+import { Button } from "../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
+  const { jobId } = useParams();
+  const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
+
+  // Set the selected job when URL param exists
+  useEffect(() => {
+    if (jobId && jobs.some(job => job.id === jobId)) {
+      setSelectedJobId(jobId);
+    }
+  }, [jobId, jobs, setSelectedJobId]);
 
   return (
     <section>
@@ -82,6 +94,17 @@ export default function Paycheck() {
               />
             </div>
           </div>
+
+          {selectedJobId && (
+            <div className="mt-8 flex justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/jobs/${selectedJobId}`)}
+              >
+                Edit Job Details
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
