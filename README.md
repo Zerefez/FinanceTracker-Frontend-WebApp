@@ -1,50 +1,76 @@
-# React + TypeScript + Vite
+# Finance Tracker Frontend Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based frontend for tracking finances, including jobs, paychecks, and student grants.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The project follows a clean architecture that separates UI components from business logic:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+src/
+  ├── components/         # UI components
+  ├── pages/              # Page components
+  ├── lib/
+  │    ├── hooks/         # Custom React hooks
+  │    └── utils.ts       # Utility functions
+  ├── services/           # API and data services
+  ├── data/               # Static data
+  ├── assets/             # Static assets
+  └── style/              # Global styles
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Hooks Architecture
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+We've separated component logic from UI rendering using custom hooks:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### Authentication and Navigation Hooks
+
+- `useAuth`: Manages authentication state and auth-related actions
+- `useNavigation`: Handles navigation logic and route transitions
+- `useProtectedRoute`: Protects routes that require authentication
+- `useLogout`: Manages the logout process
+
+### Form and Data Hooks
+
+- `useLoginForm`: Manages login form state and submission
+- `useMenu`: Manages menu open/close state
+- `useJobs`: Fetches and manages job data
+- `useJobForm`: Manages job creation and editing
+- `usePaycheck`: Handles paycheck data and job selection
+
+### UI Hooks
+
+- `useLocomotiveScroll`: Initializes and manages the Locomotive Scroll library
+
+## Component Architecture
+
+Components are split into:
+
+1. **Pure UI Components**: Focus solely on rendering and delegating events to parent
+2. **Container Components**: Use hooks to manage state and pass data to UI components
+3. **Page Components**: Compose multiple components together and use hooks for page-level logic
+
+## Development
+
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+
+### Installation
+
+```bash
+npm install
 ```
+
+### Running the Development Server
+
+```bash
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+``` 

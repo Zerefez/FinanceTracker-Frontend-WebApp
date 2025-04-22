@@ -1,13 +1,12 @@
 // src/pages/jobs/[id].tsx
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Job } from '../components/Job';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { jobService } from '../services/jobService';
+import { useJobForm } from '../lib/hooks';
 
 // Weekday options
 const weekdays = [
@@ -25,119 +24,19 @@ const employmentTypes = [
 ];
 
 export default function JobPage() {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<Job>({
-    id: ''
-    // Other fields will be added when needed
-  });
   
-  const [isNewJob, setIsNewJob] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // State for weekday selection
-  const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
-
-  // Get job display name from either title or companyName
-  const getJobDisplayName = (): string => {
-    if (job.title) return job.title;
-    if (job.companyName) return job.companyName;
-    return '';
-  };
-
-  useEffect(() => {
-    const fetchJob = async () => {
-      setIsLoading(true);
-      try {
-        if (!id || id === 'new') {
-          setIsNewJob(true);
-          // Generate a random ID for new jobs
-          setJob({ 
-            id: `job_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}` 
-          });
-          setSelectedWeekdays([]);
-        } else {
-          setIsNewJob(false);
-          const jobData = await jobService.getJobById(id);
-          if (jobData) {
-            // Use the fetched job data
-            setJob(jobData);
-            
-            // Initialize selected weekdays
-            if (jobData.weekdays && jobData.weekdays.length > 0) {
-              setSelectedWeekdays(jobData.weekdays);
-            } else if (jobData.weekday) {
-              setSelectedWeekdays([jobData.weekday]);
-            } else {
-              setSelectedWeekdays([]);
-            }
-          } else {
-            console.error(`Job with id ${id} not found`);
-            navigate('/');
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching job:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchJob();
-  }, [id, navigate]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    setJob(prev => ({ 
-      ...prev, 
-      [name]: type === 'number' ? (value ? parseFloat(value) : 0) : value 
-    }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setJob(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle weekday checkbox change
-  const handleWeekdayChange = (weekday: string) => {
-    setSelectedWeekdays(prev => {
-      if (prev.includes(weekday)) {
-        return prev.filter(day => day !== weekday);
-      } else {
-        return [...prev, weekday];
-      }
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    
-    try {
-      // Ensure required fields are present
-      const jobToSave: Job = {
-        ...job,
-        id: job.id || `job_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
-        weekdays: selectedWeekdays,
-        // For backward compatibility
-        weekday: selectedWeekdays.length > 0 ? selectedWeekdays.join(', ') : undefined
-      };
-      
-      if (isNewJob) {
-        await jobService.createJob(jobToSave);
-      } else {
-        await jobService.updateJob(jobToSave.id, jobToSave);
-      }
-      
-      // Navigate back to the jobs list
-      navigate('/');
-    } catch (error) {
-      console.error('Error saving job:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const {
+    job,
+    isNewJob,
+    isSaving,
+    isLoading,
+    selectedWeekdays,
+    handleInputChange,
+    handleSelectChange,
+    handleWeekdayChange,
+    handleSubmit
+  } = useJobForm();
 
   if (isLoading) {
     return (
@@ -268,29 +167,30 @@ export default function JobPage() {
                 </Select>
               </div>
               
-              {/* Weekday Selection */}
+              {/* Weekdays */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Workdays</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {weekdays.map(day => (
-                    <Checkbox
-                      key={day}
-                      id={`weekday-${day}`}
-                      label={day}
-                      checked={selectedWeekdays.includes(day)}
-                      onChange={() => handleWeekdayChange(day)}
-                    />
+                  {weekdays.map((day) => (
+                    <div key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`weekday-${day}`}
+                        checked={selectedWeekdays.includes(day)}
+                        onClick={() => handleWeekdayChange(day)}
+                      />
+                      <label
+                        htmlFor={`weekday-${day}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {day}
+                      </label>
+                    </div>
                   ))}
                 </div>
-                {selectedWeekdays.length === 0 && (
-                  <p className="text-sm text-red-500 mt-1">
-                    Please select at least one workday
-                  </p>
-                )}
               </div>
               
-              {/* Time Range */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Start/End Time */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Start Time</label>
                   <Input 
@@ -299,7 +199,6 @@ export default function JobPage() {
                     value={job.startTime || ''}
                     onChange={handleInputChange}
                     className="mt-1"
-                    required
                   />
                 </div>
                 <div>
@@ -310,12 +209,11 @@ export default function JobPage() {
                     value={job.endTime || ''}
                     onChange={handleInputChange}
                     className="mt-1"
-                    required
                   />
                 </div>
               </div>
               
-              {/* Supplement Amount */}
+              {/* Supplement */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Supplement Amount</label>
                 <Input 
@@ -329,21 +227,18 @@ export default function JobPage() {
                 />
               </div>
               
-              {/* Action Buttons */}
-              <div className="flex justify-between pt-4">
+              {/* Submit Button */}
+              <div className="flex justify-end space-x-4">
                 <Button 
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/')}
+                  className="mr-2"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-accent text-white hover:bg-accent/80"
-                >
-                  {isSaving ? 'Saving...' : (isNewJob ? 'Add Job' : 'Update Job')}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : (isNewJob ? 'Create Job' : 'Update Job')}
                 </Button>
               </div>
             </form>

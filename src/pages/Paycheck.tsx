@@ -1,30 +1,10 @@
-import { useState } from "react";
-import { Job } from "../components/Job";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // Mock job data - in a real app, this would come from an API
-  const jobs: Job[] = [
-    {
-      id: '1',
-      title: 'Software Engineer',
-      company: 'Nvidia Inc.',
-      startDate: 'January 2023',
-      endDate: 'Present'
-    },
-    {
-      id: '2',
-      title: 'Data Analyst',
-      company: 'Data Insights LLC',
-      startDate: 'June 2022',
-      endDate: 'December 2022'
-    }
-  ];
-
-  const [selectedJobId, setSelectedJobId] = useState<string>('');
+  const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
 
   return (
     <section>
@@ -57,11 +37,17 @@ export default function Paycheck() {
                 <SelectValue placeholder="Select a job" />
               </SelectTrigger>
               <SelectContent>
-                {jobs.map((job) => (
-                  <SelectItem key={job.id} value={job.id}>
-                    {job.title} - {job.company}
-                  </SelectItem>
-                ))}
+                {loading ? (
+                  <SelectItem value="loading" disabled>Loading jobs...</SelectItem>
+                ) : jobs.length === 0 ? (
+                  <SelectItem value="none" disabled>No jobs available</SelectItem>
+                ) : (
+                  jobs.map((job) => (
+                    <SelectItem key={job.id} value={job.id}>
+                      {job.title || job.companyName} - {job.company || job.companyName}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

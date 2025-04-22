@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Job } from "../components/Job";
 import SUSection from "../components/SU";
 import AnimatedText from "../components/ui/animation/animatedText";
-import { jobService } from '../services/jobService';
+import { useJobs } from '../lib/hooks';
 
 // Weekday options for reference
 const weekdays = [
@@ -27,24 +26,7 @@ const formatWeekdays = (job: Job): string => {
 };
 
 export default function Home() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      try {
-        const data = await jobService.getJobs();
-        setJobs(data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, []);
+  const { jobs, loading } = useJobs();
 
   return (
     <section>
