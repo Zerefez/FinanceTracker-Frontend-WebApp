@@ -55,9 +55,9 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await handleLogin();
-    // Update parent state if login successful and function provided
-    if (success && setIsAuthenticated) {
+    await handleLogin();
+    // Update parent state if authenticated and function provided
+    if (setIsAuthenticated) {
       setIsAuthenticated(true);
     }
   };

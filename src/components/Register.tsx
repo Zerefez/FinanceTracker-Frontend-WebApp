@@ -117,7 +117,7 @@ export function Register() {
                     />
                     <button 
                         type="submit" 
-                        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition-colors"
+                        className="w-full bg-accent text-white p-2 rounded hover:bg-accent/80 transition-colors"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Registering...' : 'Register'}
