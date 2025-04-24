@@ -23,35 +23,35 @@ const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires i
 // Common fetch helper function to reduce redundancy
 const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, parseAsJson = false): Promise<any> => {
   const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-  
+
   // Default headers for all requests
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     ...(options.headers || {})
   };
-  
+
   const requestOptions = {
     ...options,
     headers
   };
-  
+
   const response = await fetch(url, requestOptions);
-  
+
   if (!response.ok) {
     const errorText = await response.text();
     let errorMessage = 'Request failed';
-    
+
     try {
       const errorData = JSON.parse(errorText);
       errorMessage = errorData.detail || errorData.message || errorMessage;
     } catch (e) {
       errorMessage = errorText || errorMessage;
     }
-    
+
     throw new Error(errorMessage);
   }
-  
+
   // Parse response based on content type or requested format
   return parseAsJson ? response.json() : response.text();
 };
@@ -78,16 +78,16 @@ export const authService = {
         method: 'POST',
         body: JSON.stringify({ Username: username, Password: password })
       });
-      
+
       // Store token in localStorage
       localStorage.setItem('token', token);
-      
+
       // Parse and store user data
       const userData = parseUserFromToken(token);
       if (userData) {
         localStorage.setItem('user', JSON.stringify(userData));
       }
-      
+
       return { token, success: true };
     } catch (error) {
       console.error('Login failed:', error);
@@ -96,13 +96,13 @@ export const authService = {
   },
 
   // Register a new user
-  register: async (email: string, password: string): Promise<RegisterResponse> => {
+  register: async (email: string, password: string, hourlyRate: string, fullName: string): Promise<RegisterResponse> => {
     try {
       const message = await fetchWithAuth('/Account/register', {
         method: 'POST',
-        body: JSON.stringify({ Email: email, Password: password })
+        body: JSON.stringify({ Email: email, Password: password, hourlyRate: hourlyRate, FullName: fullName })
       });
-      
+
       return { success: true, message };
     } catch (error) {
       console.error('Registration failed:', error);
@@ -117,7 +117,7 @@ export const authService = {
         method: 'POST',
         body: JSON.stringify({ Email: email })
       }, true);
-      
+
       return data.success === true;
     } catch (error) {
       console.error('User validation failed:', error);
@@ -135,7 +135,7 @@ export const authService = {
   getCurrentUser: (): User | null => {
     const userJson = localStorage.getItem('user');
     if (!userJson) return null;
-    
+
     try {
       return JSON.parse(userJson);
     } catch {
@@ -148,11 +148,11 @@ export const authService = {
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem('token');
     if (!token) return false;
-    
+
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expiry = payload.exp * 1000; // Convert to milliseconds
-      
+
       if (Date.now() >= expiry) {
         // Token expired, clear it
         localStorage.removeItem('token');

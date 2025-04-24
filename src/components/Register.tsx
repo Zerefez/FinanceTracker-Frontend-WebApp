@@ -1,12 +1,19 @@
 
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card"
+import { authService } from "../services/authService";
 import React from "react";
 export function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [hourlyRate, setHourlyRate] = useState('');
     const [fullName, setFullName] = useState('');
+
+
+    useEffect(() => {
+        authService.register(email, password, hourlyRate, fullName)
+    }, [])
+
     return (
         <Card className="w-[350px] border-gray-500 border-2 rounded-lg ">
             <CardHeader>
@@ -14,6 +21,7 @@ export function Register() {
                 <CardDescription>Enter your information to create an account</CardDescription>
             </CardHeader>
             <form className="space-y-4">
+
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700"> Full Name</label>
                 <input
                     id="fullName"
@@ -45,7 +53,7 @@ export function Register() {
                 >
 
                 </input>
-                <label htmlFor="hourlyRate" className="block text-sm"></label>
+                <label htmlFor="hourlyRate" className="block text-sm">Hourly rate</label>
                 <input
                     id="hourlyRate"
                     type="text"
