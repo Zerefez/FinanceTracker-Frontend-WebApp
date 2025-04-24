@@ -97,10 +97,24 @@ export const authService = {
 
   // Register a new user
   register: async (email: string, password: string, hourlyRate: string, fullName: string): Promise<RegisterResponse> => {
+    // Basic validation
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+    
+    if (password.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
     try {
       const message = await fetchWithAuth('/Account/register', {
         method: 'POST',
-        body: JSON.stringify({ Email: email, Password: password, hourlyRate: hourlyRate, FullName: fullName })
+        body: JSON.stringify({ 
+          Email: email, 
+          Password: password, 
+          HourlyRate: hourlyRate || null, // Send null if hourlyRate is empty
+          FullName: fullName 
+        })
       });
 
       return { success: true, message };
