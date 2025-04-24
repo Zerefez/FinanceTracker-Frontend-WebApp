@@ -24,6 +24,8 @@ export function Register() {
                     required
                 >
                 </input >
+
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                 <input
                     id="email"
                     type="email"
@@ -33,6 +35,7 @@ export function Register() {
                     required
                 >
                 </input >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                 <input
                     id="password"
                     type="password"
@@ -42,6 +45,7 @@ export function Register() {
                 >
 
                 </input>
+                <label htmlFor="hourlyRate" className="block text-sm"></label>
                 <input
                     id="hourlyRate"
                     type="text"
