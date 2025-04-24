@@ -1,50 +1,14 @@
-import { Fragment, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Fragment } from 'react';
 import { loginLink, logoutLink, mainLinks, userLinks } from '../data/navigationLinks';
-import { AUTH_EVENTS, authUtils } from '../lib/utils';
+import { useAuth, useMenu, useNavigation } from '../lib/hooks';
 import AnimatedLink from './ui/animation/animatedLink';
 import Clock from './ui/clock';
 import Menu from './ui/Menu';
 
 export default function Header() {
-  const [isMenuActive, setIsMenuActive] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
-
-  // Check authentication status when component mounts
-  useEffect(() => {
-    const checkAuth = () => {
-      setIsAuthenticated(authUtils.isAuthenticated());
-    };
-    
-    // Check initially
-    checkAuth();
-    
-    // Setup event listeners
-    const handleLogin = () => checkAuth();
-    const handleLogout = () => checkAuth();
-    
-    window.addEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-    window.addEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-    window.addEventListener('storage', checkAuth);
-    
-    return () => {
-      window.removeEventListener(AUTH_EVENTS.LOGIN, handleLogin);
-      window.removeEventListener(AUTH_EVENTS.LOGOUT, handleLogout);
-      window.removeEventListener('storage', checkAuth);
-    };
-  }, []);
-
-  const toggleMenu = () => {
-    setIsMenuActive(!isMenuActive);
-  };
-
-  const handleLogout = (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    // Navigate to logout page to show transition animation
-    navigate('/logout');
-  };
+  const { isAuthenticated } = useAuth();
+  const { isMenuActive, toggleMenu } = useMenu();
+  const { handleLogout } = useNavigation();
 
   return (
     <>
@@ -79,7 +43,7 @@ export default function Header() {
                 </div>
               </div>
 
-              {/* Desktop User Links - Hidden on Mobile */}
+              {/* Desktop User Links - Hidden on Mobile */} 
               <div className="hidden lg:block space-y-1">
                 <p className="text-muted font-medium">User</p>
                 <div className="flex flex-wrap gap-2">

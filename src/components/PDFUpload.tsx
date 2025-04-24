@@ -1,7 +1,7 @@
 // src/components/PDFUploadComponent/PDFUploadComponent.tsx
 import { Eye, FileText, Upload, X } from 'lucide-react';
-import React, { useState } from 'react';
-import { Job } from '../types/Job';
+import { useState } from 'react';
+import { Job } from './Job';
 import PDFViewer from './PDFViewer';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -13,7 +13,7 @@ interface PDFUploadComponentProps {
   jobs?: Job[];
 }
 
-const PDFUploadComponent: React.FC<PDFUploadComponentProps> = ({ title, type, jobId, jobs }) => {
+const PDFUploadComponent = ({ title, type, jobId, jobs }: PDFUploadComponentProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isViewing, setIsViewing] = useState(false);

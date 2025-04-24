@@ -23,3 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 .qodo
+
+
+.FinanceTracker/*
+.AuthServer/*
+Projekt4_Frontend-WebApp.sln
+FinanceTracker.sln

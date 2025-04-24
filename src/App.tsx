@@ -1,22 +1,10 @@
-import { useEffect, useRef } from "react"
-import { BrowserRouter as Router } from "react-router-dom"
-import RouteConfig from "./components/RouteConfig"
+import { BrowserRouter as Router } from "react-router-dom";
+import RouteConfig from "./components/RouteConfig";
+import { useLocomotiveScroll } from "./lib/hooks";
 
 function App() {
-  const locomotiveScrollRef = useRef<any>(null)
-
-  useEffect(() => {
-    ;(async () => {
-      const LocomotiveScroll = (await import("locomotive-scroll")).default
-      locomotiveScrollRef.current = new LocomotiveScroll()
-
-      return () => {
-        if (locomotiveScrollRef.current) {
-          locomotiveScrollRef.current.destroy()
-        }
-      }
-    })()
-  }, [])
+  // Use the custom hook for locomotive scroll
+  useLocomotiveScroll();
 
   return (
     <Router>

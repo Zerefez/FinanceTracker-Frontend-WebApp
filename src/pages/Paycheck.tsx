@@ -1,30 +1,22 @@
-import { useState } from "react";
-import { Job } from "../components/Job";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
+import { Button } from "../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // Mock job data - in a real app, this would come from an API
-  const jobs: Job[] = [
-    {
-      id: '1',
-      title: 'Software Engineer',
-      company: 'Nvidia Inc.',
-      startDate: 'January 2023',
-      endDate: 'Present'
-    },
-    {
-      id: '2',
-      title: 'Data Analyst',
-      company: 'Data Insights LLC',
-      startDate: 'June 2022',
-      endDate: 'December 2022'
-    }
-  ];
+  const { jobId } = useParams();
+  const navigate = useNavigate();
+  const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
 
-  const [selectedJobId, setSelectedJobId] = useState<string>('');
+  // Set the selected job when URL param exists
+  useEffect(() => {
+    if (jobId && jobs.some(job => job.id === jobId)) {
+      setSelectedJobId(jobId);
+    }
+  }, [jobId, jobs, setSelectedJobId]);
 
   return (
     <section>
@@ -57,11 +49,17 @@ export default function Paycheck() {
                 <SelectValue placeholder="Select a job" />
               </SelectTrigger>
               <SelectContent>
-                {jobs.map((job) => (
-                  <SelectItem key={job.id} value={job.id}>
-                    {job.title} - {job.company}
-                  </SelectItem>
-                ))}
+                {loading ? (
+                  <SelectItem value="loading" disabled>Loading jobs...</SelectItem>
+                ) : jobs.length === 0 ? (
+                  <SelectItem value="none" disabled>No jobs available</SelectItem>
+                ) : (
+                  jobs.map((job) => (
+                    <SelectItem key={job.id} value={job.id}>
+                      {job.title || job.companyName} - {job.company || job.companyName}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -96,6 +94,17 @@ export default function Paycheck() {
               />
             </div>
           </div>
+
+          {selectedJobId && (
+            <div className="mt-8 flex justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/jobs/${selectedJobId}`)}
+              >
+                Edit Job Details
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
