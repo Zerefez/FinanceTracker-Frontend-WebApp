@@ -13,7 +13,7 @@ interface LocationState {
 }
 
 interface LoginPageProps {
-  setIsAuthenticated: (value: boolean) => void;
+  setIsAuthenticated?: (value: boolean) => void;
 }
 
 export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
@@ -46,16 +46,20 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
     if (isAuthenticated) {
       const from = locState?.from?.pathname || '/';
       console.log('Already authenticated, redirecting to:', from);
-      setIsAuthenticated(true); // Make sure we update parent state
+      if (setIsAuthenticated) {
+        setIsAuthenticated(true); // Make sure we update parent state if provided
+      }
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, locState, navigate, setIsAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleLogin();
-    // Update parent state
-    setIsAuthenticated(true);
+    const success = await handleLogin();
+    // Update parent state if login successful and function provided
+    if (success && setIsAuthenticated) {
+      setIsAuthenticated(true);
+    }
   };
 
   return (
@@ -79,8 +83,8 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
             onForgotPassword={() => alert('Forgot password not implemented')}
             onRegister={() => navigate('/register')}
           />
-        </div> 
+        </div>
       </section>
     </Inner>
   );
-} 
+}

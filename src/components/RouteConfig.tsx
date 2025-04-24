@@ -8,6 +8,7 @@ import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import StudentGrant from "../pages/StudentGrant";
 import ProtectedRoutes from "./ProtectedRoutes";
+import { RegisterPage } from "../pages/RegisterPage";
 
 const RouteConfig = () => {
   const { isAuthenticated, isInitializing } = useAuth();
@@ -22,8 +23,11 @@ const RouteConfig = () => {
     );
   }
 
+  // Check if the current path is the logout page
+  const isLogoutPage = location.pathname === '/logout';
+  
   // Generate a key for route transitions
-  const routingKey = location.pathname === '/logout'
+  const routingKey = isLogoutPage
     ? 'logout-page'
     : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
   
@@ -34,8 +38,10 @@ const RouteConfig = () => {
       <Routes location={location} key={routingKey}>
         {/* Public routes */}
         <Route path="/login" element={
-          isAuthenticated ? <Navigate to="/" replace /> : <LoginPage setIsAuthenticated={() => {/* No-op, using hook now */}} />
+          isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
         } />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
         
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -45,13 +51,12 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:id" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-          <Route path="/logout" element={<LogoutPage />} />
         </Route>
-
+        
         {/* Catch all route */}
         <Route path="*" element={
-          isAuthenticated ? 
-            <Navigate to="/" replace /> : 
+          isAuthenticated ?
+            <Navigate to="/" replace /> :
             <Navigate to="/login" replace />
         } />
       </Routes>
@@ -59,4 +64,4 @@ const RouteConfig = () => {
   );
 };
 
-export default RouteConfig; 
+export default RouteConfig;
