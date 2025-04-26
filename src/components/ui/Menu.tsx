@@ -5,30 +5,32 @@ import Nav from './nav';
 
 export default function Menu() {
   const [isActive, setIsActive] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isSmallMobile, setIsSmallMobile] = useState(false);
 
   // Check if the screen size is mobile
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1024);
+      setIsSmallMobile(window.innerWidth < 480);
     };
     
     // Initial check
-    checkIfMobile();
+    checkScreenSize();
     
     // Add event listener for window resize
-    window.addEventListener('resize', checkIfMobile);
+    window.addEventListener('resize', checkScreenSize);
     
     // Clean up
     return () => {
-      window.removeEventListener('resize', checkIfMobile);
+      window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
 
   const menu = {
     open: {
-      width: "340px",
-      height: "650px",
+      width: isSmallMobile ? "280px" : "340px",
+      height: isSmallMobile ? "550px" : "650px",
       bottom: "-25px",
       right: "-25px",
       transition: { duration: 0.75, type: "tween", ease: [0.76, 0, 0.24, 1] }
@@ -43,12 +45,12 @@ export default function Menu() {
   };
 
   // Only render the menu on mobile devices
-  if (!isMobile) return null;
+  if (!isSmallScreen) return null;
 
   return (
     <div className="fixed right-[50px] bottom-[50px] lg:hidden z-50">
       <motion.div 
-        className="w-[480px] h-[650px] bg-accent rounded-2xl relative z-50"
+        className={`${isSmallMobile ? 'w-[400px] h-[550px]' : 'w-[480px] h-[650px]'} bg-accent rounded-2xl relative z-50`}
         variants={menu}
         animate={isActive ? "open" : "closed"}
         initial="closed"
