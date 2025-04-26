@@ -8,7 +8,7 @@
 # Redirect API calls to the backend
 [[redirects]]
   from = "/api/*"
-  to = "https://projekt4-backend.azurewebsites.net/:splat"
+  to = "http://localhost:5140/:splat"
   status = 200
   force = true
 
