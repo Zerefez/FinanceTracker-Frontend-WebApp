@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import AnimatedText from "../components/ui/animation/animatedText";
+import { AVAILABLE_YEARS, HOUSING_STATUS, INCOME_CEILING, MAX_EARNABLE, TAX_CARD_OPTIONS } from '../data/studentGrantData';
 
 interface SUData {
   incomeCeiling: number;
@@ -8,12 +8,28 @@ interface SUData {
   updatedDate: string;
 }
 
-export default function SUSection() {
-  const [selectedYear, setSelectedYear] = useState('2025');
+interface SUProps {
+  suBrutto?: number;
+  taxCard?: string;
+  housingStatus?: string;
+  onSuChange?: (value: number) => void;
+  onTaxCardChange?: (card: string) => void;
+  onHousingChange?: (status: string) => void;
+}
+
+export function SUSection({ 
+  suBrutto, 
+  taxCard = TAX_CARD_OPTIONS.MAIN.value, 
+  housingStatus = HOUSING_STATUS.AWAY.value,
+  onSuChange, 
+  onTaxCardChange,
+  onHousingChange 
+}: SUProps) {
+  const [selectedYear, setSelectedYear] = useState(AVAILABLE_YEARS[0]);
   const [suData, setSUData] = useState<SUData>({
-    incomeCeiling: 247976,
+    incomeCeiling: INCOME_CEILING,
     currentIncome: 10000,
-    maxEarnable: 228138,
+    maxEarnable: MAX_EARNABLE,
     updatedDate: '17/03-2025'
   });
 
@@ -46,39 +62,87 @@ export default function SUSection() {
   const percentage = calculatePercentage();
   const progressPaths = generateProgressPath(percentage);
 
+  // Handle SU brutto change from slider
+  const handleSuDataChange = (value: number) => {
+    setSUData(prev => ({
+      ...prev, 
+      currentIncome: value
+    }));
+    
+    // Notify parent component if callback provided
+    if (onSuChange) {
+      onSuChange(value);
+    }
+  };
+
+  // Handle year change
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    
+    // Add any year-specific logic here
+  };
+
+  // Handle tax card change
+  const handleTaxCardChange = (cardType: string) => {
+    if (onTaxCardChange) {
+      onTaxCardChange(cardType);
+    }
+  };
+  
+  // Handle housing status change
+  const handleHousingChange = (status: string) => {
+    if (onHousingChange) {
+      onHousingChange(status);
+    }
+  };
+
   return (
-    <div className="w-full rounded-lg border-2 border-gray-200 p-5">
-      <AnimatedText
-        phrases={["Student Grant Overview [SU]"]}
-        accentWords={["[SU]"]}
-        className="mb-4 text-center text-2xl font-bold md:text-3xl lg:text-4xl"
-        accentClassName="text-accent"
-      />
+    <div className="w-full rounded-lg border-2 border-gray-200 p-4 md:p-5 bg-white relative">
+      <h2 className="mb-4 text-center text-xl md:text-2xl font-bold">
+        Student <span className="text-accent">Grant</span> Dashboard
+      </h2>
       
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-center mb-4 gap-2">
         <select 
           value={selectedYear} 
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="border rounded px-2 py-1"
+          onChange={(e) => handleYearChange(e.target.value)}
+          className="border rounded px-2 py-1 text-sm"
         >
-          <option value="2025">2025</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
+          {AVAILABLE_YEARS.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
         </select>
-        <p className="text-sm text-gray-500">Updated {suData.updatedDate}</p>
+        
+        <select 
+          value={housingStatus} 
+          onChange={(e) => handleHousingChange(e.target.value)}
+          className="border rounded px-2 py-1 text-sm"
+        >
+          <option value={HOUSING_STATUS.AWAY.value}>{HOUSING_STATUS.AWAY.label}</option>
+          <option value={HOUSING_STATUS.WITH_PARENTS.value}>{HOUSING_STATUS.WITH_PARENTS.label}</option>
+        </select>
+        
+        <select 
+          value={taxCard} 
+          onChange={(e) => handleTaxCardChange(e.target.value)}
+          className="border rounded px-2 py-1 text-sm"
+        >
+          <option value={TAX_CARD_OPTIONS.MAIN.value}>{TAX_CARD_OPTIONS.MAIN.label}</option>
+          <option value={TAX_CARD_OPTIONS.SECONDARY.value}>{TAX_CARD_OPTIONS.SECONDARY.label}</option>
+        </select>
       </div>
       
-      <div className="relative flex justify-center items-center mb-4">
+      <div className="relative flex justify-center items-center mb-6">
         <div className="absolute inset-0 flex justify-center items-center">
-          <div className="w-48 h-48 bg-white rounded-full shadow-lg"></div>
+          <div className="w-36 h-36 md:w-48 md:h-48 bg-white rounded-full shadow-sm"></div>
         </div>
-        <div className="w-56 h-56 relative">
+        <div className="w-44 h-44 md:w-56 md:h-56 relative">
           <svg viewBox="0 0 36 36" className="w-full h-full">
             {/* Background circle */}
             <path 
               d={progressPaths.backgroundPath}
               fill="none"
-              stroke="#eee"
+              stroke="#f1f1f1"
               strokeWidth="3"
             />
             {/* Progress arc */}
@@ -92,53 +156,44 @@ export default function SUSection() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col justify-center items-center">
-            <span className="text-3xl font-bold">{percentage}%</span>
-            <AnimatedText
-              phrases={["of your income ceiling"]}
-              className="text-sm text-gray-500"
-              accentClassName="text-accent"
-            />
+            <span className="text-3xl md:text-4xl font-bold">{percentage}%</span>
+            <p className="text-sm text-gray-500">of your income ceiling</p>
           </div>
         </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="bg-gray-100 rounded-lg p-3 flex justify-between items-center">
           <div>
-            <AnimatedText
-              phrases={["How much more you can earn"]}
-              className="text-sm text-gray-600"
-              accentClassName="text-accent"
-            />
+            <p className="text-sm text-gray-600">Remaining earnings allowance</p>
             <p className="font-semibold text-accent">{suData.maxEarnable.toLocaleString()} kr.</p>
             <p className="text-xs text-gray-500">
-              Amount for AM contribution: {suData.incomeCeiling.toLocaleString()} kr.
+              Maximum income ceiling: {suData.incomeCeiling.toLocaleString()} kr.
             </p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
           </svg>
         </div>
         
         <div className="bg-gray-100 rounded-lg p-3 flex justify-between items-center">
           <div>
-            <AnimatedText
-              phrases={["How many more hours you can work"]}
-              className="text-sm text-gray-600"
-              accentClassName="text-accent"
-            />
-            <p className="font-semibold">-</p>
-            <p className="text-xs text-gray-500">Enter your timesheet to see remaining hours</p>
+            <p className="text-sm text-gray-600">Your monthly grant payment</p>
+            <p className="font-semibold">{suBrutto?.toLocaleString() || '7,086'} kr. (gross)</p>
+            <div className="text-xs text-gray-500">
+              <p>Tax card: {taxCard === TAX_CARD_OPTIONS.MAIN.value ? TAX_CARD_OPTIONS.MAIN.label : TAX_CARD_OPTIONS.SECONDARY.label}</p>
+              <p>Housing: {housingStatus === HOUSING_STATUS.AWAY.value ? HOUSING_STATUS.AWAY.label : HOUSING_STATUS.WITH_PARENTS.label}</p>
+            </div>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
             <path d="m9 18 6-6-6-6"/>
           </svg>
         </div>
       </div>
 
       {/* Slider with accent styling and filled progress */}
-      <div className="mt-4 px-2">
-        <div className="flex justify-between items-center mb-2">
+      <div className="mt-4">
+        <div className="flex justify-between items-center mb-1">
           <label className="text-sm text-gray-700">Current Income</label>
           <span className="text-sm font-semibold text-accent">
             {suData.currentIncome.toLocaleString()} kr.
@@ -149,10 +204,7 @@ export default function SUSection() {
           min="0" 
           max={suData.incomeCeiling} 
           value={suData.currentIncome}
-          onChange={(e) => setSUData(prev => ({
-            ...prev, 
-            currentIncome: Number(e.target.value)
-          }))}
+          onChange={(e) => handleSuDataChange(Number(e.target.value))}
           style={{
             background: `linear-gradient(to right, 
               #FF6B6B 0%, 
@@ -173,4 +225,9 @@ export default function SUSection() {
       </div>
     </div>
   );
+}
+
+// Default export as a standalone component with no props
+export default function DefaultSUSection() {
+  return <SUSection />;
 }

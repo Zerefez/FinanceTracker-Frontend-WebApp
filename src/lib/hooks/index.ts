@@ -8,4 +8,5 @@ export * from './useMenu';
 export * from './useNavigation';
 export * from './usePaycheck';
 export * from './useProtectedRoute';
+export * from './useStudentGrant';
 

@@ -46,9 +46,9 @@ export default function Menu() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed right-[50px] bottom-[50px] lg:hidden z-1000">
+    <div className="fixed right-[50px] bottom-[50px] lg:hidden z-50">
       <motion.div 
-        className="w-[480px] h-[650px] bg-accent rounded-2xl relative"
+        className="w-[480px] h-[650px] bg-accent rounded-2xl relative z-50"
         variants={menu}
         animate={isActive ? "open" : "closed"}
         initial="closed"

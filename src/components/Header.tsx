@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <>
       <Menu/>
-      <header className="w-full h-full pt-6 pb-4 bg-white z-10">
+      <header className="w-full h-full pt-6 pb-4 bg-white z-40 relative">
         <div className="border-b-2 border-black mx-8">
           <div className="px-2 md:px-4 py-4 items-stretch justify-items-stretch">
             <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-2 gap-6 md:gap-[100px] text-md">

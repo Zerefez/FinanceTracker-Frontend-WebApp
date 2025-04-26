@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
-import { mainLinks, userLinks } from '../../data/navigationLinks';
+import { loginLink, logoutLink, mainLinks, userLinks } from '../../data/navigationLinks';
+import { useAuth, useNavigation } from '../../lib/hooks';
 import { perspective, slideIn } from "./animation/animNav";
 
-export default function index() {
+export default function Nav() {
+  const { isAuthenticated } = useAuth();
+  const { handleLogout } = useNavigation();
+  
   return (
     <div className="flex flex-col justify-between h-full box-border">
       <div className="container mx-auto px-8 py-20">
@@ -54,6 +58,36 @@ export default function index() {
               User
             </motion.h2>
             <div className="flex gap-4 flex-col">
+              {/* Conditional login/logout link */}
+              {isAuthenticated ? (
+                <div className="perspective-120px perspective-origin-bottom">
+                  <motion.div
+                    custom={-2}
+                    variants={perspective}
+                    initial="initial"
+                    animate="enter"
+                    exit="exit"
+                  >
+                    <a onClick={handleLogout} href="#" className="block text-2xl font-semibold">
+                      {logoutLink.title}
+                    </a>
+                  </motion.div>
+                </div>
+              ) : (
+                <div className="perspective-120px perspective-origin-bottom">
+                  <motion.div
+                    custom={-2}
+                    variants={perspective}
+                    initial="initial"
+                    animate="enter"
+                    exit="exit"
+                  >
+                    <a href={loginLink.href} className="block text-2xl font-semibold">
+                      {loginLink.title}
+                    </a>
+                  </motion.div>
+                </div>
+              )}
               {
                 userLinks.map((link, i) => {
                   const { title, href } = link;
