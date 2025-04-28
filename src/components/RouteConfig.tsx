@@ -6,9 +6,9 @@ import JobPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
+import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
 import ProtectedRoutes from "./ProtectedRoutes";
-import { RegisterPage } from "../pages/RegisterPage";
 
 const RouteConfig = () => {
   const { isAuthenticated, isInitializing } = useAuth();
@@ -41,7 +41,7 @@ const RouteConfig = () => {
           isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
         } />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/logout" element={<LogoutPage />} />
+        
         
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -51,6 +51,7 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:id" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
+          <Route path="/logout" element={<LogoutPage />} />
         </Route>
         
         {/* Catch all route */}
