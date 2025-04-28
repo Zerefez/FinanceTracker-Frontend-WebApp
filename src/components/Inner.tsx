@@ -1,5 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import type * as React from "react";
+import { useLocation } from "react-router-dom";
 import Header from "./Header";
 import { opacity, perspective, slide } from "./ui/animation/anim";
 
@@ -16,6 +17,8 @@ interface InnerProps {
 }
 
 export default function Inner({ children, showHeader = true }: InnerProps) {
+  const location = useLocation();
+  
   return (
     <div className="bg-black min-h-screen relative overflow-hidden">
       {/* Background animation */}

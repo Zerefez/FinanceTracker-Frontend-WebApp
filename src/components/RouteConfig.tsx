@@ -26,6 +26,10 @@ const RouteConfig = () => {
   // Check if the current path is the logout page
   const isLogoutPage = location.pathname === '/logout';
   
+  // Add detailed logging
+  console.log('Current location:', location.pathname);
+  console.log('Is logout page?', isLogoutPage);
+  
   // Generate a key for route transitions
   const routingKey = isLogoutPage
     ? 'logout-page'
@@ -41,7 +45,7 @@ const RouteConfig = () => {
           isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
         } />
         <Route path="/register" element={<RegisterPage />} />
-        
+        <Route path="/logout" element={<LogoutPage />} />
         
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -51,7 +55,7 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:id" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-          <Route path="/logout" element={<LogoutPage />} />
+          
         </Route>
         
         {/* Catch all route */}

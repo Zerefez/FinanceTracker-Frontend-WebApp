@@ -42,9 +42,16 @@ export function useNavigation() {
     navigate('/login', { state, replace: true });
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    // Perform the actual logout
+    console.log('Logging out user');
+    
+    // Clear auth data
     authUtils.logout();
-    navigate('/logout');
+    
+    // Add a timestamp to force a fresh load of the logout page
+    // This prevents any animation caching issues
+    window.location.href = '/logout?t=' + Date.now();
   };
 
   const navigateAfterLogin = (currentLocation: Location, defaultPath = '/') => {
