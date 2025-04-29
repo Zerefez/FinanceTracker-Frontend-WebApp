@@ -11,11 +11,11 @@ export function useJobForm() {
   const navigate = useNavigate();
 
   const [job, setJob] = useState<Job>({
-    Title: "",
-    CompanyName: "",
-    HourlyRate: 0,
-    EmploymentType: "",
-    TaxCard: "",
+    title: "",
+    companyName: "",
+    hourlyRate: 0,
+    employmentType: "",
+    taxCard: "",
   });
   const [isNewJob, setIsNewJob] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -24,7 +24,7 @@ export function useJobForm() {
 
   // Get job display name from Company Name
   const getJobDisplayName = (): string => {
-    return job.CompanyName || "";
+    return job.companyName || "";
   };
 
   useEffect(() => {
@@ -34,11 +34,11 @@ export function useJobForm() {
         if (!companyName || companyName === "new") {
           // Initialize empty job for new job form
           setJob({
-            Title: "",
-            CompanyName: "",
-            HourlyRate: 0,
-            EmploymentType: "",
-            TaxCard: "",
+            title: "",
+            companyName: "",
+            hourlyRate: 0,
+            employmentType: "",
+            taxCard: "",
           });
           setSelectedWeekdays([]);
         } else {
@@ -75,30 +75,18 @@ export function useJobForm() {
     const { name, value, type } = e.target;
 
     // If the input is for companyName, update the CompanyName property
-    const fieldName =
-      name === "companyName"
-        ? "CompanyName"
-        : name === "hourlyRate"
-          ? "HourlyRate"
-          : name === "employmentType"
-            ? "EmploymentType"
-            : name === "taxCardType"
-              ? "TaxCard"
-              : name === "Title"
-                ? "Title"
-                : name;
 
     setJob((prev) => ({
       ...prev,
-      [fieldName]: type === "number" ? (value ? parseFloat(value) : 0) : value,
+      [name]: type === "number" ? (value ? parseFloat(value) : 0) : value,
     }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
     // Map field names to backend model properties
     const fieldMap: Record<string, string> = {
-      taxCardType: "TaxCard",
-      employmentType: "EmploymentType",
+      taxCardType: "taxCard",
+      employmentType: "employmentType",
     };
 
     const fieldName = fieldMap[name] || name;
@@ -117,6 +105,24 @@ export function useJobForm() {
     });
   };
 
+  const handleDelete = async (companyName: string, e: React.FormEvent) => {
+    e.preventDefault();
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+    if (!confirmDelete) return;
+
+    try {
+      await jobService.deleteJob(companyName);
+
+      // Optionally navigate away or update UI
+      alert("Job deleted successfully.");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Error deleting job.");
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -156,5 +162,6 @@ export function useJobForm() {
     handleSelectChange,
     handleWeekdayChange,
     handleSubmit,
+    handleDelete,
   };
 }

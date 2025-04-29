@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Job } from '../../components/Job';
-import { jobService } from '../../services/jobService';
+import { useEffect, useState } from "react";
+import { Job } from "../../components/Job";
+import { jobService } from "../../services/jobService";
 
 /**
  * Hook for fetching and managing jobs data
@@ -17,8 +17,8 @@ export function useJobs() {
       const data = await jobService.getJobs();
       setJobs(data);
     } catch (error) {
-      console.error('Error fetching jobs:', error);
-      setError(error instanceof Error ? error : new Error('Failed to fetch jobs'));
+      console.error("Error fetching jobs:", error);
+      setError(error instanceof Error ? error : new Error("Failed to fetch jobs"));
     } finally {
       setLoading(false);
     }
@@ -31,10 +31,10 @@ export function useJobs() {
   const registerJob = async (job: Job): Promise<Job> => {
     try {
       const newJob = await jobService.registerJob(job);
-      setJobs(prev => [...prev, newJob]);
+      setJobs((prev) => [...prev, newJob]);
       return newJob;
     } catch (error) {
-      console.error('Error registering job:', error);
+      console.error("Error registering job:", error);
       throw error;
     }
   };
@@ -42,10 +42,10 @@ export function useJobs() {
   const updateJob = async (job: Job): Promise<Job> => {
     try {
       const updatedJob = await jobService.updateJob(job);
-      setJobs(prev => prev.map(j => j.CompanyName === job.CompanyName ? updatedJob : j));
+      setJobs((prev) => prev.map((j) => (j.companyName === job.companyName ? updatedJob : j)));
       return updatedJob;
     } catch (error) {
-      console.error('Error updating job:', error);
+      console.error("Error updating job:", error);
       throw error;
     }
   };
@@ -53,9 +53,9 @@ export function useJobs() {
   const deleteJob = async (companyName: string): Promise<void> => {
     try {
       await jobService.deleteJob(companyName);
-      setJobs(prev => prev.filter(job => job.CompanyName !== companyName));
+      setJobs((prev) => prev.filter((job) => job.companyName !== companyName));
     } catch (error) {
-      console.error('Error deleting job:', error);
+      console.error("Error deleting job:", error);
       throw error;
     }
   };
@@ -77,6 +77,6 @@ export function useJobs() {
     registerJob,
     updateJob,
     deleteJob,
-    getJobByCompanyName
+    getJobByCompanyName,
   };
-} 
+}
