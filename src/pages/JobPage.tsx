@@ -197,7 +197,7 @@ export default function JobPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSaving}>
+                  <Button type="submit" variant="submit" disabled={isSaving}>
                     {isSaving ? "Saving..." : isNewJob ? "Create Job" : "Update Job"}
                   </Button>
                 </div>

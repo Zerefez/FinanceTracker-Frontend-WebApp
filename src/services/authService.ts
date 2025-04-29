@@ -83,15 +83,22 @@ export const authService = {
     try {
       console.log('Attempting login for user:', username);
       
-      // The backend returns a JWT string directly, not a JSON object
-      const response = await fetch(`${API_URL}/Account/login`, {
+      // Try using the API URL with proxy first
+      const url = `${API_URL}/Account/login`;
+      console.log(`Making login request to: ${url}`);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': '*/*'
         },
-        body: JSON.stringify({ Username: username, Password: password })
+        credentials: 'include', // Include cookies if server uses them
+        body: JSON.stringify({ username, password })
       });
+      
+      console.log('Login response status:', response.status);
+      console.log('Login response headers:', [...response.headers.entries()]);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -102,7 +109,8 @@ export const authService = {
       // Get the raw token string
       const token = await response.text();
       
-      console.log('Received token:', token ? `${token.substring(0, 15)}...` : 'No token');
+      console.log('Received token length:', token ? token.length : 0);
+      console.log('Received token preview:', token ? `${token.substring(0, 15)}...` : 'No token');
       
       if (!token || typeof token !== 'string' || token.trim() === '') {
         throw new Error('Invalid token received from server');
@@ -110,12 +118,13 @@ export const authService = {
 
       // Store token in localStorage with consistent key
       localStorage.setItem(AUTH_TOKEN_KEY, token);
+      console.log('Token stored in localStorage');
 
       // Parse and store user data
       const userData = parseUserFromToken(token);
       if (userData) {
         localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
-        console.log('User data successfully parsed from token');
+        console.log('User data successfully parsed from token:', userData);
       } else {
         console.error('Failed to parse user data from token');
       }
@@ -201,7 +210,22 @@ export const authService = {
     }
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      // Check if token is a valid JWT
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        console.error('Invalid token format');
+        return false;
+      }
+
+      // Parse the payload
+      const payload = JSON.parse(atob(parts[1]));
+      
+      // Check for expiration
+      if (!payload.exp) {
+        console.log('Token has no expiration, considering valid');
+        return true;
+      }
+      
       const expiry = payload.exp * 1000; // Convert to milliseconds
       const now = Date.now();
       
@@ -218,6 +242,7 @@ export const authService = {
       return true;
     } catch (error) {
       console.error('Error parsing token:', error);
+      // Don't clear token on parsing error - it might be temporarily invalid
       return false;
     }
   },

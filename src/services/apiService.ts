@@ -3,7 +3,7 @@ import { authService } from './authService';
 
 // API URL - Use relative URL to leverage the Vite proxy
 // This should match the proxy setup in your Vite config
-const API_URL = '';
+const API_URL = '/api';
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -32,12 +32,16 @@ export const apiService = {
       endpoint.includes('/Account/register');
 
     // Build URL
-    const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const url = endpoint.startsWith('http') 
+      ? endpoint 
+      : `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    
+    console.log(`API request to: ${url}, method: ${method}`);
     
     // Setup headers with auth token
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      'Accept': '*/*',
       ...headers
     };
     
