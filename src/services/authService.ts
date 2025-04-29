@@ -74,7 +74,7 @@ export const authService = {
   // Login with username and password
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
-      const token = await fetchWithAuth('/Account', {
+      const token = await fetchWithAuth('/Account/login', {
         method: 'POST',
         body: JSON.stringify({ Username: username, Password: password })
       });
