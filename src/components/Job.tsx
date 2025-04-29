@@ -2,23 +2,12 @@
 import { Link } from 'react-router-dom';
 
 export interface Job {
-  id: string;
-  title?: string;  // Keep for backward compatibility
-  company?: string; // Keep for backward compatibility
-  startDate?: string; // Keep for backward compatibility
-  endDate?: string; // Keep for backward compatibility
-  
-  // New fields from ER diagram
-  companyName?: string;
-  hourlyRate?: number;
-  taxCardType?: string;
-  employmentType?: string;
-  cvr?: string;
-  weekday?: string;
-  weekdays?: string[]; // New field for multiple weekdays
-  startTime?: string;
-  endTime?: string;
-  supplementAmount?: number;
+
+  CompanyName: string;
+  HourlyRate: number;
+  EmploymentType: string;
+  TaxCard: string;
+  Title: string;
 }
 
 interface JobListProps {
@@ -36,20 +25,19 @@ export default function JobList({ jobs }: JobListProps) {
       ) : (
         <div className="space-y-4">
           {jobs.map((job) => (
-            <Link 
-              key={job.id} 
-              to={`/jobs/${job.id}`}
+            <Link
+              to={`/jobs/${job.Title}`} // Replace with the appropriate path
               className="block hover:bg-gray-100 transition-colors duration-200 rounded-lg p-3"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-lg font-semibold">{job.title || job.companyName}</h3>
-                  <p className="text-gray-600">{job.company || job.companyName}</p>
+                  <h3 className="text-lg font-semibold">{job.Title || job.CompanyName}</h3>
+                  <p className="text-gray-600">{job.CompanyName || job.CompanyName}</p>
                 </div>
-                <div className="text-right text-sm text-gray-500">
-                  {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` : 
-                   (job.weekday ? `${job.weekday} ${job.startTime}-${job.endTime}` : '')}
-                </div>
+                {/* <div className="text-right text-sm text-gray-500">
+                  {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` :
+                    (job.weekday ? `${job.weekday} ${job.startTime}-${job.endTime}` : '')}
+                </div> */}
               </div>
             </Link>
           ))}

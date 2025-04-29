@@ -61,7 +61,7 @@ export default function JobPage() {
               phrases={[
                 <React.Fragment key="edit-phrase">
                   Edit Job:{" "}
-                  <span className="text-accent">{job.companyName || job.company || ""}</span>
+                  <span className="text-accent">{job.CompanyName || job.TaxCard || ""}</span>
                 </React.Fragment>,
               ]}
               className="mb-4 text-center text-4xl font-bold"
@@ -72,15 +72,15 @@ export default function JobPage() {
           <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Job ID - Hidden */}
-              <input type="hidden" name="id" value={job.id} />
+              <input type="hidden" name="id" value={job.CompanyName} />
 
               {/* Title (if it exists from older job format) */}
-              {job.title && (
+              {job.Title && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Job Title</label>
                   <Input
                     name="title"
-                    value={job.title || ""}
+                    value={job.Title || ""}
                     onChange={handleInputChange}
                     className="mt-1"
                   />
@@ -92,7 +92,7 @@ export default function JobPage() {
                 <label className="block text-sm font-medium text-gray-700">Company Name</label>
                 <Input
                   name="companyName"
-                  value={job.companyName || job.company || ""}
+                  value={job.CompanyName || ""}
                   onChange={handleInputChange}
                   className="mt-1"
                   required
@@ -100,18 +100,18 @@ export default function JobPage() {
               </div>
 
               {/* CVR */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">CVR</label>
                 <Input
                   name="cvr"
-                  value={job.cvr || ""}
+                  value={"job.cvr" || ""}
                   onChange={handleInputChange}
                   className="mt-1"
                   required
                   pattern="[0-9]{8}"
                   title="CVR must be 8 digits"
                 />
-              </div>
+              </div> */}
 
               {/* Hourly Rate */}
               <div>
@@ -121,7 +121,7 @@ export default function JobPage() {
                   type="number"
                   min="0"
                   step="0.01"
-                  value={job.hourlyRate || ""}
+                  value={job.HourlyRate || ""}
                   onChange={handleInputChange}
                   className="mt-1"
                   required
@@ -132,7 +132,7 @@ export default function JobPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Tax Card Type</label>
                 <Select
-                  value={job.taxCardType || ""}
+                  value={job.TaxCard || ""}
                   onValueChange={(value) => handleSelectChange("taxCardType", value)}
                 >
                   <SelectTrigger className="mt-1">
@@ -152,7 +152,7 @@ export default function JobPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employment Type</label>
                 <Select
-                  value={job.employmentType || ""}
+                  value={job.EmploymentType || ""}
                   onValueChange={(value) => handleSelectChange("employmentType", value)}
                 >
                   <SelectTrigger className="mt-1">
@@ -191,7 +191,7 @@ export default function JobPage() {
               </div>
 
               {/* Start/End Time */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Start Time</label>
                   <Input
@@ -212,10 +212,10 @@ export default function JobPage() {
                     className="mt-1"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Supplement */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">Supplement Amount</label>
                 <Input
                   name="supplementAmount"
@@ -226,16 +226,16 @@ export default function JobPage() {
                   onChange={handleInputChange}
                   className="mt-1"
                 />
-              </div>
+              </div> */}
 
               {/* Submit Button */}
               <div className="flex justify-between items-center space-x-4">
                 <div>
-                  {!isNewJob && job.id && (
+                  {!isNewJob && job.CompanyName && (
                     <Button
-                      type="button" 
+                      type="button"
                       variant="outline"
-                      onClick={() => navigate(`/paycheck/${job.id}`)}
+                      onClick={() => navigate(`/paycheck/${job.CompanyName}`)}
                     >
                       Go to This Job Paycheck
                     </Button>
