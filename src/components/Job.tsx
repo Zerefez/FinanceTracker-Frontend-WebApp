@@ -13,6 +13,9 @@ export interface Job {
   weekday?: string;
   startTime?: string;
   endTime?: string;
+  // Additional optional fields for display
+  startDate?: string;
+  endDate?: string;
 }
 
 interface JobListProps {
