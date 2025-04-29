@@ -1,28 +1,26 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { Job } from "../components/Job";
 import SUSection from "../components/SU";
 import AnimatedText from "../components/ui/animation/animatedText";
-import { useJobs } from '../lib/hooks';
+import { useJobs } from "../lib/hooks";
 
 // Weekday options for reference
-const weekdays = [
-  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-];
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 // Helper function to format weekdays
 const formatWeekdays = (job: Job): string => {
   if (job.weekdays && job.weekdays.length > 0) {
     if (job.weekdays.length === weekdays.length) {
-      return 'All weekdays';
+      return "All weekdays";
     } else if (job.weekdays.length > 2) {
       return `${job.weekdays[0]}-${job.weekdays[job.weekdays.length - 1]}`;
     } else {
-      return job.weekdays.join(', ');
+      return job.weekdays.join(", ");
     }
   } else if (job.weekday) {
     return job.weekday;
   }
-  return '';
+  return "";
 };
 
 export default function Home() {
@@ -30,7 +28,7 @@ export default function Home() {
 
   return (
     <section>
-      <div className=" md:px-6 h-full">
+      <div className="h-full md:px-6">
         <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
           <div className="w-full">
             <AnimatedText
@@ -40,10 +38,7 @@ export default function Home() {
               accentClassName="text-accent"
             />
             <AnimatedText
-              phrases={[
-                "Keep track of your finances with ease.",
-                "Here is your economy overview.",
-              ]}
+              phrases={["Keep track of your finances with ease.", "Here is your economy overview."]}
               accentWords={["economy"]}
               className="mb-4 text-2xl md:text-3xl lg:text-4xl"
               accentClassName="text-accent"
@@ -59,9 +54,9 @@ export default function Home() {
               accentClassName="text-accent"
             />
             <div className="mb-4 flex justify-end">
-              <Link 
+              <Link
                 to="/jobs/new"
-                className="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg transition-colors duration-200"
+                className="rounded-lg bg-accent px-4 py-2 text-white transition-colors duration-200 hover:bg-accent/90"
               >
                 Add New Job
               </Link>
@@ -71,25 +66,33 @@ export default function Home() {
             ) : jobs.length === 0 ? (
               <p className="text-center text-gray-500">No jobs found</p>
             ) : (
-              <div className="space-y-4">
-                {jobs.map((job) => (
-                  <Link 
-                    key={job.CompanyName} 
-                    to={`/jobs/${job.CompanyName}`}
-                    className="block hover:bg-gray-100 border border-gray-200 transition-colors duration-200 rounded-lg p-3"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="text-lg font-semibold">{job.Title || job.CompanyName}</h3>
-                        <p className="text-gray-600">{job.CompanyName}</p>
-                      </div>
-                      <div className="text-right text-sm text-gray-500">
-                        {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` : 
-                         (job.weekdays || job.weekday ? `${formatWeekdays(job)} ${job.startTime}-${job.endTime}` : '')}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full table-auto text-left text-sm text-gray-700">
+                  <thead className="bg-gray-100 text-xs font-semibold uppercase text-gray-600">
+                    <tr>
+                      <th className="px-4 py-3">Company Name</th>
+                      <th className="px-4 py-3">Title</th>
+                      <th className="px-4 py-3">Hourly Rate</th>
+                      <th className="px-4 py-3">Employment Type</th>
+                      <th className="px-4 py-3">Tax Card</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {jobs.map((job) => (
+                      <tr key={job.companyName} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium text-accent">
+                          <Link to={`/jobs/${job.companyName}`} className="hover:underline">
+                            {job.companyName}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3">{job.title}</td>
+                        <td className="px-4 py-3">{job.hourlyRate} DKK</td>
+                        <td className="px-4 py-3">{job.employmentType}</td>
+                        <td className="px-4 py-3">{job.taxCard}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
