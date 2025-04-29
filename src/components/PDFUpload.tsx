@@ -18,7 +18,7 @@ const PDFUploadComponent = ({ title, type, jobId, jobs }: PDFUploadComponentProp
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isViewing, setIsViewing] = useState(false);
 
-  const selectedJob = jobs?.find(job => job.id === jobId);
+  const selectedJob = jobs?.find(job => job.CompanyName === jobId);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -43,63 +43,99 @@ const PDFUploadComponent = ({ title, type, jobId, jobs }: PDFUploadComponentProp
         </CardTitle>
         {selectedJob && (
           <div className="mt-2 text-sm text-gray-600">
-            <p className="font-semibold">{selectedJob.title}</p>
-            <p>{selectedJob.company}</p>
+            <p className="font-semibold">{selectedJob.Title || selectedJob.CompanyName}</p>
+            <p>{selectedJob.CompanyName}</p>
           </div>
         )}
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center w-full">
-          {!selectedFile ? (
-            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-10 h-10 text-gray-400 mb-3" />
-                <p className="mb-2 text-sm text-gray-500">
-                  <span className="font-semibold">Click to upload</span> or drag and drop
-                </p>
-                <p className="text-xs text-gray-500">PDF files only</p>
+        {!pdfUrl ? (
+          <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+            <FileText size={48} className="text-gray-400 mb-4" />
+            <p className="mb-4 text-center text-gray-500">
+              {type === 'uploaded' ? 'Upload a PDF file of your paycheck' : 'Generate a PDF of your paycheck'}
+            </p>
+            {type === 'uploaded' ? (
+              <label className="cursor-pointer">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Upload size={16} />
+                  Upload Paycheck
+                </Button>
+                <input 
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+            ) : (
+              <Button variant="outline" className="flex items-center gap-2">
+                <FileText size={16} />
+                Generate Paycheck
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <FileText size={24} className="text-gray-700 mr-2" />
+                <span className="font-medium truncate max-w-[200px]">
+                  {selectedFile?.name || 'Generated Paycheck.pdf'}
+                </span>
               </div>
-              <input 
-                type="file" 
-                className="hidden" 
-                accept=".pdf"
-                onChange={handleFileChange}
-              />
-            </label>
-          ) : (
-            <div className="w-full flex items-center justify-between p-4 bg-gray-100 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <FileText className="w-6 h-6 text-blue-500" />
-                <span className="text-sm font-medium">{selectedFile.name}</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex gap-2">
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="sm"
                   onClick={() => setIsViewing(true)}
+                  className="flex items-center gap-1"
                 >
-                  <Eye className="mr-2 h-4 w-4" /> View
+                  <Eye size={16} />
+                  View
                 </Button>
                 <Button 
-                  variant="destructive" 
-                  size="sm" 
+                  variant="outline" 
+                  size="sm"
                   onClick={handleRemoveFile}
+                  className="flex items-center gap-1 text-red-500 hover:text-red-700"
                 >
-                  <X className="mr-2 h-4 w-4" /> Remove
+                  <X size={16} />
+                  Remove
                 </Button>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* PDF Viewer Modal */}
-        {isViewing && pdfUrl && (
-          <PDFViewer 
-            pdfUrl={pdfUrl} 
-            onClose={() => setIsViewing(false)} 
-          />
+            
+            {/* PDF Preview thumbnail */}
+            <div className="w-full h-48 bg-gray-100 rounded-md overflow-hidden relative">
+              {pdfUrl && !isViewing && (
+                <div 
+                  className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsViewing(true)}
+                >
+                  <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+                  <Eye size={36} className="text-white z-10" />
+                </div>
+              )}
+              {pdfUrl && (
+                <iframe 
+                  src={pdfUrl} 
+                  className="w-full h-full pointer-events-none"
+                  title="PDF Preview"
+                ></iframe>
+              )}
+            </div>
+          </div>
         )}
       </CardContent>
+
+      {/* PDF Viewer Modal */}
+      {isViewing && pdfUrl && (
+        <PDFViewer 
+          pdfUrl={pdfUrl}
+          onClose={() => setIsViewing(false)}
+        />
+      )}
     </Card>
   );
 };

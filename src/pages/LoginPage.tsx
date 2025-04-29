@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import Inner from '../components/Inner';
 import { Login } from '../components/Login';
 import { useAuth, useLoginForm, useNavigation } from '../lib/hooks';
@@ -20,11 +20,16 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
   const { isAuthenticated } = useAuth();
   const { navigate } = useNavigation();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   
   // Get location state
   const locState = location.state as LocationState;
   const initialEmail = locState?.email || '';
   const successMessage = locState?.message || null;
+  
+  // Check for error from query params (like session_expired)
+  const error = searchParams.get('error');
+  const errorFromQuery = error === 'session_expired' ? 'Your session has expired. Please log in again.' : null;
   
   // Use login form hook
   const {
@@ -79,7 +84,7 @@ export function LoginPage({ setIsAuthenticated }: LoginPageProps) {
             onSubmit={handleSubmit}
             onReset={resetForm}
             isLoading={isLoading} 
-            errorMessage={errorMessage}
+            errorMessage={errorMessage || errorFromQuery}
             onForgotPassword={() => alert('Forgot password not implemented')}
             onRegister={() => navigate('/register')}
           />

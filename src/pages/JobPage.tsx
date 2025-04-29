@@ -61,7 +61,7 @@ export default function JobPage() {
               phrases={[
                 <React.Fragment key="edit-phrase">
                   Edit Job:{" "}
-                  <span className="text-accent">{job.CompanyName || job.TaxCard || ""}</span>
+                  <span className="text-accent">{job.CompanyName || ""}</span>
                 </React.Fragment>,
               ]}
               className="mb-4 text-center text-4xl font-bold"
@@ -71,15 +71,15 @@ export default function JobPage() {
 
           <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Job ID - Hidden */}
-              <input type="hidden" name="id" value={job.CompanyName} />
+              {/* Company Name as ID - Hidden */}
+              <input type="hidden" name="CompanyName" value={job.CompanyName} />
 
               {/* Title (if it exists from older job format) */}
               {job.Title && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Job Title</label>
                   <Input
-                    name="title"
+                    name="Title"
                     value={job.Title || ""}
                     onChange={handleInputChange}
                     className="mt-1"
@@ -98,20 +98,6 @@ export default function JobPage() {
                   required
                 />
               </div>
-
-              {/* CVR */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">CVR</label>
-                <Input
-                  name="cvr"
-                  value={"job.cvr" || ""}
-                  onChange={handleInputChange}
-                  className="mt-1"
-                  required
-                  pattern="[0-9]{8}"
-                  title="CVR must be 8 digits"
-                />
-              </div> */}
 
               {/* Hourly Rate */}
               <div>
@@ -168,7 +154,7 @@ export default function JobPage() {
                 </Select>
               </div>
 
-              {/* Weekdays */}
+              {/* Weekdays - UI only, not part of backend model */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">Workdays</label>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -190,44 +176,6 @@ export default function JobPage() {
                 </div>
               </div>
 
-              {/* Start/End Time */}
-              {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Start Time</label>
-                  <Input
-                    name="startTime"
-                    type="time"
-                    value={job.startTime || ""}
-                    onChange={handleInputChange}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">End Time</label>
-                  <Input
-                    name="endTime"
-                    type="time"
-                    value={job.endTime || ""}
-                    onChange={handleInputChange}
-                    className="mt-1"
-                  />
-                </div>
-              </div> */}
-
-              {/* Supplement */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">Supplement Amount</label>
-                <Input
-                  name="supplementAmount"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={job.supplementAmount || ""}
-                  onChange={handleInputChange}
-                  className="mt-1"
-                />
-              </div> */}
-
               {/* Submit Button */}
               <div className="flex justify-between items-center space-x-4">
                 <div>
@@ -244,12 +192,12 @@ export default function JobPage() {
                 <div className="flex space-x-4">
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={() => navigate("/")}
+                    variant="destructive"
+                    onClick={() => navigate(-1)}
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSaving} variant="submit">
+                  <Button type="submit" disabled={isSaving}>
                     {isSaving ? "Saving..." : isNewJob ? "Create Job" : "Update Job"}
                   </Button>
                 </div>

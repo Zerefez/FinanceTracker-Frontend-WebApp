@@ -6,23 +6,23 @@ import { useJobs } from './useJobs';
  */
 export function usePaycheck() {
   const { jobs, loading } = useJobs();
-  const [selectedJobId, setSelectedJobId] = useState<string>('');
+  const [selectedCompanyName, setSelectedCompanyName] = useState<string>('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const selectedJob = jobs.find(job => job.id === selectedJobId) || null;
+  const selectedJob = jobs.find(job => job.CompanyName === selectedCompanyName) || null;
 
-  const handleJobSelect = (jobId: string) => {
-    setSelectedJobId(jobId);
+  const handleJobSelect = (companyName: string) => {
+    setSelectedCompanyName(companyName);
   };
 
   return {
     jobs,
     loading,
-    selectedJobId,
+    selectedJobId: selectedCompanyName,
     selectedJob,
     isMenuOpen,
     setSelectedJobId: handleJobSelect,

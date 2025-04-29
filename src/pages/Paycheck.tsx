@@ -7,105 +7,83 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
-  const { jobId } = useParams();
+  const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
 
   // Set the selected job when URL param exists
   useEffect(() => {
-    if (jobId && jobs.some(job => job.id === jobId)) {
-      setSelectedJobId(jobId);
+    if (companyName && jobs.some(job => job.CompanyName === companyName)) {
+      setSelectedJobId(companyName);
     }
-  }, [jobId, jobs, setSelectedJobId]);
+  }, [companyName, jobs, setSelectedJobId]);
 
   return (
-    <section>
-      <div className="md:px-6 h-full">
-        <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
-          <div className="w-full ">
-            <AnimatedText
-              phrases={["Here is your latest Paycheck overview."]}
-              accentWords={["latest", "Paycheck"]}
-              className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl"
-              accentClassName="text-accent"
-            />
-            <AnimatedText
-              phrases={["Select a Job to view your latest paycheck."]}
-              className="mb-4 text-2xl font-normal md:text-3xl lg:text-4xl"
-            />
-          </div>
-        </div>
-        <div className="my-5">
-          <div className="mb-8 border-b border-black pb-8">
-          <AnimatedText
-              phrases={["Select Job"]}
-              accentWords={["Select", "Job"]}
-              className="mb-4 text-2xl block font-semibold md:text-3xl lg:text-4xl"
-              accentClassName="text-accent"
-            />
+    <section className="py-12">
+      <div className="container mx-auto px-4">
+        <AnimatedText
+          phrases={["Paycheck Management"]}
+          accentWords={["Paycheck"]}
+          className="mb-6 text-center text-3xl font-bold md:text-4xl lg:text-5xl"
+          accentClassName="text-accent"
+        />
+        <p className="mx-auto mb-8 max-w-2xl text-center text-gray-600">
+          Manage your paychecks for each job. Upload and store your payslips for easy tracking.
+        </p>
 
-            <Select value={selectedJobId} onValueChange={setSelectedJobId}>
-              <SelectTrigger className="w-full md:w-[300px]">
-                <SelectValue placeholder="Select a job" />
+        <div className="mb-8 flex flex-col items-center justify-center">
+          <div className="w-full max-w-md">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Select a Job</label>
+            <Select
+              value={selectedJobId}
+              onValueChange={setSelectedJobId}
+              disabled={loading}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a job" />
               </SelectTrigger>
               <SelectContent>
-                {loading ? (
-                  <SelectItem value="loading" disabled>Loading jobs...</SelectItem>
-                ) : jobs.length === 0 ? (
-                  <SelectItem value="none" disabled>No jobs available</SelectItem>
-                ) : (
-                  jobs.map((job) => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.title || job.companyName} - {job.company || job.companyName}
-                    </SelectItem>
-                  ))
-                )}
+                {jobs.map((job) => (
+                  <SelectItem key={job.CompanyName} value={job.CompanyName}>
+                    {job.Title || job.CompanyName}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
-
-          <div className="grid grid-cols-1 items-center gap-[100px] md:my-10 md:grid-cols-2 md:items-start md:gap-20">
-            <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
-              <AnimatedText
-                phrases={["Latest generated paycheck"]}
-                accentWords={["Latest generated paycheck"]}
-                className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
-                accentClassName="text-accent"
-              />
-              <PDFUploadComponent 
-                title="Latest Generated Paycheck" 
-                type="generated" 
-                jobId={selectedJobId}
-                jobs={jobs}
-              />
-            </div>
-            <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
-              <AnimatedText
-                phrases={["Latest user upload paycheck"]}
-                accentWords={["Latest user upload paycheck"]}
-                className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
-                accentClassName="text-accent"
-              />
-              <PDFUploadComponent 
-                title="Latest User Upload Paycheck" 
-                type="uploaded" 
-                jobId={selectedJobId}
-                jobs={jobs}
-              />
-            </div>
+          <div className="mt-4">
+            <Button
+              onClick={() => navigate("/jobs/new")}
+              variant="outline"
+              size="sm"
+            >
+              Add New Job
+            </Button>
           </div>
-
-          {selectedJobId && (
-            <div className="mt-8 flex justify-end">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate(`/jobs/${selectedJobId}`)}
-              >
-                Edit Job Details
-              </Button>
-            </div>
-          )}
         </div>
+
+        {selectedJobId ? (
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <PDFUploadComponent
+              title="Upload Payslip"
+              type="uploaded"
+              jobId={selectedJobId}
+              jobs={jobs}
+            />
+            <PDFUploadComponent
+              title="Generated Payslip"
+              type="generated"
+              jobId={selectedJobId}
+              jobs={jobs}
+            />
+          </div>
+        ) : (
+          <div className="mx-auto max-w-lg rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
+            <p className="text-gray-500">
+              Please select a job to manage its paychecks
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

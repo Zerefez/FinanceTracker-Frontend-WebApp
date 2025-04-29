@@ -29,27 +29,18 @@ export default function Home() {
   const { jobs, loading } = useJobs();
 
   return (
-    <section>
-      <div className=" md:px-6 h-full">
-        <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
-          <div className="w-full">
-            <AnimatedText
-              phrases={["Welcome to your finance tracker !"]}
-              accentWords={["finance", "tracker"]}
-              className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
-              accentClassName="text-accent"
-            />
-            <AnimatedText
-              phrases={[
-                "Keep track of your finances with ease.",
-                "Here is your economy overview.",
-              ]}
-              accentWords={["economy"]}
-              className="mb-4 text-2xl md:text-3xl lg:text-4xl"
-              accentClassName="text-accent"
-            />
-          </div>
-        </div>
+    <section className="py-12">
+      <div className="container mx-auto px-4">
+        <AnimatedText
+          phrases={["Your Personal Finance Dashboard"]}
+          accentWords={["Personal", "Finance"]}
+          className="mb-6 text-center text-3xl font-bold md:text-4xl lg:text-5xl"
+          accentClassName="text-accent"
+        />
+        <p className="mx-auto mb-12 max-w-3xl text-center text-gray-600">
+          Track your income, expenses, and more in one simple dashboard.
+        </p>
+
         <div className="my-5 grid grid-cols-1 items-center gap-[100px] md:my-10 md:grid-cols-2 md:items-start md:gap-20">
           <div className="w-full rounded-lg border-2 border-gray-200 p-5">
             <AnimatedText
@@ -74,18 +65,17 @@ export default function Home() {
               <div className="space-y-4">
                 {jobs.map((job) => (
                   <Link 
-                    key={job.id} 
-                    to={`/jobs/${job.id}`}
+                    key={job.CompanyName} 
+                    to={`/jobs/${job.CompanyName}`}
                     className="block hover:bg-gray-100 border border-gray-200 transition-colors duration-200 rounded-lg p-3"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-lg font-semibold">{job.title || job.companyName}</h3>
-                        <p className="text-gray-600">{job.company || job.companyName}</p>
+                        <h3 className="text-lg font-semibold">{job.Title || job.CompanyName}</h3>
+                        <p className="text-gray-600">{job.CompanyName}</p>
                       </div>
                       <div className="text-right text-sm text-gray-500">
-                        {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` : 
-                         (job.weekdays || job.weekday ? `${formatWeekdays(job)} ${job.startTime}-${job.endTime}` : '')}
+                        {job.weekday ? `${formatWeekdays(job)} ${job.startTime || ''}-${job.endTime || ''}` : ''}
                       </div>
                     </div>
                   </Link>

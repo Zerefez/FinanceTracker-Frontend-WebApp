@@ -2,12 +2,17 @@
 import { Link } from 'react-router-dom';
 
 export interface Job {
-
   CompanyName: string;
   HourlyRate: number;
   EmploymentType: string;
   TaxCard: string;
-  Title: string;
+  // Keep Title for backward compatibility with existing components
+  Title?: string;
+  // Optional fields for UI that don't exist in backend
+  weekdays?: string[];
+  weekday?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 interface JobListProps {
@@ -26,13 +31,13 @@ export default function JobList({ jobs }: JobListProps) {
         <div className="space-y-4">
           {jobs.map((job) => (
             <Link
-              to={`/jobs/${job.Title}`} // Replace with the appropriate path
+              to={`/jobs/${job.CompanyName}`} // Updated to use CompanyName as the identifier
               className="block hover:bg-gray-100 transition-colors duration-200 rounded-lg p-3"
             >
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-semibold">{job.Title || job.CompanyName}</h3>
-                  <p className="text-gray-600">{job.CompanyName || job.CompanyName}</p>
+                  <p className="text-gray-600">{job.CompanyName}</p>
                 </div>
                 {/* <div className="text-right text-sm text-gray-500">
                   {job.startDate ? `${job.startDate} - ${job.endDate || 'Present'}` :

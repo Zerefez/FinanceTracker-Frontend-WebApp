@@ -7,36 +7,41 @@ import { jobService } from '../../services/jobService';
  * Hook for managing job form state and operations
  */
 export function useJobForm() {
-  const { id } = useParams<{ id: string }>();
+  const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   
-  const [job, setJob] = useState<Job>({ id: '' });
+  const [job, setJob] = useState<Job>({ 
+    CompanyName: '',
+    HourlyRate: 0,
+    EmploymentType: '',
+    TaxCard: ''
+  });
   const [isNewJob, setIsNewJob] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
 
-  // Get job display name from either title or companyName
+  // Get job display name from Company Name
   const getJobDisplayName = (): string => {
-    if (job.title) return job.title;
-    if (job.companyName) return job.companyName;
-    return '';
+    return job.CompanyName || '';
   };
 
   useEffect(() => {
     const fetchJob = async () => {
       setIsLoading(true);
       try {
-        if (!id || id === 'new') {
-          setIsNewJob(true);
-          // Generate a random ID for new jobs
+        if (!companyName || companyName === 'new') {
+          // Initialize empty job for new job form
           setJob({ 
-            id: `job_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}` 
+            CompanyName: '',
+            HourlyRate: 0,
+            EmploymentType: '',
+            TaxCard: ''
           });
           setSelectedWeekdays([]);
         } else {
           setIsNewJob(false);
-          const jobData = await jobService.getJobById(id);
+          const jobData = await jobService.getJobByCompanyName(companyName);
           if (jobData) {
             // Use the fetched job data
             setJob(jobData);
@@ -50,7 +55,7 @@ export function useJobForm() {
               setSelectedWeekdays([]);
             }
           } else {
-            console.error(`Job with id ${id} not found`);
+            console.error(`Job with company name ${companyName} not found`);
             navigate('/');
           }
         }
@@ -62,18 +67,33 @@ export function useJobForm() {
     };
 
     fetchJob();
-  }, [id, navigate]);
+  }, [companyName, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
+    
+    // If the input is for companyName, update the CompanyName property
+    const fieldName = name === 'companyName' ? 'CompanyName' : 
+                     name === 'hourlyRate' ? 'HourlyRate' : 
+                     name === 'employmentType' ? 'EmploymentType' : 
+                     name === 'taxCardType' ? 'TaxCard' : name;
+    
     setJob(prev => ({ 
       ...prev, 
-      [name]: type === 'number' ? (value ? parseFloat(value) : 0) : value 
+      [fieldName]: type === 'number' ? (value ? parseFloat(value) : 0) : value 
     }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setJob(prev => ({ ...prev, [name]: value }));
+    // Map field names to backend model properties
+    const fieldMap: Record<string, string> = {
+      'taxCardType': 'TaxCard',
+      'employmentType': 'EmploymentType'
+    };
+    
+    const fieldName = fieldMap[name] || name;
+    
+    setJob(prev => ({ ...prev, [fieldName]: value }));
   };
 
   // Handle weekday checkbox change
@@ -95,16 +115,15 @@ export function useJobForm() {
       // Ensure required fields are present
       const jobToSave: Job = {
         ...job,
-        id: job.id || `job_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
         weekdays: selectedWeekdays,
         // For backward compatibility
         weekday: selectedWeekdays.length > 0 ? selectedWeekdays.join(', ') : undefined
       };
       
       if (isNewJob) {
-        await jobService.createJob(jobToSave);
+        await jobService.registerJob(jobToSave);
       } else {
-        await jobService.updateJob(jobToSave.id, jobToSave);
+        await jobService.updateJob(jobToSave);
       }
       
       // Navigate back to the jobs list

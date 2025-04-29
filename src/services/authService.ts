@@ -19,6 +19,8 @@ const API_URL = '/api';
 
 // Security constants
 const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires in 15 mins)
+const AUTH_TOKEN_KEY = 'auth_token';
+const USER_DATA_KEY = 'user_data';
 
 // Common fetch helper function to reduce redundancy
 const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, parseAsJson = false): Promise<any> => {
@@ -59,10 +61,15 @@ const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, parseA
 // Helper function to parse user data from JWT token
 const parseUserFromToken = (token: string): User | null => {
   try {
+    console.log('Parsing token to extract user data');
     const payload = JSON.parse(atob(token.split('.')[1]));
+    console.log('JWT payload:', payload);
+    
+    // Extract data based on the ClaimTypes used in the backend
     return {
-      id: payload.nameid || '',
-      email: payload.name || '',
+      id: payload.nameid || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '',
+      email: payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || '',
+      name: payload.name || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || '',
     };
   } catch (e) {
     console.error('Failed to parse token', e);
@@ -74,20 +81,46 @@ export const authService = {
   // Login with username and password
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
-      const token = await fetchWithAuth('/Account/login', {
+      console.log('Attempting login for user:', username);
+      
+      // The backend returns a JWT string directly, not a JSON object
+      const response = await fetch(`${API_URL}/Account/login`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ Username: username, Password: password })
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Login failed with status:', response.status, errorText);
+        throw new Error(errorText || 'Login failed');
+      }
+      
+      // Get the raw token string
+      const token = await response.text();
+      
+      console.log('Received token:', token ? `${token.substring(0, 15)}...` : 'No token');
+      
+      if (!token || typeof token !== 'string' || token.trim() === '') {
+        throw new Error('Invalid token received from server');
+      }
 
-      // Store token in localStorage
-      localStorage.setItem('token', token);
+      // Store token in localStorage with consistent key
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
 
       // Parse and store user data
       const userData = parseUserFromToken(token);
       if (userData) {
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+        console.log('User data successfully parsed from token');
+      } else {
+        console.error('Failed to parse user data from token');
       }
 
+      console.log('Login successful, token stored');
       return { token, success: true };
     } catch (error) {
       console.error('Login failed:', error);
@@ -141,44 +174,54 @@ export const authService = {
 
   // Logout - clear local storage
   logout: (): void => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    console.log('Logging out user, clearing auth data');
+    localStorage.removeItem(USER_DATA_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
   },
 
   // Get current user from localStorage
   getCurrentUser: (): User | null => {
-    const userJson = localStorage.getItem('user');
+    const userJson = localStorage.getItem(USER_DATA_KEY);
     if (!userJson) return null;
 
     try {
       return JSON.parse(userJson);
     } catch {
-      localStorage.removeItem('user');
+      localStorage.removeItem(USER_DATA_KEY);
       return null;
     }
   },
 
   // Check if user is authenticated
   isAuthenticated: (): boolean => {
-    const token = localStorage.getItem('token');
-    if (!token) return false;
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) {
+      console.log('No auth token found');
+      return false;
+    }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expiry = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      
+      console.log(`Token expiry check: Now=${now}, Expires=${expiry}, Diff=${expiry - now}ms`);
 
-      if (Date.now() >= expiry) {
+      if (now >= expiry) {
         // Token expired, clear it
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.log('Token expired, clearing auth data');
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(USER_DATA_KEY);
         return false;
       }
+      
       return true;
-    } catch {
+    } catch (error) {
+      console.error('Error parsing token:', error);
       return false;
     }
   },
 
   // Get the authentication token
-  getToken: (): string | null => localStorage.getItem('token')
+  getToken: (): string | null => localStorage.getItem(AUTH_TOKEN_KEY)
 }; 

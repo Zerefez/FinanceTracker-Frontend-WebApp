@@ -28,21 +28,21 @@ export function useJobs() {
     fetchJobs();
   }, []);
 
-  const createJob = async (job: Job): Promise<Job> => {
+  const registerJob = async (job: Job): Promise<Job> => {
     try {
-      const newJob = await jobService.createJob(job);
+      const newJob = await jobService.registerJob(job);
       setJobs(prev => [...prev, newJob]);
       return newJob;
     } catch (error) {
-      console.error('Error creating job:', error);
+      console.error('Error registering job:', error);
       throw error;
     }
   };
 
-  const updateJob = async (id: string, job: Job): Promise<Job> => {
+  const updateJob = async (job: Job): Promise<Job> => {
     try {
-      const updatedJob = await jobService.updateJob(id, job);
-      setJobs(prev => prev.map(j => j.id === id ? updatedJob : j));
+      const updatedJob = await jobService.updateJob(job);
+      setJobs(prev => prev.map(j => j.CompanyName === job.CompanyName ? updatedJob : j));
       return updatedJob;
     } catch (error) {
       console.error('Error updating job:', error);
@@ -50,21 +50,21 @@ export function useJobs() {
     }
   };
 
-  const deleteJob = async (id: string): Promise<void> => {
+  const deleteJob = async (companyName: string): Promise<void> => {
     try {
-      await jobService.deleteJob(id);
-      setJobs(prev => prev.filter(job => job.id !== id));
+      await jobService.deleteJob(companyName);
+      setJobs(prev => prev.filter(job => job.CompanyName !== companyName));
     } catch (error) {
       console.error('Error deleting job:', error);
       throw error;
     }
   };
 
-  const getJobById = async (id: string): Promise<Job | null> => {
+  const getJobByCompanyName = async (companyName: string): Promise<Job | null> => {
     try {
-      return await jobService.getJobById(id);
+      return await jobService.getJobByCompanyName(companyName);
     } catch (error) {
-      console.error(`Error fetching job ${id}:`, error);
+      console.error(`Error fetching job ${companyName}:`, error);
       return null;
     }
   };
@@ -74,9 +74,9 @@ export function useJobs() {
     loading,
     error,
     fetchJobs,
-    createJob,
+    registerJob,
     updateJob,
     deleteJob,
-    getJobById
+    getJobByCompanyName
   };
 } 
