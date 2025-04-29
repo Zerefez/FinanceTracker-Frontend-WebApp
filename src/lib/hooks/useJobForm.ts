@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Job } from '../../components/Job';
-import { jobService } from '../../services/jobService';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Job } from "../../components/Job";
+import { jobService } from "../../services/jobService";
 
 /**
  * Hook for managing job form state and operations
@@ -9,12 +9,13 @@ import { jobService } from '../../services/jobService';
 export function useJobForm() {
   const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
-  
-  const [job, setJob] = useState<Job>({ 
-    CompanyName: '',
+
+  const [job, setJob] = useState<Job>({
+    Title: "",
+    CompanyName: "",
     HourlyRate: 0,
-    EmploymentType: '',
-    TaxCard: ''
+    EmploymentType: "",
+    TaxCard: "",
   });
   const [isNewJob, setIsNewJob] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -23,20 +24,21 @@ export function useJobForm() {
 
   // Get job display name from Company Name
   const getJobDisplayName = (): string => {
-    return job.CompanyName || '';
+    return job.CompanyName || "";
   };
 
   useEffect(() => {
     const fetchJob = async () => {
       setIsLoading(true);
       try {
-        if (!companyName || companyName === 'new') {
+        if (!companyName || companyName === "new") {
           // Initialize empty job for new job form
-          setJob({ 
-            CompanyName: '',
+          setJob({
+            Title: "",
+            CompanyName: "",
             HourlyRate: 0,
-            EmploymentType: '',
-            TaxCard: ''
+            EmploymentType: "",
+            TaxCard: "",
           });
           setSelectedWeekdays([]);
         } else {
@@ -45,7 +47,7 @@ export function useJobForm() {
           if (jobData) {
             // Use the fetched job data
             setJob(jobData);
-            
+
             // Initialize selected weekdays
             if (jobData.weekdays && jobData.weekdays.length > 0) {
               setSelectedWeekdays(jobData.weekdays);
@@ -56,11 +58,11 @@ export function useJobForm() {
             }
           } else {
             console.error(`Job with company name ${companyName} not found`);
-            navigate('/');
+            navigate("/");
           }
         }
       } catch (error) {
-        console.error('Error fetching job:', error);
+        console.error("Error fetching job:", error);
       } finally {
         setIsLoading(false);
       }
@@ -71,36 +73,44 @@ export function useJobForm() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    
+
     // If the input is for companyName, update the CompanyName property
-    const fieldName = name === 'companyName' ? 'CompanyName' : 
-                     name === 'hourlyRate' ? 'HourlyRate' : 
-                     name === 'employmentType' ? 'EmploymentType' : 
-                     name === 'taxCardType' ? 'TaxCard' : name;
-    
-    setJob(prev => ({ 
-      ...prev, 
-      [fieldName]: type === 'number' ? (value ? parseFloat(value) : 0) : value 
+    const fieldName =
+      name === "companyName"
+        ? "CompanyName"
+        : name === "hourlyRate"
+          ? "HourlyRate"
+          : name === "employmentType"
+            ? "EmploymentType"
+            : name === "taxCardType"
+              ? "TaxCard"
+              : name === "Title"
+                ? "Title"
+                : name;
+
+    setJob((prev) => ({
+      ...prev,
+      [fieldName]: type === "number" ? (value ? parseFloat(value) : 0) : value,
     }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
     // Map field names to backend model properties
     const fieldMap: Record<string, string> = {
-      'taxCardType': 'TaxCard',
-      'employmentType': 'EmploymentType'
+      taxCardType: "TaxCard",
+      employmentType: "EmploymentType",
     };
-    
+
     const fieldName = fieldMap[name] || name;
-    
-    setJob(prev => ({ ...prev, [fieldName]: value }));
+
+    setJob((prev) => ({ ...prev, [fieldName]: value }));
   };
 
   // Handle weekday checkbox change
   const handleWeekdayChange = (weekday: string) => {
-    setSelectedWeekdays(prev => {
+    setSelectedWeekdays((prev) => {
       if (prev.includes(weekday)) {
-        return prev.filter(day => day !== weekday);
+        return prev.filter((day) => day !== weekday);
       } else {
         return [...prev, weekday];
       }
@@ -110,26 +120,26 @@ export function useJobForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    
+
     try {
       // Ensure required fields are present
       const jobToSave: Job = {
         ...job,
         weekdays: selectedWeekdays,
         // For backward compatibility
-        weekday: selectedWeekdays.length > 0 ? selectedWeekdays.join(', ') : undefined
+        weekday: selectedWeekdays.length > 0 ? selectedWeekdays.join(", ") : undefined,
       };
-      
+
       if (isNewJob) {
         await jobService.registerJob(jobToSave);
       } else {
         await jobService.updateJob(jobToSave);
       }
-      
+
       // Navigate back to the jobs list
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error saving job:', error);
+      console.error("Error saving job:", error);
     } finally {
       setIsSaving(false);
     }
@@ -145,6 +155,6 @@ export function useJobForm() {
     handleInputChange,
     handleSelectChange,
     handleWeekdayChange,
-    handleSubmit
+    handleSubmit,
   };
-} 
+}

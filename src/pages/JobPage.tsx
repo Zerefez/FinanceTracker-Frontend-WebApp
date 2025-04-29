@@ -60,8 +60,7 @@ export default function JobPage() {
             <AnimatedText
               phrases={[
                 <React.Fragment key="edit-phrase">
-                  Edit Job:{" "}
-                  <span className="text-accent">{job.CompanyName || ""}</span>
+                  Edit Job: <span className="text-accent">{job.CompanyName || ""}</span>
                 </React.Fragment>,
               ]}
               className="mb-4 text-center text-4xl font-bold"
@@ -75,7 +74,7 @@ export default function JobPage() {
               <input type="hidden" name="CompanyName" value={job.CompanyName} />
 
               {/* Title (if it exists from older job format) */}
-              {job.Title && (
+              {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Job Title</label>
                   <Input
@@ -85,7 +84,7 @@ export default function JobPage() {
                     className="mt-1"
                   />
                 </div>
-              )}
+              }
 
               {/* Company Name */}
               <div>
@@ -177,7 +176,7 @@ export default function JobPage() {
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-between items-center space-x-4">
+              <div className="flex items-center justify-between space-x-4">
                 <div>
                   {!isNewJob && job.CompanyName && (
                     <Button
@@ -190,11 +189,7 @@ export default function JobPage() {
                   )}
                 </div>
                 <div className="flex space-x-4">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => navigate(-1)}
-                  >
+                  <Button type="button" variant="destructive" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>
                   <Button type="submit" variant="submit" disabled={isSaving}>
