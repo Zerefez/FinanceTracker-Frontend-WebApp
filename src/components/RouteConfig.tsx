@@ -47,7 +47,7 @@ const RouteConfig = () => {
         } />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
-        <Route path="/contact" element={<Contact />} />
+        
 
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -57,7 +57,7 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:companyName" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-
+          <Route path="contact" element={<Contact />} />
         </Route>
 
         {/* Catch all route */}
