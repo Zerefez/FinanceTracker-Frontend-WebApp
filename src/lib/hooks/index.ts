@@ -1,6 +1,7 @@
 export * from './useAuth';
 export * from './useJobForm';
 export * from './useJobs';
+export * from './useLocalization';
 export * from './useLocomotiveScroll';
 export * from './useLoginForm';
 export * from './useLogout';

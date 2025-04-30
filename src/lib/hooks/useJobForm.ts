@@ -5,6 +5,7 @@ import { confirmationDialogService } from "../../components/ui/confirmation-dial
 import { toastService } from "../../components/ui/toast";
 import { jobService } from "../../services/jobService";
 import { localStorageService } from "../../services/localStorageService";
+import { useLocalization } from "./useLocalization";
 
 /**
  * Hook for managing job form state and operations
@@ -12,6 +13,7 @@ import { localStorageService } from "../../services/localStorageService";
 export function useJobForm() {
   const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
+  const { t } = useLocalization();
 
   const [job, setJob] = useState<Job>({
     title: "",
@@ -122,10 +124,10 @@ export function useJobForm() {
     e.preventDefault();
 
     const confirmed = await confirmationDialogService.confirm({
-      title: "Delete Job",
-      message: `Are you sure you want to delete the job at ${companyName}? This action cannot be undone.`,
-      confirmText: "Delete",
-      cancelText: "Cancel",
+      title: t('common.delete'),
+      message: t('jobPage.deleteConfirmation', { companyName }),
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel'),
       type: "danger"
     });
 
@@ -138,11 +140,11 @@ export function useJobForm() {
       localStorageService.removeWorkdaysForJob(companyName);
 
       // Show success notification
-      toastService.success("Job deleted successfully");
+      toastService.success(t('jobPage.deleteSuccess'));
       navigate("/");
     } catch (error) {
       console.error("Delete error:", error);
-      toastService.error("Failed to delete job. Please try again.");
+      toastService.error(t('jobPage.deleteError'));
     }
   };
   
@@ -161,10 +163,10 @@ export function useJobForm() {
       let savedJob: Job;
       if (isNewJob) {
         savedJob = await jobService.registerJob(jobToSave);
-        toastService.success("Job created successfully");
+        toastService.success(t('jobPage.createSuccess'));
       } else {
         savedJob = await jobService.updateJob(jobToSave);
-        toastService.success("Job updated successfully");
+        toastService.success(t('jobPage.updateSuccess'));
       }
 
       // Save workdays to local storage
@@ -177,8 +179,8 @@ export function useJobForm() {
     } catch (error) {
       console.error("Error saving job:", error);
       toastService.error(isNewJob 
-        ? "Failed to create job. Please try again." 
-        : "Failed to update job. Please try again.");
+        ? t('jobPage.createError')
+        : t('jobPage.updateError'));
     } finally {
       setIsSaving(false);
     }

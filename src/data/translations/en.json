@@ -1,0 +1,171 @@
+{
+  "app": {
+    "title": "FINANCE TRACKER"
+  },
+  "status": {
+    "title": "Status",
+    "paycheck": "New generated paycheck Currently available for viewing"
+  },
+  "navigation": {
+    "sitemap": "Sitemap",
+    "user": "User"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register"
+  },
+  "language": {
+    "en": "English",
+    "da": "Danish",
+    "currentLanguage": "Current Language"
+  },
+  "home": {
+    "welcome": "Welcome to your finance tracker !",
+    "subtitle1": "Keep track of your finances with ease.",
+    "subtitle2": "Here is your economy overview.",
+    "jobsOverview": "Jobs Overview",
+    "addNewJob": "Add New Job",
+    "loading": "Loading jobs...",
+    "noJobs": "No jobs found",
+    "table": {
+      "companyName": "Company Name",
+      "title": "Title",
+      "hourlyRate": "Hourly Rate",
+      "employmentType": "Employment Type",
+      "taxCard": "Tax Card",
+      "currency": "DKK"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have a question or feedback? Reach out to us.",
+    "getInTouch": "Get In Touch",
+    "email": "Email",
+    "emailAddress": "support@financetracker.com",
+    "phone": "Phone",
+    "phoneNumber": "+45 91 78 03 89",
+    "address": "Address",
+    "addressDetails": {
+      "line1": "Finance Tracker HQ",
+      "line2": "Finlandsgade 21",
+      "line3": "8200 Aarhus N",
+      "line4": "Denmark"
+    },
+    "hours": "Hours",
+    "weekdays": "Monday - Friday: 9:00 AM - 5:00 PM",
+    "weekend": "Weekend: Closed",
+    "sendMessage": "Send Us a Message",
+    "successMessage": "Your message has been sent successfully! We'll get back to you soon.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "sending": "Sending...",
+      "send": "Send Message"
+    }
+  },
+  "jobPage": {
+    "addNewJob": "Add New Job",
+    "editJob": "Edit or delete Job",
+    "loading": "Loading...",
+    "jobTitle": "Job Title",
+    "companyName": "Company Name",
+    "companyNameRequired": "(required)",
+    "companyNameReadOnly": "(read-only)",
+    "hourlyRate": "Hourly Rate",
+    "taxCardType": "Tax Card Type",
+    "selectTaxCard": "Select tax card type",
+    "employmentType": "Employment Type",
+    "selectEmploymentType": "Select employment type",
+    "workdays": "Workdays",
+    "goToPaycheck": "Go to This Job Paycheck",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "createJob": "Create Job",
+    "updateJob": "Update Job",
+    "delete": "Delete",
+    "createSuccess": "Job created successfully",
+    "updateSuccess": "Job updated successfully",
+    "deleteSuccess": "Job deleted successfully",
+    "createError": "Failed to create job. Please try again.",
+    "updateError": "Failed to update job. Please try again.",
+    "deleteError": "Failed to delete job. Please try again.",
+    "deleteConfirmation": "Are you sure you want to delete the job at {{companyName}}? This action cannot be undone.",
+    "weekdays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "taxCards": {
+      "main": "Main card",
+      "secondary": "Secondary card",
+      "exemption": "Exemption card"
+    },
+    "employmentTypes": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "temporary": "Temporary",
+      "contract": "Contract",
+      "freelance": "Freelance"
+    }
+  },
+  "studentGrant": {
+    "title": "Student Grant Dashboard",
+    "incomeCeiling": "of your income ceiling",
+    "remainingEarnings": "Remaining earnings allowance",
+    "maxIncome": "Maximum income ceiling",
+    "monthlyGrant": "Your monthly grant payment",
+    "gross": "gross",
+    "taxCard": "Tax card",
+    "housing": "Housing",
+    "currentIncome": "Current Income",
+    "housingStatus": {
+      "away": "Away from parents",
+      "withParents": "With parents"
+    },
+    "taxCardOptions": {
+      "main": "Main Card",
+      "secondary": "Secondary Card"
+    }
+  },
+  "jobs": {
+    "employmentTypes": {
+      "fullTime": "Full Time",
+      "partTime": "Part Time",
+      "freelance": "Freelance",
+      "contract": "Contract"
+    },
+    "taxCards": {
+      "main": "Main",
+      "secondary": "Secondary"
+    },
+    "weekdays": {
+      "all": "All weekdays",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "error": "Error",
+    "success": "Success"
+  }
+} 

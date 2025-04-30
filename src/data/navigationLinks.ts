@@ -14,6 +14,5 @@ export const loginLink: NavLink = { title: "LOGIN", href: "/login" };
 export const logoutLink: NavLink = { title: "LOGOUT", href: "#" }; // Href will be handled with an onClick handler
 
 export const userLinks: NavLink[] = [
-  { title: "SERVICE", href: "/service" },
   { title: "CONTACT US", href: "/contact" }
 ]; 
