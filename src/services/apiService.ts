@@ -153,14 +153,16 @@ logger.error('Error message');
 // With additional data
 logger.info('User action', { userId: '123', action: 'login' });
 
-// Track performance of a function or operation
-logger.startPerformanceMark('fetchData');
-try {
-  const data = await fetchData();
-  logger.endPerformanceMark('fetchData');
-} catch (error) {
-  logger.error('Failed to fetch data', error);
-}
+// Wrap the code with top-level await in an IIFE
+(function() {
+  // Track performance of a function or operation
+  logger.startPerformanceMark('fetchData');
+  fetchData().then(() => {
+    logger.endPerformanceMark('fetchData');
+  }).catch(error => {
+    logger.error('Failed to fetch data', error);
+  });
+})();
 
 async function fetchData() {
   logger.logApiRequest('GET', '');

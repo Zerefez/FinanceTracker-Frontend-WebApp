@@ -24,4 +24,12 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    target: 'esnext', // Enables top-level await support
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // Disable manual chunking to allow top-level await
+      }
+    }
+  }
 })
