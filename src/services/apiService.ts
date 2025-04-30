@@ -133,7 +133,7 @@ export const apiService = {
     apiService.request<T>(endpoint, { ...options, method: 'PUT', body }),
   
   delete: <T>(endpoint: string, options: Omit<ApiOptions, 'method'> = {}) => 
-    apiService.request<T>(endpoint, { ...options, method: 'DELETE' })
+    apiService.request<T>(endpoint, { ...options, method: 'DELETE', parseAsJson: false })
 };
 
 // Configure the logger

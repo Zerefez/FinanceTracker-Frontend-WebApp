@@ -194,7 +194,7 @@ export default function JobPage() {
                   )}
                 </div>
                 <div className="flex space-x-4">
-                  <Button type="button" variant="destructive" onClick={() => navigate(-1)}>
+                  <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>
                   <Button type="submit" variant="submit" disabled={isSaving}>

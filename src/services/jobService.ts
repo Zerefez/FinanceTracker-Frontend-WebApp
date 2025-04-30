@@ -76,7 +76,7 @@ export const jobService = {
   updateJob: async (job: Job): Promise<Job> => {
     try {
       // Try API first
-      return await apiService.post<Job>(`/Job/UpdateJob/${job.companyName}`, job);
+      return await apiService.put<Job>(`/Job/UpdateJob/${job.companyName}`, job);
     } catch (error) {
       console.error(`Error updating job ${job.companyName}:`, error);
       throw error;
@@ -87,7 +87,9 @@ export const jobService = {
   deleteJob: async (companyName: string): Promise<void> => {
     try {
       // Try API first
-      return await apiService.delete(`/Job/DeleteJob?companyName=${companyName}`);
+      await apiService.delete(`/Job/DeleteJob/${companyName}`);
+      // Successfully deleted
+      return;
     } catch (error) {
       console.error(`Error deleting job at ${companyName}:`, error);
       throw error;
