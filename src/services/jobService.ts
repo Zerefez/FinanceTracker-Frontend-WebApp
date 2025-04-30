@@ -86,8 +86,8 @@ export const jobService = {
   // Delete a job
   deleteJob: async (companyName: string): Promise<void> => {
     try {
-      // Try API first
-      await apiService.delete(`/Job/DeleteJob/${companyName}`);
+      // Include both in path and as query parameter to match the backend's configuration
+      await apiService.delete(`/Job/DeleteJob/${encodeURIComponent(companyName)}?companyName=${encodeURIComponent(companyName)}`);
       // Successfully deleted
       return;
     } catch (error) {
