@@ -27,5 +27,9 @@ export const authUtils = {
     window.dispatchEvent(new CustomEvent(AUTH_EVENTS.LOGIN));
   },
   
-  isAuthenticated: (): boolean => authService.isAuthenticated()
+  isAuthenticated: (): boolean => {
+    const isAuth = authService.isAuthenticated();
+    console.log('isAuthenticated check from authUtils:', isAuth);
+    return isAuth;
+  }
 }; 

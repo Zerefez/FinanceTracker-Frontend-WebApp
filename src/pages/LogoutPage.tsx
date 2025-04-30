@@ -1,15 +1,19 @@
 import { useEffect, useRef } from 'react';
 import Inner from '../components/Inner';
+import { authUtils } from '../lib/utils';
 
 export function LogoutPage() {
   const redirectTimer = useRef<number | null>(null);
   const hasInitiated = useRef(false);
 
   useEffect(() => {
-    console.log('LogoutPage mounted');
+    console.log('LogoutPage mounted - performing logout');
     
     if (!hasInitiated.current) {
       hasInitiated.current = true;
+      
+      // Explicitly log the user out when this page is visited
+      authUtils.logout();
       
       // Set a timer to redirect to login
       redirectTimer.current = window.setTimeout(() => {

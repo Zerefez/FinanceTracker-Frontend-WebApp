@@ -65,7 +65,7 @@ const CardContent = React.forwardRef<
 CardContent.displayName = "CardContent"
 
 export {
-  Card, CardContent, CardDescription, CardHeader,
-  CardTitle
+    Card, CardContent, CardDescription, CardHeader,
+    CardTitle
 }
 

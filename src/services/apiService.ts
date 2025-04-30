@@ -2,6 +2,7 @@ import { logger } from '../services/logger';
 import { authService } from './authService';
 
 // API URL - Use relative URL to leverage the Vite proxy
+// This should match the proxy setup in your Vite config
 const API_URL = '/api';
 
 interface ApiOptions {
@@ -25,22 +26,38 @@ export const apiService = {
       parseAsJson = true
     } = options;
 
+    // For login/register endpoints, we shouldn't try to attach Authorization header
+    const isAuthEndpoint = 
+      endpoint.includes('/Account/login') || 
+      endpoint.includes('/Account/register');
+
     // Build URL
-    const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const url = endpoint.startsWith('http') 
+      ? endpoint 
+      : `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    
+    console.log(`API request to: ${url}, method: ${method}`);
     
     // Setup headers with auth token
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      'Accept': '*/*',
       ...headers
     };
     
-    if (!skipAuth) {
+    if (!skipAuth && !isAuthEndpoint) {
       const token = authService.getToken();
       if (token) {
         requestHeaders['Authorization'] = `Bearer ${token}`;
+        console.log(`Added auth token to request for ${endpoint}`);
       } else {
-        return Promise.reject(new Error('Authentication required'));
+        console.error('Authentication required but no token found');
+        
+        // Only reject if not on auth pages
+        if (!window.location.pathname.includes('/login') && 
+            !window.location.pathname.includes('/register')) {
+          return Promise.reject(new Error('Authentication required'));
+        }
       }
     }
     
@@ -53,13 +70,22 @@ export const apiService = {
     
     // Execute request
     try {
+      console.log(`Making ${method} request to ${url}`);
       const response = await fetch(url, requestOptions);
+      console.log(`Response status: ${response.status} for ${url}`);
       
       // Handle 401 Unauthorized
       if (response.status === 401) {
-        authService.logout();
-        window.location.href = '/login';
-        return Promise.reject(new Error('Session expired'));
+        console.error('Received 401 Unauthorized response');
+        // Only log out if we're not already on login/logout/register page
+        if (!window.location.pathname.includes('/login') && 
+            !window.location.pathname.includes('/logout') &&
+            !window.location.pathname.includes('/register')) {
+          console.log('Unauthorized access, logging out');
+          authService.logout();
+          window.location.href = `/login?t=${Date.now()}&error=session_expired`;
+          return Promise.reject(new Error('Session expired'));
+        }
       }
       
       // Handle other errors
@@ -80,10 +106,12 @@ export const apiService = {
       // Parse response
       if (parseAsJson) {
         try {
-          return await response.json();
-        } catch {
-          // Handle empty responses that should be JSON
-          return {} as T;
+          const jsonData = await response.json();
+          return jsonData;
+        } catch (error) {
+          console.log('Response is not valid JSON, returning as-is');
+          // Return raw text if it can't be parsed as JSON
+          return response.text() as unknown as T;
         }
       } else {
         return await response.text() as unknown as T;
@@ -105,7 +133,7 @@ export const apiService = {
     apiService.request<T>(endpoint, { ...options, method: 'PUT', body }),
   
   delete: <T>(endpoint: string, options: Omit<ApiOptions, 'method'> = {}) => 
-    apiService.request<T>(endpoint, { ...options, method: 'DELETE' })
+    apiService.request<T>(endpoint, { ...options, method: 'DELETE', parseAsJson: false })
 };
 
 // Configure the logger
@@ -135,14 +163,14 @@ try {
 }
 
 async function fetchData() {
-  logger.logApiRequest('GET', '/api/data');
+  logger.logApiRequest('GET', '');
   try {
-    const response = await fetch('/api/data');
+    const response = await fetch('');
     const data = await response.json();
-    logger.logApiResponse('GET', '/api/data', response.status, data);
+    logger.logApiResponse('GET', '', response.status, data);
     return data;
   } catch (error) {
-    logger.logApiError('GET', '/api/data', error);
+    logger.logApiError('GET', '', error);
     throw error;
   }
 } 

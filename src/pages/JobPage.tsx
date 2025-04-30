@@ -36,6 +36,7 @@ export default function JobPage() {
     handleSelectChange,
     handleWeekdayChange,
     handleSubmit,
+    handleDelete,
   } = useJobForm();
 
   if (isLoading) {
@@ -60,8 +61,7 @@ export default function JobPage() {
             <AnimatedText
               phrases={[
                 <React.Fragment key="edit-phrase">
-                  Edit Job:{" "}
-                  <span className="text-accent">{job.companyName || job.company || ""}</span>
+                  Edit or delete Job: <span className="text-accent">{job.companyName || ""}</span>
                 </React.Fragment>,
               ]}
               className="mb-4 text-center text-4xl font-bold"
@@ -71,11 +71,11 @@ export default function JobPage() {
 
           <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Job ID - Hidden */}
-              <input type="hidden" name="id" value={job.id} />
+              {/* Company Name as ID - Hidden */}
+              <input type="hidden" name="CompanyName" value={job.companyName} />
 
               {/* Title (if it exists from older job format) */}
-              {job.title && (
+              {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Job Title</label>
                   <Input
@@ -85,31 +85,21 @@ export default function JobPage() {
                     className="mt-1"
                   />
                 </div>
-              )}
+              }
 
               {/* Company Name */}
+
               <div>
-                <label className="block text-sm font-medium text-gray-700">Company Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Company Name {isNewJob ? "(required)" : "(read-only)"}
+                </label>
                 <Input
                   name="companyName"
-                  value={job.companyName || job.company || ""}
+                  value={job.companyName || ""}
                   onChange={handleInputChange}
                   className="mt-1"
-                  required
-                />
-              </div>
-
-              {/* CVR */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">CVR</label>
-                <Input
-                  name="cvr"
-                  value={job.cvr || ""}
-                  onChange={handleInputChange}
-                  className="mt-1"
-                  required
-                  pattern="[0-9]{8}"
-                  title="CVR must be 8 digits"
+                  required={isNewJob}
+                  readOnly={!isNewJob}
                 />
               </div>
 
@@ -132,7 +122,7 @@ export default function JobPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Tax Card Type</label>
                 <Select
-                  value={job.taxCardType || ""}
+                  value={job.taxCard || ""}
                   onValueChange={(value) => handleSelectChange("taxCardType", value)}
                 >
                   <SelectTrigger className="mt-1">
@@ -168,7 +158,7 @@ export default function JobPage() {
                 </Select>
               </div>
 
-              {/* Weekdays */}
+              {/* Weekdays - UI only, not part of backend model */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">Workdays</label>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -190,68 +180,35 @@ export default function JobPage() {
                 </div>
               </div>
 
-              {/* Start/End Time */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Start Time</label>
-                  <Input
-                    name="startTime"
-                    type="time"
-                    value={job.startTime || ""}
-                    onChange={handleInputChange}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">End Time</label>
-                  <Input
-                    name="endTime"
-                    type="time"
-                    value={job.endTime || ""}
-                    onChange={handleInputChange}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              {/* Supplement */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Supplement Amount</label>
-                <Input
-                  name="supplementAmount"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={job.supplementAmount || ""}
-                  onChange={handleInputChange}
-                  className="mt-1"
-                />
-              </div>
-
               {/* Submit Button */}
-              <div className="flex justify-between items-center space-x-4">
+              <div className="flex items-center justify-between space-x-4">
                 <div>
-                  {!isNewJob && job.id && (
+                  {!isNewJob && job.companyName && (
                     <Button
-                      type="button" 
+                      type="button"
                       variant="outline"
-                      onClick={() => navigate(`/paycheck/${job.id}`)}
+                      onClick={() => navigate(`/paycheck/${job.companyName}`)}
                     >
                       Go to This Job Paycheck
                     </Button>
                   )}
                 </div>
                 <div className="flex space-x-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/")}
-                  >
+                  <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSaving} variant="submit">
+                  <Button type="submit" variant="submit" disabled={isSaving}>
                     {isSaving ? "Saving..." : isNewJob ? "Create Job" : "Update Job"}
                   </Button>
+
+                  {!isNewJob && (
+                    <button
+                      className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      onClick={(e) => handleDelete(job.companyName, e)}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             </form>

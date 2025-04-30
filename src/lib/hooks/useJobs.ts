@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Job } from '../../components/Job';
-import { jobService } from '../../services/jobService';
+import { useEffect, useState } from "react";
+import { Job } from "../../components/Job";
+import { toastService } from "../../components/ui/toast";
+import { jobService } from "../../services/jobService";
+import { localStorageService } from "../../services/localStorageService";
 
 /**
  * Hook for fetching and managing jobs data
@@ -14,11 +16,27 @@ export function useJobs() {
     setLoading(true);
     setError(null);
     try {
+      // Fetch jobs from API
       const data = await jobService.getJobs();
-      setJobs(data);
+      
+      // Enhance jobs with locally stored workdays
+      const jobsWithWorkdays = data.map(job => {
+        if (job.companyName) {
+          const workdays = localStorageService.getWorkdaysForJob(job.companyName);
+          return {
+            ...job,
+            weekdays: workdays,
+            weekday: workdays.length > 0 ? workdays.join(", ") : undefined
+          };
+        }
+        return job;
+      });
+      
+      setJobs(jobsWithWorkdays);
     } catch (error) {
-      console.error('Error fetching jobs:', error);
-      setError(error instanceof Error ? error : new Error('Failed to fetch jobs'));
+      console.error("Error fetching jobs:", error);
+      setError(error instanceof Error ? error : new Error("Failed to fetch jobs"));
+      toastService.error("Failed to load jobs");
     } finally {
       setLoading(false);
     }
@@ -28,43 +46,100 @@ export function useJobs() {
     fetchJobs();
   }, []);
 
-  const createJob = async (job: Job): Promise<Job> => {
+  const registerJob = async (job: Job): Promise<Job> => {
     try {
-      const newJob = await jobService.createJob(job);
-      setJobs(prev => [...prev, newJob]);
-      return newJob;
+      const newJob = await jobService.registerJob(job);
+      
+      // Save workdays to local storage if provided
+      if (newJob.companyName && job.weekdays && job.weekdays.length > 0) {
+        localStorageService.saveWorkdaysForJob(newJob.companyName, job.weekdays);
+      }
+      
+      // Add workdays back to the job object for the UI
+      const enhancedJob = {
+        ...newJob,
+        weekdays: job.weekdays || [],
+        weekday: job.weekdays && job.weekdays.length > 0 
+          ? job.weekdays.join(", ") 
+          : undefined
+      };
+      
+      setJobs((prev) => [...prev, enhancedJob]);
+      toastService.success(`Job at ${job.companyName} created successfully`);
+      return enhancedJob;
     } catch (error) {
-      console.error('Error creating job:', error);
+      console.error("Error registering job:", error);
+      toastService.error("Failed to create job");
       throw error;
     }
   };
 
-  const updateJob = async (id: string, job: Job): Promise<Job> => {
+  const updateJob = async (job: Job): Promise<Job> => {
     try {
-      const updatedJob = await jobService.updateJob(id, job);
-      setJobs(prev => prev.map(j => j.id === id ? updatedJob : j));
-      return updatedJob;
+      const updatedJob = await jobService.updateJob(job);
+      
+      // Save workdays to local storage if provided
+      if (updatedJob.companyName && job.weekdays) {
+        localStorageService.saveWorkdaysForJob(updatedJob.companyName, job.weekdays);
+      }
+      
+      // Add workdays back to the job object for the UI
+      const enhancedJob = {
+        ...updatedJob,
+        weekdays: job.weekdays || [],
+        weekday: job.weekdays && job.weekdays.length > 0 
+          ? job.weekdays.join(", ") 
+          : undefined
+      };
+      
+      setJobs((prev) => prev.map((j) => 
+        (j.companyName === job.companyName ? enhancedJob : j))
+      );
+      
+      toastService.success(`Job at ${job.companyName} updated successfully`);
+      return enhancedJob;
     } catch (error) {
-      console.error('Error updating job:', error);
+      console.error("Error updating job:", error);
+      toastService.error(`Failed to update job at ${job.companyName}`);
       throw error;
     }
   };
 
-  const deleteJob = async (id: string): Promise<void> => {
+  const deleteJob = async (companyName: string): Promise<void> => {
     try {
-      await jobService.deleteJob(id);
-      setJobs(prev => prev.filter(job => job.id !== id));
+      await jobService.deleteJob(companyName);
+      
+      // Remove workdays from local storage
+      localStorageService.removeWorkdaysForJob(companyName);
+      
+      // Update jobs state
+      setJobs((prev) => prev.filter((job) => job.companyName !== companyName));
+      toastService.success(`Job at ${companyName} deleted successfully`);
     } catch (error) {
-      console.error('Error deleting job:', error);
+      console.error("Error deleting job:", error);
+      toastService.error(`Failed to delete job at ${companyName}`);
       throw error;
     }
   };
 
-  const getJobById = async (id: string): Promise<Job | null> => {
+  const getJobByCompanyName = async (companyName: string): Promise<Job | null> => {
     try {
-      return await jobService.getJobById(id);
+      const job = await jobService.getJobByCompanyName(companyName);
+      
+      if (job) {
+        // Enhance job with locally stored workdays
+        const workdays = localStorageService.getWorkdaysForJob(companyName);
+        return {
+          ...job,
+          weekdays: workdays,
+          weekday: workdays.length > 0 ? workdays.join(", ") : undefined
+        };
+      }
+      
+      return job;
     } catch (error) {
-      console.error(`Error fetching job ${id}:`, error);
+      console.error(`Error fetching job ${companyName}:`, error);
+      toastService.error(`Failed to load job details for ${companyName}`);
       return null;
     }
   };
@@ -74,9 +149,9 @@ export function useJobs() {
     loading,
     error,
     fetchJobs,
-    createJob,
+    registerJob,
     updateJob,
     deleteJob,
-    getJobById
+    getJobByCompanyName,
   };
-} 
+}

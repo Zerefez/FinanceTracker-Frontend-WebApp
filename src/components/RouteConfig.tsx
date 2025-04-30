@@ -25,16 +25,16 @@ const RouteConfig = () => {
 
   // Check if the current path is the logout page
   const isLogoutPage = location.pathname === '/logout';
-  
+
   // Add detailed logging
   console.log('Current location:', location.pathname);
   console.log('Is logout page?', isLogoutPage);
-  
+
   // Generate a key for route transitions
   const routingKey = isLogoutPage
     ? 'logout-page'
     : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
-  
+
   console.log('Rendering routes with key:', routingKey, 'Auth state:', isAuthenticated);
 
   return (
@@ -46,18 +46,18 @@ const RouteConfig = () => {
         } />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
-        
+
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
           <Route path="paycheck" element={<Paycheck />} />
-          <Route path="paycheck/:jobId" element={<Paycheck />} />
+          <Route path="paycheck/:PaycheckId" element={<Paycheck />} />
           <Route path="student-grant" element={<StudentGrant />} />
-          <Route path="jobs/:id" element={<JobPage />} />
+          <Route path="jobs/:companyName" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-          
+
         </Route>
-        
+
         {/* Catch all route */}
         <Route path="*" element={
           isAuthenticated ?

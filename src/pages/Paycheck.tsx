@@ -7,16 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
-  const { jobId } = useParams();
+  const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
 
   // Set the selected job when URL param exists
   useEffect(() => {
-    if (jobId && jobs.some(job => job.id === jobId)) {
-      setSelectedJobId(jobId);
+    if (companyName && jobs.some(job => job.CompanyName === companyName)) {
+      setSelectedJobId(companyName);
     }
-  }, [jobId, jobs, setSelectedJobId]);
+  }, [companyName, jobs, setSelectedJobId]);
 
   return (
     <section>
@@ -37,7 +37,7 @@ export default function Paycheck() {
         </div>
         <div className="my-5">
           <div className="mb-8 border-b border-black pb-8">
-          <AnimatedText
+            <AnimatedText
               phrases={["Select Job"]}
               accentWords={["Select", "Job"]}
               className="mb-4 text-2xl block font-semibold md:text-3xl lg:text-4xl"
@@ -55,8 +55,8 @@ export default function Paycheck() {
                   <SelectItem value="none" disabled>No jobs available</SelectItem>
                 ) : (
                   jobs.map((job) => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.title || job.companyName} - {job.company || job.companyName}
+                    <SelectItem key={job.CompanyName} value={job.CompanyName}>
+                      {job.Title || job.CompanyName}
                     </SelectItem>
                   ))
                 )}
@@ -72,9 +72,9 @@ export default function Paycheck() {
                 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
                 accentClassName="text-accent"
               />
-              <PDFUploadComponent 
+              <PDFUploadComponent
                 title="Latest Generated Paycheck" 
-                type="generated" 
+                type="generated"
                 jobId={selectedJobId}
                 jobs={jobs}
               />
