@@ -8,6 +8,7 @@ import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
+import WorkshiftPage from "../pages/Workshift";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {
@@ -17,33 +18,34 @@ const RouteConfig = () => {
   // Show loading screen while initializing
   if (isInitializing) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <p>Loading...</p>
       </div>
     );
   }
 
   // Check if the current path is the logout page
-  const isLogoutPage = location.pathname === '/logout';
+  const isLogoutPage = location.pathname === "/logout";
 
   // Add detailed logging
-  console.log('Current location:', location.pathname);
-  console.log('Is logout page?', isLogoutPage);
+  console.log("Current location:", location.pathname);
+  console.log("Is logout page?", isLogoutPage);
 
   // Generate a key for route transitions
   const routingKey = isLogoutPage
-    ? 'logout-page'
-    : `${location.pathname}-${isAuthenticated ? 'auth' : 'noauth'}`;
+    ? "logout-page"
+    : `${location.pathname}-${isAuthenticated ? "auth" : "noauth"}`;
 
-  console.log('Rendering routes with key:', routingKey, 'Auth state:', isAuthenticated);
+  console.log("Rendering routes with key:", routingKey, "Auth state:", isAuthenticated);
 
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={routingKey}>
         {/* Public routes */}
-        <Route path="/login" element={
-          isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
-        } />
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+        />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
 
@@ -55,15 +57,15 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:companyName" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-
+          <Route path="/workshift/new" element={<WorkshiftPage />} />
+          <Route path="/workshift/:id" element={<WorkshiftPage />} />
         </Route>
 
         {/* Catch all route */}
-        <Route path="*" element={
-          isAuthenticated ?
-            <Navigate to="/" replace /> :
-            <Navigate to="/login" replace />
-        } />
+        <Route
+          path="*"
+          element={isAuthenticated ? <Navigate to="/" replace /> : <Navigate to="/login" replace />}
+        />
       </Routes>
     </AnimatePresence>
   );

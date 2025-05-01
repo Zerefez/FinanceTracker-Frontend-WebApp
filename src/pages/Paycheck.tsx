@@ -1,9 +1,15 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { usePaycheck } from "../lib/hooks";
 
 export default function Paycheck() {
@@ -13,16 +19,16 @@ export default function Paycheck() {
 
   // Set the selected job when URL param exists
   useEffect(() => {
-    if (companyName && jobs.some(job => job.CompanyName === companyName)) {
+    if (companyName && jobs.some((job) => job.companyName === companyName)) {
       setSelectedJobId(companyName);
     }
   }, [companyName, jobs, setSelectedJobId]);
 
   return (
     <section>
-      <div className="md:px-6 h-full">
+      <div className="h-full md:px-6">
         <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
-          <div className="w-full ">
+          <div className="w-full">
             <AnimatedText
               phrases={["Here is your latest Paycheck overview."]}
               accentWords={["latest", "Paycheck"]}
@@ -40,7 +46,7 @@ export default function Paycheck() {
             <AnimatedText
               phrases={["Select Job"]}
               accentWords={["Select", "Job"]}
-              className="mb-4 text-2xl block font-semibold md:text-3xl lg:text-4xl"
+              className="mb-4 block text-2xl font-semibold md:text-3xl lg:text-4xl"
               accentClassName="text-accent"
             />
 
@@ -50,13 +56,17 @@ export default function Paycheck() {
               </SelectTrigger>
               <SelectContent>
                 {loading ? (
-                  <SelectItem value="loading" disabled>Loading jobs...</SelectItem>
+                  <SelectItem value="loading" disabled>
+                    Loading jobs...
+                  </SelectItem>
                 ) : jobs.length === 0 ? (
-                  <SelectItem value="none" disabled>No jobs available</SelectItem>
+                  <SelectItem value="none" disabled>
+                    No jobs available
+                  </SelectItem>
                 ) : (
                   jobs.map((job) => (
-                    <SelectItem key={job.CompanyName} value={job.CompanyName}>
-                      {job.Title || job.CompanyName}
+                    <SelectItem key={job.companyName} value={job.companyName}>
+                      {job.title || job.companyName}
                     </SelectItem>
                   ))
                 )}
@@ -67,17 +77,20 @@ export default function Paycheck() {
           <div className="grid grid-cols-1 items-center gap-[100px] md:my-10 md:grid-cols-2 md:items-start md:gap-20">
             <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
               <AnimatedText
-                phrases={["Latest generated paycheck"]}
-                accentWords={["Latest generated paycheck"]}
+                phrases={["Overview of workshift"]}
+                accentWords={["Overview of workshift"]}
                 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
                 accentClassName="text-accent"
               />
-              <PDFUploadComponent
-                title="Latest Generated Paycheck" 
-                type="generated"
-                jobId={selectedJobId}
-                jobs={jobs}
-              />
+
+              <div className="mb-4 flex justify-end">
+                <Link
+                  to="/workshift/new"
+                  className="rounded-lg bg-accent px-4 py-2 text-white transition-colors duration-200 hover:bg-accent/90"
+                >
+                  Add New Workshift
+                </Link>
+              </div>
             </div>
             <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
               <AnimatedText
@@ -86,9 +99,9 @@ export default function Paycheck() {
                 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
                 accentClassName="text-accent"
               />
-              <PDFUploadComponent 
-                title="Latest User Upload Paycheck" 
-                type="uploaded" 
+              <PDFUploadComponent
+                title="Latest User Upload Paycheck"
+                type="uploaded"
                 jobId={selectedJobId}
                 jobs={jobs}
               />
@@ -97,10 +110,7 @@ export default function Paycheck() {
 
           {selectedJobId && (
             <div className="mt-8 flex justify-end">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate(`/jobs/${selectedJobId}`)}
-              >
+              <Button variant="outline" onClick={() => navigate(`/jobs/${selectedJobId}`)}>
                 Edit Job Details
               </Button>
             </div>

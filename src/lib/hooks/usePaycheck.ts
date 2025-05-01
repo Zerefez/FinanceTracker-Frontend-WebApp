@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { useJobs } from './useJobs';
+import { useState } from "react";
+import { useJobs } from "./useJobs";
 
 /**
  * Hook for managing paycheck data and job selection
  */
 export function usePaycheck() {
   const { jobs, loading } = useJobs();
-  const [selectedCompanyName, setSelectedCompanyName] = useState<string>('');
+  const [selectedCompanyName, setSelectedCompanyName] = useState<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const selectedJob = jobs.find(job => job.CompanyName === selectedCompanyName) || null;
+  const selectedJob = jobs.find((job) => job.companyName === selectedCompanyName) || null;
 
   const handleJobSelect = (companyName: string) => {
     setSelectedCompanyName(companyName);
@@ -26,6 +26,6 @@ export function usePaycheck() {
     selectedJob,
     isMenuOpen,
     setSelectedJobId: handleJobSelect,
-    toggleMenu
+    toggleMenu,
   };
-} 
+}
