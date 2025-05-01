@@ -1,0 +1,171 @@
+{
+  "app": {
+    "title": "ØKONOMI TRACKER"
+  },
+  "status": {
+    "title": "Status",
+    "paycheck": "Ny genereret lønseddel Tilgængelig for visning"
+  },
+  "navigation": {
+    "sitemap": "Siteoversigt",
+    "user": "Bruger"
+  },
+  "auth": {
+    "login": "Log ind",
+    "logout": "Log ud",
+    "register": "Registrer"
+  },
+  "language": {
+    "en": "Engelsk",
+    "da": "Dansk",
+    "currentLanguage": "Nuværende Sprog"
+  },
+  "home": {
+    "welcome": "Velkommen til din økonomi tracker !",
+    "subtitle1": "Hold styr på din økonomi med lethed.",
+    "subtitle2": "Her er et overblik over din økonomi.",
+    "jobsOverview": "Job Oversigt",
+    "addNewJob": "Tilføj Nyt Job",
+    "loading": "Indlæser jobs...",
+    "noJobs": "Ingen jobs fundet",
+    "table": {
+      "companyName": "Firmanavn",
+      "title": "Titel",
+      "hourlyRate": "Timeløn",
+      "employmentType": "Ansættelsestype",
+      "taxCard": "Skattekort",
+      "currency": "DKK"
+    }
+  },
+  "contact": {
+    "title": "Kontakt Os",
+    "subtitle": "Har du et spørgsmål eller feedback? Kontakt os.",
+    "getInTouch": "Kontakt Information",
+    "email": "Email",
+    "emailAddress": "support@financetracker.com",
+    "phone": "Telefon",
+    "phoneNumber": "+45 91 78 03 89",
+    "address": "Adresse",
+    "addressDetails": {
+      "line1": "Finance Tracker HQ",
+      "line2": "Finlandsgade 21",
+      "line3": "8200 Aarhus N",
+      "line4": "Danmark"
+    },
+    "hours": "Åbningstider",
+    "weekdays": "Mandag - Fredag: 9:00 - 17:00",
+    "weekend": "Weekend: Lukket",
+    "sendMessage": "Send Os en Besked",
+    "successMessage": "Din besked er blevet sendt! Vi vender tilbage til dig hurtigst muligt.",
+    "form": {
+      "name": "Navn",
+      "email": "Email",
+      "subject": "Emne",
+      "message": "Besked",
+      "sending": "Sender...",
+      "send": "Send Besked"
+    }
+  },
+  "jobPage": {
+    "addNewJob": "Tilføj Nyt Job",
+    "editJob": "Rediger eller slet Job",
+    "loading": "Indlæser...",
+    "jobTitle": "Job Titel",
+    "companyName": "Firmanavn",
+    "companyNameRequired": "(påkrævet)",
+    "companyNameReadOnly": "(skrivebeskyttet)",
+    "hourlyRate": "Timeløn",
+    "taxCardType": "Skattekort Type",
+    "selectTaxCard": "Vælg skattekort type",
+    "employmentType": "Ansættelsestype",
+    "selectEmploymentType": "Vælg ansættelsestype",
+    "workdays": "Arbejdsdage",
+    "goToPaycheck": "Gå til Denne Jobs Lønseddel",
+    "cancel": "Annuller",
+    "saving": "Gemmer...",
+    "createJob": "Opret Job",
+    "updateJob": "Opdater Job",
+    "delete": "Slet",
+    "createSuccess": "Job blev oprettet med succes",
+    "updateSuccess": "Job blev opdateret med succes",
+    "deleteSuccess": "Job blev slettet med succes",
+    "createError": "Kunne ikke oprette job. Prøv igen.",
+    "updateError": "Kunne ikke opdatere job. Prøv igen.",
+    "deleteError": "Kunne ikke slette job. Prøv igen.",
+    "deleteConfirmation": "Er du sikker på, at du vil slette jobbet hos {{companyName}}? Denne handling kan ikke fortrydes.",
+    "weekdays": {
+      "monday": "Mandag",
+      "tuesday": "Tirsdag",
+      "wednesday": "Onsdag",
+      "thursday": "Torsdag",
+      "friday": "Fredag",
+      "saturday": "Lørdag",
+      "sunday": "Søndag"
+    },
+    "taxCards": {
+      "main": "Hovedkort",
+      "secondary": "Bikort",
+      "exemption": "Frikort"
+    },
+    "employmentTypes": {
+      "fullTime": "Fuldtid",
+      "partTime": "Deltid",
+      "temporary": "Midlertidig",
+      "contract": "Kontrakt",
+      "freelance": "Freelance"
+    }
+  },
+  "studentGrant": {
+    "title": "SU-støtte Oversigt",
+    "incomeCeiling": "af dit indkomstloft",
+    "remainingEarnings": "Resterende indtjeningsgrænse",
+    "maxIncome": "Maksimalt indkomstloft",
+    "monthlyGrant": "Din månedlige SU-udbetaling",
+    "gross": "brutto",
+    "taxCard": "Skattekort",
+    "housing": "Boligstatus",
+    "currentIncome": "Nuværende Indkomst",
+    "housingStatus": {
+      "away": "Udeboende",
+      "withParents": "Hjemmeboende"
+    },
+    "taxCardOptions": {
+      "main": "Hovedkort",
+      "secondary": "Bikort"
+    }
+  },
+  "jobs": {
+    "employmentTypes": {
+      "fullTime": "Fuldtid",
+      "partTime": "Deltid",
+      "freelance": "Freelance",
+      "contract": "Kontrakt"
+    },
+    "taxCards": {
+      "main": "Hovedkort",
+      "secondary": "Bikort"
+    },
+    "weekdays": {
+      "all": "Alle ugedage",
+      "monday": "Mandag",
+      "tuesday": "Tirsdag",
+      "wednesday": "Onsdag",
+      "thursday": "Torsdag",
+      "friday": "Fredag",
+      "saturday": "Lørdag",
+      "sunday": "Søndag"
+    }
+  },
+  "common": {
+    "save": "Gem",
+    "cancel": "Annuller",
+    "edit": "Rediger",
+    "delete": "Slet",
+    "loading": "Indlæser...",
+    "submit": "Indsend",
+    "back": "Tilbage",
+    "next": "Næste",
+    "error": "Fejl",
+    "success": "Succes"
+  }
+} 

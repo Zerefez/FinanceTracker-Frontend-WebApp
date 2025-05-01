@@ -12,19 +12,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { useJobForm } from "../lib/hooks";
-
-// Weekday options
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-// Tax card types
-const taxCardTypes = ["Main card", "Secondary card", "Exemption card"];
-
-// Employment types
-const employmentTypes = ["Full-time", "Part-time", "Temporary", "Contract", "Freelance"];
+import { useJobForm, useLocalization } from "../lib/hooks";
 
 export default function JobPage() {
   const navigate = useNavigate();
+  const { t } = useLocalization();
+
+  // Define weekdays and employment types using translation keys
+  const weekdays = [
+    t('jobPage.weekdays.monday'),
+    t('jobPage.weekdays.tuesday'),
+    t('jobPage.weekdays.wednesday'),
+    t('jobPage.weekdays.thursday'),
+    t('jobPage.weekdays.friday'),
+    t('jobPage.weekdays.saturday'),
+    t('jobPage.weekdays.sunday')
+  ];
+
+  // Tax card types
+  const taxCardTypes = [
+    t('jobPage.taxCards.main'),
+    t('jobPage.taxCards.secondary'),
+    t('jobPage.taxCards.exemption')
+  ];
+
+  // Employment types
+  const employmentTypes = [
+    t('jobPage.employmentTypes.fullTime'),
+    t('jobPage.employmentTypes.partTime'),
+    t('jobPage.employmentTypes.temporary'),
+    t('jobPage.employmentTypes.contract'),
+    t('jobPage.employmentTypes.freelance')
+  ];
 
   const {
     job,
@@ -42,7 +61,7 @@ export default function JobPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p>Loading...</p>
+        <p>{t('jobPage.loading')}</p>
       </div>
     );
   }
@@ -53,7 +72,7 @@ export default function JobPage() {
         <div className="mx-auto max-w-2xl">
           {isNewJob ? (
             <AnimatedText
-              phrases={["Add New Job"]}
+              phrases={[t('jobPage.addNewJob')]}
               className="mb-4 text-center text-4xl font-bold"
               accentClassName="text-accent"
             />
@@ -61,7 +80,7 @@ export default function JobPage() {
             <AnimatedText
               phrases={[
                 <React.Fragment key="edit-phrase">
-                  Edit or delete Job: <span className="text-accent">{job.companyName || ""}</span>
+                  {t('jobPage.editJob')}: <span className="text-accent">{job.companyName || ""}</span>
                 </React.Fragment>,
               ]}
               className="mb-4 text-center text-4xl font-bold"
@@ -77,7 +96,7 @@ export default function JobPage() {
               {/* Title (if it exists from older job format) */}
               {
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Job Title</label>
+                  <label className="block text-sm font-medium text-gray-700">{t('jobPage.jobTitle')}</label>
                   <Input
                     name="title"
                     value={job.title || ""}
@@ -88,10 +107,9 @@ export default function JobPage() {
               }
 
               {/* Company Name */}
-
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Company Name {isNewJob ? "(required)" : "(read-only)"}
+                  {t('jobPage.companyName')} {isNewJob ? t('jobPage.companyNameRequired') : t('jobPage.companyNameReadOnly')}
                 </label>
                 <Input
                   name="companyName"
@@ -105,7 +123,7 @@ export default function JobPage() {
 
               {/* Hourly Rate */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Hourly Rate</label>
+                <label className="block text-sm font-medium text-gray-700">{t('jobPage.hourlyRate')}</label>
                 <Input
                   name="hourlyRate"
                   type="number"
@@ -120,13 +138,13 @@ export default function JobPage() {
 
               {/* Tax Card Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Tax Card Type</label>
+                <label className="block text-sm font-medium text-gray-700">{t('jobPage.taxCardType')}</label>
                 <Select
                   value={job.taxCard || ""}
                   onValueChange={(value) => handleSelectChange("taxCardType", value)}
                 >
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select tax card type" />
+                    <SelectValue placeholder={t('jobPage.selectTaxCard')} />
                   </SelectTrigger>
                   <SelectContent>
                     {taxCardTypes.map((type) => (
@@ -140,13 +158,13 @@ export default function JobPage() {
 
               {/* Employment Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Employment Type</label>
+                <label className="block text-sm font-medium text-gray-700">{t('jobPage.employmentType')}</label>
                 <Select
                   value={job.employmentType || ""}
                   onValueChange={(value) => handleSelectChange("employmentType", value)}
                 >
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select employment type" />
+                    <SelectValue placeholder={t('jobPage.selectEmploymentType')} />
                   </SelectTrigger>
                   <SelectContent>
                     {employmentTypes.map((type) => (
@@ -160,7 +178,7 @@ export default function JobPage() {
 
               {/* Weekdays - UI only, not part of backend model */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">Workdays</label>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('jobPage.workdays')}</label>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                   {weekdays.map((day) => (
                     <div key={day} className="flex items-center space-x-2">
@@ -189,16 +207,16 @@ export default function JobPage() {
                       variant="outline"
                       onClick={() => navigate(`/paycheck/${job.companyName}`)}
                     >
-                      Go to This Job Paycheck
+                      {t('jobPage.goToPaycheck')}
                     </Button>
                   )}
                 </div>
                 <div className="flex space-x-4">
                   <Button type="button" variant="outline" onClick={() => navigate(-1)}>
-                    Cancel
+                    {t('jobPage.cancel')}
                   </Button>
                   <Button type="submit" variant="submit" disabled={isSaving}>
-                    {isSaving ? "Saving..." : isNewJob ? "Create Job" : "Update Job"}
+                    {isSaving ? t('jobPage.saving') : isNewJob ? t('jobPage.createJob') : t('jobPage.updateJob')}
                   </Button>
 
                   {!isNewJob && (
@@ -206,7 +224,7 @@ export default function JobPage() {
                       className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                       onClick={(e) => handleDelete(job.companyName, e)}
                     >
-                      Delete
+                      {t('jobPage.delete')}
                     </button>
                   )}
                 </div>

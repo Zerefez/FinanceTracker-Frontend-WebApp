@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/hooks";
+import Contact from "../pages/Contact";
 import Home from "../pages/Home";
 import JobPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
@@ -48,6 +49,7 @@ const RouteConfig = () => {
         />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
+        
 
         {/* Protected routes */}
         <Route path="/" element={<ProtectedRoutes />}>
@@ -59,6 +61,8 @@ const RouteConfig = () => {
           <Route path="jobs/new" element={<JobPage />} />
           <Route path="/workshift/new" element={<WorkshiftPage />} />
           <Route path="/workshift/:id" element={<WorkshiftPage />} />
+          <Route path="contact" element={<Contact />} />
+
         </Route>
 
         {/* Catch all route */}
