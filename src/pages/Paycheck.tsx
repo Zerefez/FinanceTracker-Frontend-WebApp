@@ -1,6 +1,6 @@
 import { CalendarIcon, Clock, Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
@@ -23,6 +23,7 @@ export default function Paycheck() {
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
   const [workshifts, setWorkshifts] = useState<WorkShift[]>([]);
   const [loadingWorkshifts, setLoadingWorkshifts] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Set the selected job when URL param exists
   useEffect(() => {
@@ -40,12 +41,14 @@ export default function Paycheck() {
       }
 
       setLoadingWorkshifts(true);
+      setError(null);
       try {
         // Pass the selectedJobId to filter workshifts by job
         const data = await workshiftService.getUserWorkshifts(selectedJobId);
         setWorkshifts(data);
       } catch (error) {
         console.error("Error fetching workshifts:", error);
+        setError("Failed to load workshifts. Please try again.");
       } finally {
         setLoadingWorkshifts(false);
       }
@@ -93,6 +96,19 @@ export default function Paycheck() {
     } catch (error) {
       console.error("Error deleting workshift:", error);
       toastService.error("Failed to delete workshift");
+    }
+  };
+
+  // Check if a job is selected
+  const hasSelectedJob = selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
+
+  // Handle add new workshift button click
+  const handleAddNewWorkshift = () => {
+    if (hasSelectedJob) {
+      // Navigate with the selected job ID in the state
+      navigate(`/workshift/new?jobId=${selectedJobId}`);
+    } else {
+      toastService.error("Please select a job before adding a workshift");
     }
   };
 
@@ -156,14 +172,14 @@ export default function Paycheck() {
               />
 
               <div className="mb-4 flex justify-end">
-                {selectedJobId ? (
-                  <Link
-                    to="/workshift/new"
+                {hasSelectedJob ? (
+                  <Button
+                    onClick={handleAddNewWorkshift}
                     className="rounded-lg bg-accent px-4 py-2 text-white transition-colors duration-200 hover:bg-accent/90 flex items-center gap-2"
                   >
                     <Plus size={16} />
-                    Add New Workshift
-                  </Link>
+                  Add New Workshift
+                  </Button>
                 ) : (
                   <Button disabled className="flex items-center gap-2 opacity-70">
                     <Plus size={16} />
@@ -195,7 +211,7 @@ export default function Paycheck() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {!selectedJobId ? (
+                    {!hasSelectedJob ? (
                       <tr>
                         <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
                           Please select a job to view workshifts
@@ -205,6 +221,12 @@ export default function Paycheck() {
                       <tr>
                         <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
                           Loading workshifts...
+                        </td>
+                      </tr>
+                    ) : error ? (
+                      <tr>
+                        <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-red-500">
+                          {error}
                         </td>
                       </tr>
                     ) : workshifts.length === 0 ? (
@@ -240,7 +262,7 @@ export default function Paycheck() {
                           <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => navigate(`/workshift/${index}`)}
+                                onClick={() => navigate(`/workshift/${index}?jobId=${selectedJobId}`)}
                                 className="rounded p-1 text-blue-600 hover:bg-blue-100"
                                 title="Edit"
                               >
@@ -278,7 +300,7 @@ export default function Paycheck() {
             </div>
           </div>
 
-          {selectedJobId && (
+          {hasSelectedJob && (
             <div className="mt-8 flex justify-end">
               <Button variant="outline" onClick={() => navigate(`/jobs/${selectedJobId}`)}>
                 Edit Job Details

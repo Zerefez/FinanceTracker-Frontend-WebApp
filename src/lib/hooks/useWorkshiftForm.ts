@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { confirmationDialogService } from "../../components/ui/confirmation-dialog";
 import { toastService } from "../../components/ui/toast";
 import { workshiftService } from "../../services/workshiftService";
@@ -15,27 +15,38 @@ export interface WorkShift {
 export function useWorkshiftForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedJobId } = usePaycheck();
+  
+  // Extract jobId from query parameters if present
+  const query = new URLSearchParams(location.search);
+  const jobIdFromUrl = query.get('jobId');
+
+  // Use jobId from URL if available, otherwise try to use the one from context
+  const effectiveJobId = jobIdFromUrl || selectedJobId || "";
 
   const [workshift, setWorkshift] = useState<WorkShift>({
     startTime: new Date(),
     endTime: new Date(),
-    jobId: selectedJobId || "",
+    jobId: effectiveJobId,
   });
 
   const [isNewWorkshift, setIsNewWorkshift] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Update jobId when selectedJobId changes
+  // Check if a job is selected - check both the URL parameter and the context
+  const hasSelectedJob = effectiveJobId !== "";
+
+  // Update jobId when effectiveJobId changes
   useEffect(() => {
-    if (selectedJobId) {
+    if (effectiveJobId) {
       setWorkshift(prev => ({
         ...prev,
-        jobId: selectedJobId
+        jobId: effectiveJobId
       }));
     }
-  }, [selectedJobId]);
+  }, [effectiveJobId]);
 
   useEffect(() => {
     const fetchWorkshift = async () => {
@@ -46,13 +57,17 @@ export function useWorkshiftForm() {
           setWorkshift({
             startTime: new Date(),
             endTime: new Date(),
-            jobId: selectedJobId || "",
+            jobId: effectiveJobId,
           });
         } else {
           setIsNewWorkshift(false);
           try {
             const workshiftData = await workshiftService.getWorkshiftById(id);
             if (workshiftData) {
+              // If we have jobId from URL and the workshift doesn't have one, add it
+              if (effectiveJobId && !workshiftData.jobId) {
+                workshiftData.jobId = effectiveJobId;
+              }
               setWorkshift(workshiftData);
             } else {
               console.error(`Workshift with id ${id} not found`);
@@ -71,7 +86,7 @@ export function useWorkshiftForm() {
     };
 
     fetchWorkshift();
-  }, [id, navigate, selectedJobId]);
+  }, [id, navigate, effectiveJobId]);
 
   const handleInputChange = (name: string, value: any) => {
     setWorkshift((prev) => ({
@@ -118,7 +133,7 @@ export function useWorkshiftForm() {
     e.preventDefault();
     
     // Validate that a job is selected
-    if (!workshift.jobId) {
+    if (!hasSelectedJob) {
       toastService.error("Please select a job before saving the workshift");
       // Redirect to paycheck page to select a job
       navigate("/paycheck");
@@ -153,7 +168,8 @@ export function useWorkshiftForm() {
     isNewWorkshift,
     isSaving,
     isLoading,
-    selectedJobId,
+    selectedJobId: effectiveJobId,
+    hasSelectedJob,
     handleInputChange,
     handleDateTimeChange,
     handleSubmit,

@@ -15,6 +15,7 @@ export default function WorkshiftPage() {
     isSaving,
     isLoading,
     selectedJobId,
+    hasSelectedJob,
     handleInputChange,
     handleDateTimeChange,
     handleSubmit,
@@ -23,11 +24,11 @@ export default function WorkshiftPage() {
 
   // Redirect to paycheck page if no job is selected for new workshifts
   useEffect(() => {
-    if (isNewWorkshift && !selectedJobId) {
+    if (isNewWorkshift && !hasSelectedJob) {
       toastService.error("Please select a job before adding a workshift");
       navigate("/paycheck");
     }
-  }, [isNewWorkshift, selectedJobId, navigate]);
+  }, [isNewWorkshift, hasSelectedJob, navigate]);
 
   // Format date for datetime-local input
   const formatDateForInput = (date: Date): string => {
@@ -43,7 +44,7 @@ export default function WorkshiftPage() {
   }
 
   // Show message if no job is selected
-  if (!selectedJobId) {
+  if (!hasSelectedJob) {
     return (
       <section className="pb-12">
         <div className="min-h-screen md:px-6">
@@ -118,7 +119,7 @@ export default function WorkshiftPage() {
                   <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSaving}>
+                  <Button type="submit" variant="submit" disabled={isSaving}>
                     {isSaving ? "Saving..." : isNewWorkshift ? "Create Workshift" : "Update Workshift"}
                   </Button>
 
