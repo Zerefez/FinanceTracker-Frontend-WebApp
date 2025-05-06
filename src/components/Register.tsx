@@ -7,7 +7,6 @@ import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [hourlyRate, setHourlyRate] = useState("");
   const [fullName, setFullName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -31,10 +30,6 @@ export function Register() {
       setError("Password must be at least 6 characters long");
       return false;
     }
-    if (hourlyRate.trim() && isNaN(Number(hourlyRate))) {
-      setError("Hourly rate must be a number");
-      return false;
-    }
     return true;
   };
 
@@ -50,13 +45,12 @@ export function Register() {
     }
 
     try {
-      const response = await authService.register(email, password, hourlyRate, fullName);
+      const response = await authService.register(email, password, fullName);
       if (response.success) {
         setSuccess(true);
         // Reset form
         setEmail("");
         setPassword("");
-        setHourlyRate("");
         setFullName("");
       }
     } catch (err) {
@@ -116,17 +110,6 @@ export function Register() {
             onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             className="w-full rounded border p-2"
             required
-          />
-          <label htmlFor="hourlyRate" className="block text-sm">
-            Hourly rate (optional)
-          </label>
-          <input
-            id="hourlyRate"
-            type="text"
-            placeholder="Enter your hourly rate"
-            value={hourlyRate}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setHourlyRate(e.target.value)}
-            className="w-full rounded border p-2"
           />
           <Button type="submit" variant="submit" disabled={isSubmitting} className="w-full items-center justify-center">
             {isSubmitting ? "Registering..." : "Register"}

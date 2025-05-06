@@ -9,7 +9,6 @@ import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
-import WorkshiftPage from "../pages/Workshift";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {
@@ -59,10 +58,7 @@ const RouteConfig = () => {
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:companyName" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
-          <Route path="/workshift/new" element={<WorkshiftPage />} />
-          <Route path="/workshift/:id" element={<WorkshiftPage />} />
           <Route path="contact" element={<Contact />} />
-
         </Route>
 
         {/* Catch all route */}

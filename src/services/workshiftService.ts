@@ -5,13 +5,7 @@ import { authService } from "./authService";
 export const workshiftService = {
   // Get all workshifts for the current user
   getUserWorkshifts: async (jobId?: string): Promise<WorkShift[]> => {
-    // Use the correct endpoints based on Paycheck controller
-    const endpoint = jobId 
-      ? `/Paycheck/GetWorkshiftsByJob/${jobId}`
-      : "/Paycheck/GetWorkshifts";
-    
-    const response = await apiService.get<WorkShift[]>(endpoint);
-    
+    const response = await apiService.get<WorkShift[]>(`/Workshifts`);
     // Parse date strings to Date objects
     return response.map(ws => ({
       ...ws,
@@ -23,7 +17,7 @@ export const workshiftService = {
   // Get a workshift by ID
   getWorkshiftById: async (id: string): Promise<WorkShift | null> => {
     // Use the correct endpoint
-    const response = await apiService.get<WorkShift>(`/Paycheck/GetWorkshift/${id}`);
+    const response = await apiService.get<WorkShift>(`/Workshifts/${id}`);
     
     if (response) {
       // Parse date strings to Date objects
@@ -54,7 +48,7 @@ export const workshiftService = {
     try {
       console.log("Sending workshift data:", requestBody);
       // Use the correct endpoint
-      const response = await apiService.post<WorkShift>("/Paycheck/registerWorkshift", requestBody);
+      const response = await apiService.post<WorkShift>("/Workshifts", requestBody);
       
       // Parse date strings to Date objects
       return {

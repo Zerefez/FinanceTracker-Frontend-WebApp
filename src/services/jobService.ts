@@ -38,7 +38,7 @@ export const jobService = {
   getJobs: async (): Promise<Job[]> => {
     try {
       // Try API first
-      return await apiService.get<Job[]>("/Job/GetAllJobsForUser");
+      return await apiService.get<Job[]>("/Jobs");
     } catch (error) {
       console.error("Error fetching jobs:", error);
       return [];
@@ -65,7 +65,7 @@ export const jobService = {
   registerJob: async (job: Job): Promise<Job> => {
     try {
       // Try API first
-      return await apiService.post<Job>("/Job/RegisterJob", job);
+      return await apiService.post<Job>("/Jobs", job);
     } catch (error) {
       console.error("Error creating job:", error);
       throw error;
@@ -76,7 +76,7 @@ export const jobService = {
   updateJob: async (job: Job): Promise<Job> => {
     try {
       // Try API first
-      return await apiService.put<Job>(`/Job/UpdateJob/${job.companyName}`, job);
+      return await apiService.put<Job>(`/Jobs/${job.companyName}`, job);
     } catch (error) {
       console.error(`Error updating job ${job.companyName}:`, error);
       throw error;
@@ -87,7 +87,7 @@ export const jobService = {
   deleteJob: async (companyName: string): Promise<void> => {
     try {
       // Include both in path and as query parameter to match the backend's configuration
-      await apiService.delete(`/Job/DeleteJob/${encodeURIComponent(companyName)}?companyName=${encodeURIComponent(companyName)}`);
+      await apiService.delete(`/Jobs/${encodeURIComponent(companyName)}?companyName=${encodeURIComponent(companyName)}`);
       // Successfully deleted
       return;
     } catch (error) {

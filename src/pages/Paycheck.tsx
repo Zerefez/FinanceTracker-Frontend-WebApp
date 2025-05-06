@@ -2,15 +2,16 @@ import { CalendarIcon, Clock, Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
+import WorkshiftModal from "../components/WorkshiftModal";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
 import { confirmationDialogService } from "../components/ui/confirmation-dialog";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../components/ui/select";
 import { toastService } from "../components/ui/toast";
 import { usePaycheck } from "../lib/hooks";
@@ -24,6 +25,10 @@ export default function Paycheck() {
   const [workshifts, setWorkshifts] = useState<WorkShift[]>([]);
   const [loadingWorkshifts, setLoadingWorkshifts] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingWorkshiftId, setEditingWorkshiftId] = useState<string | undefined>(undefined);
 
   // Set the selected job when URL param exists
   useEffect(() => {
@@ -102,13 +107,32 @@ export default function Paycheck() {
   // Check if a job is selected
   const hasSelectedJob = selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
 
-  // Handle add new workshift button click
+  // Open the modal to add a new workshift
   const handleAddNewWorkshift = () => {
     if (hasSelectedJob) {
-      // Navigate with the selected job ID in the state
-      navigate(`/workshift/new?jobId=${selectedJobId}`);
+      setEditingWorkshiftId(undefined); // No ID means new workshift
+      setIsModalOpen(true);
     } else {
       toastService.error("Please select a job before adding a workshift");
+    }
+  };
+
+  // Open the modal to edit an existing workshift
+  const handleEditWorkshift = (index: number) => {
+    setEditingWorkshiftId(index.toString());
+    setIsModalOpen(true);
+  };
+
+  // Refresh workshifts after saving in modal
+  const handleWorkshiftSaved = () => {
+    if (selectedJobId) {
+      // Reload workshifts to show the latest data
+      workshiftService.getUserWorkshifts(selectedJobId)
+        .then(data => setWorkshifts(data))
+        .catch(error => {
+          console.error("Error reloading workshifts:", error);
+          toastService.error("Failed to refresh workshifts.");
+        });
     }
   };
 
@@ -262,7 +286,7 @@ export default function Paycheck() {
                           <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => navigate(`/workshift/${index}?jobId=${selectedJobId}`)}
+                                onClick={() => handleEditWorkshift(index)}
                                 className="rounded p-1 text-blue-600 hover:bg-blue-100"
                                 title="Edit"
                               >
@@ -309,6 +333,17 @@ export default function Paycheck() {
           )}
         </div>
       </div>
+
+      {/* Workshift Modal */}
+      {hasSelectedJob && (
+        <WorkshiftModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          jobId={selectedJobId}
+          workshiftId={editingWorkshiftId}
+          onWorkshiftSaved={handleWorkshiftSaved}
+        />
+      )}
     </section>
   );
 }

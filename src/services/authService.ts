@@ -95,7 +95,7 @@ export const authService = {
       console.log("Attempting login for user:", username);
 
       // Try using the API URL with proxy first
-      const url = `${API_URL}/Account/login`;
+      const url = `${API_URL}/Accounts/login`;
       console.log(`Making login request to: ${url}`);
 
       const response = await fetch(url, {
@@ -152,7 +152,6 @@ export const authService = {
   register: async (
     email: string,
     password: string,
-    hourlyRate: string,
     fullName: string,
   ): Promise<RegisterResponse> => {
     // Basic validation
@@ -165,12 +164,11 @@ export const authService = {
     }
 
     try {
-      const message = await fetchWithAuth("/Account/register", {
+      const message = await fetchWithAuth("/Accounts/register", {
         method: "POST",
         body: JSON.stringify({
           Email: email,
           Password: password,
-          HourlyRate: hourlyRate || null, // Send null if hourlyRate is empty
           FullName: fullName,
         }),
       });
