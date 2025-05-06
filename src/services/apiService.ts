@@ -28,8 +28,8 @@ export const apiService = {
 
     // For login/register endpoints, we shouldn't try to attach Authorization header
     const isAuthEndpoint = 
-      endpoint.includes('/Account/login') || 
-      endpoint.includes('/Account/register');
+      endpoint.includes('/Accounts/login') || 
+      endpoint.includes('/Accounts/register');
 
     // Build URL
     const url = endpoint.startsWith('http') 

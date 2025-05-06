@@ -4,7 +4,10 @@ import { toastService } from "../../components/ui/toast";
 import { workshiftService } from "../../services/workshiftService";
 import { WorkShift } from "./useWorkshiftForm";
 
-export const useWorkshifts = (selectedJobId: string | undefined) => {
+export const useWorkshifts = (
+  selectedJobId: string | undefined,
+  onWorkshiftUpdated?: () => void
+) => {
   const [workshifts, setWorkshifts] = useState<WorkShift[]>([]);
   const [loadingWorkshifts, setLoadingWorkshifts] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +58,11 @@ export const useWorkshifts = (selectedJobId: string | undefined) => {
       setWorkshifts(prev => prev.filter((_, i) => i !== index));
       
       toastService.success("Workshift deleted successfully");
+      
+      // Notify that workshifts have been updated
+      if (onWorkshiftUpdated) {
+        onWorkshiftUpdated();
+      }
     } catch (error) {
       console.error("Error deleting workshift:", error);
       toastService.error("Failed to delete workshift");
@@ -83,7 +91,13 @@ export const useWorkshifts = (selectedJobId: string | undefined) => {
     if (selectedJobId) {
       // Reload workshifts to show the latest data
       workshiftService.getUserWorkshifts(selectedJobId)
-        .then(data => setWorkshifts(data))
+        .then(data => {
+          setWorkshifts(data);
+          // Notify that workshifts have been updated
+          if (onWorkshiftUpdated) {
+            onWorkshiftUpdated();
+          }
+        })
         .catch(error => {
           console.error("Error reloading workshifts:", error);
           toastService.error("Failed to refresh workshifts.");

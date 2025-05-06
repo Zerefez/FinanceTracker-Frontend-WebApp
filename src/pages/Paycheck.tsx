@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PDFUploadComponent from "../components/PDFUpload";
+import PaycheckOverview, { PaycheckOverviewRef } from "../components/PaycheckOverview";
 import WorkshiftModal from "../components/WorkshiftModal";
 import WorkshiftTable from "../components/WorkshiftTable";
 import AnimatedText from "../components/ui/animation/animatedText";
@@ -20,6 +20,15 @@ export default function Paycheck() {
   const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
+  
+  // Reference to the paycheck overview component for refreshing
+  const paycheckOverviewRef = useRef<PaycheckOverviewRef>(null);
+  
+  // Function to refresh the paycheck data
+  const refreshPaycheckData = () => {
+    paycheckOverviewRef.current?.refresh();
+  };
   
   // Set the selected job when URL param exists
   useEffect(() => {
@@ -43,7 +52,30 @@ export default function Paycheck() {
     handleAddNewWorkshift,
     handleEditWorkshift,
     handleWorkshiftSaved
-  } = useWorkshifts(selectedJobId);
+  } = useWorkshifts(selectedJobId, refreshPaycheckData);
+
+  // Generate month options for the select dropdown
+  const monthOptions = [
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ];
+
+  // Refresh paycheck data when month changes
+  useEffect(() => {
+    if (hasSelectedJob) {
+      refreshPaycheckData();
+    }
+  }, [selectedMonth, hasSelectedJob]);
 
   return (
     <section>
@@ -64,35 +96,57 @@ export default function Paycheck() {
         </div>
         <div className="my-4 sm:my-5">
           <div className="mb-6 sm:mb-8 border-b border-black pb-6 sm:pb-8">
-            <AnimatedText
-              phrases={["Select Job"]}
-              accentWords={["Select", "Job"]}
-              className="mb-3 sm:mb-4 block text-xl font-semibold sm:text-2xl md:text-3xl lg:text-4xl"
-              accentClassName="text-accent"
-            />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <AnimatedText
+                  phrases={["Select Job"]}
+                  accentWords={["Select", "Job"]}
+                  className="mb-3 sm:mb-4 block text-xl font-semibold sm:text-2xl md:text-3xl lg:text-4xl"
+                  accentClassName="text-accent"
+                />
 
-            <Select value={selectedJobId} onValueChange={setSelectedJobId}>
-              <SelectTrigger className="w-full max-w-[300px]">
-                <SelectValue placeholder="Select a job" />
-              </SelectTrigger>
-              <SelectContent>
-                {loading ? (
-                  <SelectItem value="loading" disabled>
-                    Loading jobs...
-                  </SelectItem>
-                ) : jobs.length === 0 ? (
-                  <SelectItem value="none" disabled>
-                    No jobs available
-                  </SelectItem>
-                ) : (
-                  jobs.map((job) => (
-                    <SelectItem key={job.companyName} value={job.companyName}>
-                      {job.title || job.companyName}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+                <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+                  <SelectTrigger className="w-full max-w-[300px]">
+                    <SelectValue placeholder="Select a job" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {loading ? (
+                      <SelectItem value="loading" disabled>
+                        Loading jobs...
+                      </SelectItem>
+                    ) : jobs.length === 0 ? (
+                      <SelectItem value="none" disabled>
+                        No jobs available
+                      </SelectItem>
+                    ) : (
+                      jobs.map((job) => (
+                        <SelectItem key={job.companyName} value={job.companyName}>
+                          {job.title || job.companyName}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {hasSelectedJob && (
+                <div>
+                  <p className="mb-2 text-sm text-gray-600">Select Month</p>
+                  <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(Number(value))}>
+                    <SelectTrigger className="w-full max-w-[200px]">
+                      <SelectValue placeholder="Select month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {monthOptions.map((month) => (
+                        <SelectItem key={month.value} value={month.value.toString()}>
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:gap-6 lg:gap-8 xl:gap-[100px] md:grid-cols-2">
@@ -132,20 +186,13 @@ export default function Paycheck() {
                 onDeleteWorkshift={handleDeleteWorkshift}
               />
             </div>
-            <div className="w-full rounded-lg border-2 border-gray-200 p-3 sm:p-4 md:p-5">
-              <AnimatedText
-                phrases={["Latest user upload paycheck"]}
-                accentWords={["Latest user upload paycheck"]}
-                className="mb-4 text-xl font-bold sm:text-2xl md:text-2xl lg:text-3xl"
-                accentClassName="text-accent"
-              />
-              <PDFUploadComponent
-                title="Latest User Upload Paycheck"
-                type="uploaded"
-                jobId={selectedJobId}
-                jobs={jobs}
-              />
-            </div>
+            
+            {/* Paycheck Overview Component */}
+            <PaycheckOverview 
+              ref={paycheckOverviewRef}
+              companyName={selectedJobId} 
+              month={selectedMonth}
+            />
           </div>
 
           {hasSelectedJob && (
