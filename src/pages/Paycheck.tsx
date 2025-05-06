@@ -1,11 +1,11 @@
-import { CalendarIcon, Clock, Edit, Plus, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PDFUploadComponent from "../components/PDFUpload";
 import WorkshiftModal from "../components/WorkshiftModal";
+import WorkshiftTable from "../components/WorkshiftTable";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
-import { confirmationDialogService } from "../components/ui/confirmation-dialog";
 import {
   Select,
   SelectContent,
@@ -13,23 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { toastService } from "../components/ui/toast";
 import { usePaycheck } from "../lib/hooks";
-import { WorkShift } from "../lib/hooks/useWorkshiftForm";
-import { workshiftService } from "../services/workshiftService";
+import { useWorkshifts } from "../lib/hooks/useWorkshifts";
 
 export default function Paycheck() {
   const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
-  const [workshifts, setWorkshifts] = useState<WorkShift[]>([]);
-  const [loadingWorkshifts, setLoadingWorkshifts] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingWorkshiftId, setEditingWorkshiftId] = useState<string | undefined>(undefined);
-
+  
   // Set the selected job when URL param exists
   useEffect(() => {
     if (companyName && jobs.some((job) => job.companyName === companyName)) {
@@ -37,133 +28,51 @@ export default function Paycheck() {
     }
   }, [companyName, jobs, setSelectedJobId]);
 
-  // Load workshifts when a job is selected
-  useEffect(() => {
-    const fetchWorkshifts = async () => {
-      if (!selectedJobId) {
-        setWorkshifts([]);
-        return;
-      }
-
-      setLoadingWorkshifts(true);
-      setError(null);
-      try {
-        // Pass the selectedJobId to filter workshifts by job
-        const data = await workshiftService.getUserWorkshifts(selectedJobId);
-        setWorkshifts(data);
-      } catch (error) {
-        console.error("Error fetching workshifts:", error);
-        setError("Failed to load workshifts. Please try again.");
-      } finally {
-        setLoadingWorkshifts(false);
-      }
-    };
-
-    fetchWorkshifts();
-  }, [selectedJobId]);
-
-  // Format date for display
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString();
-  };
-
-  // Format time for display
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  // Calculate hours worked
-  const getHoursWorked = (startTime: Date, endTime: Date): string => {
-    const diffMs = endTime.getTime() - startTime.getTime();
-    const diffHrs = diffMs / (1000 * 60 * 60);
-    return diffHrs.toFixed(2);
-  };
-
-  // Handle delete workshift
-  const handleDeleteWorkshift = async (index: number) => {
-    const confirmed = await confirmationDialogService.confirm({
-      title: "Delete Workshift",
-      message: `Are you sure you want to delete this workshift? This action cannot be undone.`,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      type: "danger",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      await workshiftService.deleteWorkshift(index.toString());
-      
-      // Update the local state to reflect the deletion
-      setWorkshifts(prev => prev.filter((_, i) => i !== index));
-      
-      toastService.success("Workshift deleted successfully");
-    } catch (error) {
-      console.error("Error deleting workshift:", error);
-      toastService.error("Failed to delete workshift");
-    }
-  };
-
   // Check if a job is selected
   const hasSelectedJob = selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
 
-  // Open the modal to add a new workshift
-  const handleAddNewWorkshift = () => {
-    if (hasSelectedJob) {
-      setEditingWorkshiftId(undefined); // No ID means new workshift
-      setIsModalOpen(true);
-    } else {
-      toastService.error("Please select a job before adding a workshift");
-    }
-  };
-
-  // Open the modal to edit an existing workshift
-  const handleEditWorkshift = (index: number) => {
-    setEditingWorkshiftId(index.toString());
-    setIsModalOpen(true);
-  };
-
-  // Refresh workshifts after saving in modal
-  const handleWorkshiftSaved = () => {
-    if (selectedJobId) {
-      // Reload workshifts to show the latest data
-      workshiftService.getUserWorkshifts(selectedJobId)
-        .then(data => setWorkshifts(data))
-        .catch(error => {
-          console.error("Error reloading workshifts:", error);
-          toastService.error("Failed to refresh workshifts.");
-        });
-    }
-  };
+  // Use the workshifts custom hook
+  const {
+    workshifts,
+    loadingWorkshifts,
+    error,
+    isModalOpen,
+    setIsModalOpen,
+    editingWorkshiftId,
+    handleDeleteWorkshift,
+    handleAddNewWorkshift,
+    handleEditWorkshift,
+    handleWorkshiftSaved
+  } = useWorkshifts(selectedJobId);
 
   return (
     <section>
-      <div className="h-full md:px-6">
-        <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-20">
+      <div className="h-full px-4 sm:px-6 md:px-6 pb-8">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-10 lg:gap-20">
           <div className="w-full">
             <AnimatedText
               phrases={["Here is your latest Paycheck overview."]}
               accentWords={["latest", "Paycheck"]}
-              className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl"
+              className="mb-3 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl"
               accentClassName="text-accent"
             />
             <AnimatedText
               phrases={["Select a Job to view your latest paycheck."]}
-              className="mb-4 text-2xl font-normal md:text-3xl lg:text-4xl"
+              className="mb-4 text-xl font-normal sm:text-2xl md:text-3xl lg:text-4xl"
             />
           </div>
         </div>
-        <div className="my-5">
-          <div className="mb-8 border-b border-black pb-8">
+        <div className="my-4 sm:my-5">
+          <div className="mb-6 sm:mb-8 border-b border-black pb-6 sm:pb-8">
             <AnimatedText
               phrases={["Select Job"]}
               accentWords={["Select", "Job"]}
-              className="mb-4 block text-2xl font-semibold md:text-3xl lg:text-4xl"
+              className="mb-3 sm:mb-4 block text-xl font-semibold sm:text-2xl md:text-3xl lg:text-4xl"
               accentClassName="text-accent"
             />
 
             <Select value={selectedJobId} onValueChange={setSelectedJobId}>
-              <SelectTrigger className="w-full md:w-[300px]">
+              <SelectTrigger className="w-full max-w-[300px]">
                 <SelectValue placeholder="Select a job" />
               </SelectTrigger>
               <SelectContent>
@@ -186,12 +95,12 @@ export default function Paycheck() {
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 items-center gap-[100px] md:my-10 md:grid-cols-2 md:items-start md:gap-20">
-            <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
+          <div className="grid grid-cols-1 gap-8 md:gap-6 lg:gap-8 xl:gap-[100px] md:grid-cols-2">
+            <div className="w-full rounded-lg border-2 border-gray-200 p-3 sm:p-4 md:p-5">
               <AnimatedText
                 phrases={["Overview of workshift"]}
                 accentWords={["Overview of workshift"]}
-                className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
+                className="mb-4 text-xl font-bold sm:text-2xl md:text-2xl lg:text-3xl"
                 accentClassName="text-accent"
               />
 
@@ -199,120 +108,35 @@ export default function Paycheck() {
                 {hasSelectedJob ? (
                   <Button
                     onClick={handleAddNewWorkshift}
-                    className="rounded-lg bg-accent px-4 py-2 text-white transition-colors duration-200 hover:bg-accent/90 flex items-center gap-2"
+                    className="rounded-lg bg-accent px-3 py-1.5 sm:px-4 sm:py-2 text-white transition-colors duration-200 hover:bg-accent/90 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                   >
-                    <Plus size={16} />
+                    <Plus size={14} className="sm:size-7" />
                   Add New Workshift
                   </Button>
                 ) : (
-                  <Button disabled className="flex items-center gap-2 opacity-70">
-                    <Plus size={16} />
+                  <Button disabled className="flex items-center gap-1 sm:gap-2 opacity-70 text-xs sm:text-sm">
+                    <Plus size={14} className="sm:size-7" />
                     Select a job to add workshift
                   </Button>
                 )}
               </div>
 
-              {/* Workshift list */}
-              <div className="overflow-hidden rounded-lg border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Date
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Start Time
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        End Time
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Hours
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {!hasSelectedJob ? (
-                      <tr>
-                        <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                          Please select a job to view workshifts
-                        </td>
-                      </tr>
-                    ) : loadingWorkshifts ? (
-                      <tr>
-                        <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                          Loading workshifts...
-                        </td>
-                      </tr>
-                    ) : error ? (
-                      <tr>
-                        <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-red-500">
-                          {error}
-                        </td>
-                      </tr>
-                    ) : workshifts.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                          No workshifts found for {selectedJobId}. Create your first workshift by clicking "Add New Workshift".
-                        </td>
-                      </tr>
-                    ) : (
-                      workshifts.map((workshift, index) => (
-                        <tr key={index}>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <CalendarIcon size={16} className="mr-2 text-gray-400" />
-                              {formatDate(workshift.startTime)}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <Clock size={16} className="mr-2 text-gray-400" />
-                              {formatTime(workshift.startTime)}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <Clock size={16} className="mr-2 text-gray-400" />
-                              {formatTime(workshift.endTime)}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                            {getHoursWorked(workshift.startTime, workshift.endTime)}
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => handleEditWorkshift(index)}
-                                className="rounded p-1 text-blue-600 hover:bg-blue-100"
-                                title="Edit"
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteWorkshift(index)}
-                                className="rounded p-1 text-red-600 hover:bg-red-100"
-                                title="Delete"
-                              >
-                                <Trash size={16} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              {/* Workshift Table Component */}
+              <WorkshiftTable
+                workshifts={workshifts}
+                loadingWorkshifts={loadingWorkshifts}
+                error={error}
+                hasSelectedJob={hasSelectedJob}
+                selectedJobId={selectedJobId}
+                onEditWorkshift={handleEditWorkshift}
+                onDeleteWorkshift={handleDeleteWorkshift}
+              />
             </div>
-            <div className="w-[50wh] rounded-lg border-2 border-gray-200 p-5">
+            <div className="w-full rounded-lg border-2 border-gray-200 p-3 sm:p-4 md:p-5">
               <AnimatedText
                 phrases={["Latest user upload paycheck"]}
                 accentWords={["Latest user upload paycheck"]}
-                className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl"
+                className="mb-4 text-xl font-bold sm:text-2xl md:text-2xl lg:text-3xl"
                 accentClassName="text-accent"
               />
               <PDFUploadComponent
@@ -325,8 +149,12 @@ export default function Paycheck() {
           </div>
 
           {hasSelectedJob && (
-            <div className="mt-8 flex justify-end">
-              <Button variant="outline" onClick={() => navigate(`/jobs/${selectedJobId}`)}>
+            <div className="mt-6 sm:mt-8 flex justify-center sm:justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/jobs/${selectedJobId}`)}
+                className="w-full sm:w-auto"
+              >
                 Edit Job Details
               </Button>
             </div>
