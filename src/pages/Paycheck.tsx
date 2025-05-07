@@ -52,7 +52,7 @@ export default function Paycheck() {
     handleAddNewWorkshift,
     handleEditWorkshift,
     handleWorkshiftSaved,
-    refreshWorkshifts
+
   } = useWorkshifts(selectedJobId, refreshPaycheckData);
 
   // Generate month options for the select dropdown
@@ -78,12 +78,6 @@ export default function Paycheck() {
     }
   }, [selectedMonth, hasSelectedJob, selectedJobId, refreshPaycheckData]);
 
-  // Force workshift refresh when selectedJobId changes
-  useEffect(() => {
-    if (hasSelectedJob && refreshWorkshifts) {
-      refreshWorkshifts();
-    }
-  }, [selectedJobId, hasSelectedJob, refreshWorkshifts]);
 
   return (
     <section>
@@ -113,28 +107,40 @@ export default function Paycheck() {
                   accentClassName="text-accent"
                 />
 
-                <Select value={selectedJobId} onValueChange={setSelectedJobId}>
-                  <SelectTrigger className="w-full max-w-[300px]">
-                    <SelectValue placeholder="Select a job" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {loading ? (
-                      <SelectItem value="loading" disabled>
-                        Loading jobs...
-                      </SelectItem>
-                    ) : jobs.length === 0 ? (
-                      <SelectItem value="none" disabled>
-                        No jobs available
-                      </SelectItem>
-                    ) : (
-                      jobs.map((job) => (
-                        <SelectItem key={job.companyName} value={job.companyName}>
-                          {job.title || job.companyName}
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                  <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+                    <SelectTrigger className="w-full max-w-[300px]">
+                      <SelectValue placeholder="Select a job" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loading ? (
+                        <SelectItem value="loading" disabled>
+                          Loading jobs...
                         </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
+                      ) : jobs.length === 0 ? (
+                        <SelectItem value="none" disabled>
+                          No jobs available
+                        </SelectItem>
+                      ) : (
+                        jobs.map((job) => (
+                          <SelectItem key={job.companyName} value={job.companyName}>
+                            {job.title || job.companyName}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  
+                  {hasSelectedJob && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => navigate(`/jobs/${selectedJobId}`)}
+                      className="whitespace-nowrap"
+                    >
+                      Edit Job Details
+                    </Button>
+                  )}
+                </div>
               </div>
               
               {hasSelectedJob && (
@@ -202,18 +208,6 @@ export default function Paycheck() {
               month={selectedMonth}
             />
           </div>
-
-          {hasSelectedJob && (
-            <div className="mt-6 sm:mt-8 flex justify-center sm:justify-end">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate(`/jobs/${selectedJobId}`)}
-                className="w-full sm:w-auto"
-              >
-                Edit Job Details
-              </Button>
-            </div>
-          )}
         </div>
       </div>
 
