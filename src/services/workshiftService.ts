@@ -2,6 +2,15 @@ import { WorkShift } from "../lib/hooks/useWorkshiftForm";
 import { apiService } from "./apiService";
 import { authService } from "./authService";
 
+// Helper function to preserve local time when converting to ISO string
+const dateToISOWithLocalTime = (date: Date): string => {
+  // Preserve local time by using the individual components
+  const pad = (num: number) => String(num).padStart(2, '0');
+  
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T` +
+         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
+
 export const workshiftService = {
   // Get all workshifts for the current user
   getUserWorkshifts: async (jobId?: string): Promise<WorkShift[]> => {
@@ -38,9 +47,10 @@ export const workshiftService = {
     const userId = currentUser?.id || '';
     
     // Format the request body exactly as expected by the backend API
+    // Use our helper to preserve local time
     const requestBody = {
-      startTime: workshift.startTime.toISOString(),
-      endTime: workshift.endTime.toISOString(),
+      startTime: dateToISOWithLocalTime(workshift.startTime),
+      endTime: dateToISOWithLocalTime(workshift.endTime),
       userId: userId,
       jobId: workshift.jobId
     };
@@ -69,9 +79,10 @@ export const workshiftService = {
     const userId = currentUser?.id || '';
     
     // Format the request body according to the API schema
+    // Use our helper to preserve local time
     const requestBody = {
-      startTime: workshift.startTime.toISOString(),
-      endTime: workshift.endTime.toISOString(),
+      startTime: dateToISOWithLocalTime(workshift.startTime),
+      endTime: dateToISOWithLocalTime(workshift.endTime),
       userId: userId,
       jobId: workshift.jobId
     };

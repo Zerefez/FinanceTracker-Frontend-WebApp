@@ -82,15 +82,27 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
 
   const handleDateTimeChange = (name: string, valueStr: string) => {
     try {
-      // Parse the input value to a Date object
-      const value = new Date(valueStr);
+      // The valueStr format is YYYY-MM-DDThh:mm from datetime-local input
+      // Parse each component and create a local date
+      const [datePart, timePart] = valueStr.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes] = timePart.split(':').map(Number);
       
-      if (!isNaN(value.getTime())) {
-        setWorkshift((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      }
+      // Create the date using local components (no timezone conversion)
+      const date = new Date();
+      date.setFullYear(year);
+      date.setMonth(month - 1); // Month is 0-indexed in JavaScript
+      date.setDate(day);
+      date.setHours(hours);
+      date.setMinutes(minutes);
+      date.setSeconds(0);
+      date.setMilliseconds(0);
+      
+      // Update the workshift with the correct local time
+      setWorkshift((prev) => ({
+        ...prev,
+        [name]: date,
+      }));
     } catch (error) {
       console.error(`Error parsing date ${name}:`, error);
     }

@@ -6,10 +6,10 @@ export const formatDate = (date: Date): string => {
 };
 
 /**
- * Formats a date object to a localized time string with hours and minutes
+ * Formats a date object to a localized time string with hours and minutes in 24-hour format
  */
 export const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 };
 
 /**
@@ -45,8 +45,15 @@ export const getDecimalHoursWorked = (startTime: Date, endTime: Date): number =>
  * Formats a date for input in datetime-local field
  */
 export const formatDateForInput = (date: Date): string => {
-  const isoStr = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
-    .toISOString()
-    .slice(0, 16);
-  return isoStr;
+  // Create a copy of the date to avoid modifying the original
+  const localDate = new Date(date);
+  
+  // Format to ISO string with proper local timezone handling
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
+  const hours = String(localDate.getHours()).padStart(2, '0');
+  const minutes = String(localDate.getMinutes()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }; 
