@@ -1,6 +1,13 @@
 // src/components/JobList.tsx
 import { Link } from "react-router-dom";
 
+export interface SupplementDetail {
+  weekday: number;
+  amount: number;
+  startTime: string;
+  endTime: string;
+}
+
 export interface Job {
   companyName: string;
   hourlyRate: number;
@@ -16,6 +23,8 @@ export interface Job {
   // Additional optional fields for display
   startDate?: string;
   endDate?: string;
+  // Supplement details
+  supplementDetails?: SupplementDetail[];
 }
 
 interface JobListProps {

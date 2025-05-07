@@ -6,11 +6,11 @@ import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { Input } from "../components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "../components/ui/select";
 import { useJobForm, useLocalization } from "../lib/hooks";
 
@@ -27,6 +27,17 @@ export default function JobPage() {
     t('jobPage.weekdays.friday'),
     t('jobPage.weekdays.saturday'),
     t('jobPage.weekdays.sunday')
+  ];
+
+  // Numeric weekday values for supplement details
+  const numericWeekdays = [
+    { label: t('jobPage.weekdays.monday'), value: 0 },
+    { label: t('jobPage.weekdays.tuesday'), value: 1 },
+    { label: t('jobPage.weekdays.wednesday'), value: 2 },
+    { label: t('jobPage.weekdays.thursday'), value: 3 },
+    { label: t('jobPage.weekdays.friday'), value: 4 },
+    { label: t('jobPage.weekdays.saturday'), value: 5 },
+    { label: t('jobPage.weekdays.sunday'), value: 6 }
   ];
 
   // Tax card types
@@ -51,9 +62,13 @@ export default function JobPage() {
     isSaving,
     isLoading,
     selectedWeekdays,
+    supplementDetails,
     handleInputChange,
     handleSelectChange,
     handleWeekdayChange,
+    addSupplementDetail,
+    removeSupplementDetail,
+    updateSupplementDetail,
     handleSubmit,
     handleDelete,
   } = useJobForm();
@@ -65,6 +80,20 @@ export default function JobPage() {
       </div>
     );
   }
+
+  // Format ISO date string to local time for input fields
+  const formatTimeForInput = (isoString: string): string => {
+    const date = new Date(isoString);
+    return date.toTimeString().slice(0, 5); // Get HH:MM format
+  };
+
+  // Parse local time to ISO date string
+  const parseTimeToISO = (timeString: string): string => {
+    const today = new Date();
+    const [hours, minutes] = timeString.split(':').map(Number);
+    today.setHours(hours, minutes, 0, 0);
+    return today.toISOString();
+  };
 
   return (
     <section className="pb-12">
@@ -196,6 +225,95 @@ export default function JobPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Supplement Details Section */}
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="mb-4 text-lg font-medium">{t('jobPage.supplementDetails')}</h3>
+                
+                {supplementDetails.length === 0 ? (
+                  <p className="text-sm text-gray-500 mb-2">{t('jobPage.noSupplementDetails')}</p>
+                ) : (
+                  <div className="space-y-4">
+                    {supplementDetails.map((detail, index) => (
+                      <div key={index} className="border rounded-md p-4 relative">
+                        <button 
+                          type="button" 
+                          className="absolute top-2 right-2 text-red-500"
+                          onClick={() => removeSupplementDetail(index)}
+                        >
+                          ✕
+                        </button>
+                        
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          {/* Weekday */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">{t('jobPage.supplementWeekday')}</label>
+                            <Select
+                              value={detail.weekday.toString()}
+                              onValueChange={(value) => updateSupplementDetail(index, 'weekday', parseInt(value))}
+                            >
+                              <SelectTrigger className="mt-1">
+                                <SelectValue placeholder={t('jobPage.selectWeekday')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {numericWeekdays.map((day) => (
+                                  <SelectItem key={day.value} value={day.value.toString()}>
+                                    {day.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Amount */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">{t('jobPage.supplementAmount')}</label>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={detail.amount}
+                              onChange={(e) => updateSupplementDetail(index, 'amount', parseFloat(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+
+                          {/* Start Time */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">{t('jobPage.supplementStartTime')}</label>
+                            <Input
+                              type="time"
+                              value={formatTimeForInput(detail.startTime)}
+                              onChange={(e) => updateSupplementDetail(index, 'startTime', parseTimeToISO(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+
+                          {/* End Time */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">{t('jobPage.supplementEndTime')}</label>
+                            <Input
+                              type="time"
+                              value={formatTimeForInput(detail.endTime)}
+                              onChange={(e) => updateSupplementDetail(index, 'endTime', parseTimeToISO(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={addSupplementDetail}
+                >
+                  {t('jobPage.addSupplementDetail')}
+                </Button>
               </div>
 
               {/* Submit Button */}

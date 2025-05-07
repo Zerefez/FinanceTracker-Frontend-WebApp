@@ -1,4 +1,4 @@
-import { Job } from "../components/Job";
+import { Job, SupplementDetail } from "../components/Job";
 import { apiService } from "./apiService";
 
 // Mock data for development without backend
@@ -92,6 +92,18 @@ export const jobService = {
       return;
     } catch (error) {
       console.error(`Error deleting job at ${companyName}:`, error);
+      throw error;
+    }
+  },
+
+  // Add supplement details for a job
+  addSupplementDetails: async (companyName: string, supplementDetails: SupplementDetail[]): Promise<void> => {
+    try {
+      // POST to the supplement details endpoint with company name as query parameter
+      await apiService.post(`/SupplementDetails?companyName=${encodeURIComponent(companyName)}`, supplementDetails);
+      return;
+    } catch (error) {
+      console.error(`Error adding supplement details for job ${companyName}:`, error);
       throw error;
     }
   },

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Job } from "../../components/Job";
+import { Job, SupplementDetail } from "../../components/Job";
 import { confirmationDialogService } from "../../components/ui/confirmation-dialog";
 import { toastService } from "../../components/ui/toast";
 import { jobService } from "../../services/jobService";
@@ -26,6 +26,7 @@ export function useJobForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
+  const [supplementDetails, setSupplementDetails] = useState<SupplementDetail[]>([]);
 
   // Get job display name from Company Name
   const getJobDisplayName = (): string => {
@@ -120,6 +121,36 @@ export function useJobForm() {
     });
   };
 
+  // Add supplement detail
+  const addSupplementDetail = () => {
+    setSupplementDetails(prev => [
+      ...prev,
+      {
+        weekday: 0,
+        amount: 0,
+        startTime: new Date().toISOString(),
+        endTime: new Date().toISOString()
+      }
+    ]);
+  };
+
+  // Remove supplement detail
+  const removeSupplementDetail = (index: number) => {
+    setSupplementDetails(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Update supplement detail
+  const updateSupplementDetail = (index: number, field: keyof SupplementDetail, value: any) => {
+    setSupplementDetails(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: value
+      };
+      return updated;
+    });
+  };
+
   const handleDelete = async (companyName: string, e: React.FormEvent) => {
     e.preventDefault();
 
@@ -163,9 +194,21 @@ export function useJobForm() {
       let savedJob: Job;
       if (isNewJob) {
         savedJob = await jobService.registerJob(jobToSave);
+        
+        // If we have supplement details, save them too
+        if (supplementDetails.length > 0) {
+          await jobService.addSupplementDetails(savedJob.companyName, supplementDetails);
+        }
+        
         toastService.success(t('jobPage.createSuccess'));
       } else {
         savedJob = await jobService.updateJob(jobToSave);
+        
+        // If we have supplement details, save them too
+        if (supplementDetails.length > 0) {
+          await jobService.addSupplementDetails(savedJob.companyName, supplementDetails);
+        }
+        
         toastService.success(t('jobPage.updateSuccess'));
       }
 
@@ -192,10 +235,14 @@ export function useJobForm() {
     isSaving,
     isLoading,
     selectedWeekdays,
+    supplementDetails,
     getJobDisplayName,
     handleInputChange,
     handleSelectChange,
     handleWeekdayChange,
+    addSupplementDetail,
+    removeSupplementDetail,
+    updateSupplementDetail,
     handleSubmit,
     handleDelete,
   };
