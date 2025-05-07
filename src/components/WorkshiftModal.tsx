@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { WorkShift } from "../lib/hooks/useWorkshiftForm";
+import { formatDateForInput } from "../lib/utils/dateTimeUtils";
 import { workshiftService } from "../services/workshiftService";
 import { Button } from "./ui/button";
 import { confirmationDialogService } from "./ui/confirmation-dialog";
@@ -25,11 +26,6 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Format date for datetime-local input
-  const formatDateForInput = (date: Date): string => {
-    return date.toISOString().slice(0, 16);
-  };
-
   // Load workshift data if editing
   useEffect(() => {
     const fetchWorkshift = async () => {
@@ -39,9 +35,14 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
       try {
         if (!workshiftId) {
           // Initialize empty workshift for new
+          const now = new Date();
+          // Set default end time to 1 hour after start time
+          const endTime = new Date(now);
+          endTime.setHours(now.getHours() + 1);
+          
           setWorkshift({
-            startTime: new Date(),
-            endTime: new Date(),
+            startTime: now,
+            endTime: endTime,
             jobId: jobId,
           });
           setIsNewWorkshift(true);
@@ -54,6 +55,11 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
               if (jobId && !workshiftData.jobId) {
                 workshiftData.jobId = jobId;
               }
+              
+              // Ensure dates are properly parsed
+              workshiftData.startTime = new Date(workshiftData.startTime);
+              workshiftData.endTime = new Date(workshiftData.endTime);
+              
               setWorkshift(workshiftData);
             } else {
               console.error(`Workshift with id ${workshiftId} not found`);
@@ -74,12 +80,19 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
     fetchWorkshift();
   }, [isOpen, workshiftId, jobId, onClose]);
 
-  const handleDateTimeChange = (name: string, value: Date | null) => {
-    if (value) {
-      setWorkshift((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+  const handleDateTimeChange = (name: string, valueStr: string) => {
+    try {
+      // Parse the input value to a Date object
+      const value = new Date(valueStr);
+      
+      if (!isNaN(value.getTime())) {
+        setWorkshift((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    } catch (error) {
+      console.error(`Error parsing date ${name}:`, error);
     }
   };
 
@@ -107,8 +120,21 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
     }
   };
 
+  const validateWorkshiftTimes = (): boolean => {
+    if (workshift.endTime <= workshift.startTime) {
+      toastService.error("End time must be after start time");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate times
+    if (!validateWorkshiftTimes()) {
+      return;
+    }
     
     setIsSaving(true);
 
@@ -152,7 +178,7 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
             <Input
               type="datetime-local"
               value={formatDateForInput(workshift.startTime)}
-              onChange={(e) => handleDateTimeChange("startTime", new Date(e.target.value))}
+              onChange={(e) => handleDateTimeChange("startTime", e.target.value)}
               className="mt-1"
               required
             />
@@ -164,7 +190,7 @@ export default function WorkshiftModal({ isOpen, onClose, jobId, workshiftId, on
             <Input
               type="datetime-local"
               value={formatDateForInput(workshift.endTime)}
-              onChange={(e) => handleDateTimeChange("endTime", new Date(e.target.value))}
+              onChange={(e) => handleDateTimeChange("endTime", e.target.value)}
               className="mt-1"
               required
             />
