@@ -51,7 +51,8 @@ export default function Paycheck() {
     handleDeleteWorkshift,
     handleAddNewWorkshift,
     handleEditWorkshift,
-    handleWorkshiftSaved
+    handleWorkshiftSaved,
+    refreshWorkshifts
   } = useWorkshifts(selectedJobId, refreshPaycheckData);
 
   // Generate month options for the select dropdown
@@ -70,12 +71,19 @@ export default function Paycheck() {
     { value: 12, label: "December" },
   ];
 
-  // Refresh paycheck data when month changes
+  // Refresh paycheck data when selectedJobId or month changes
   useEffect(() => {
     if (hasSelectedJob) {
       refreshPaycheckData();
     }
-  }, [selectedMonth, hasSelectedJob]);
+  }, [selectedMonth, hasSelectedJob, selectedJobId, refreshPaycheckData]);
+
+  // Force workshift refresh when selectedJobId changes
+  useEffect(() => {
+    if (hasSelectedJob && refreshWorkshifts) {
+      refreshWorkshifts();
+    }
+  }, [selectedJobId, hasSelectedJob, refreshWorkshifts]);
 
   return (
     <section>

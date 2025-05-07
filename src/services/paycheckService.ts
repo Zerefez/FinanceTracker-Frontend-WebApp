@@ -10,7 +10,7 @@ export interface PaycheckData {
   salaryAfterTax: number;
   taxDeduction: number;
   amContribution: number;
-  workedHours: string;
+  workedHours: number;
 }
 
 export const paycheckService = {

@@ -13,10 +13,12 @@ export const formatTime = (date: Date): string => {
 };
 
 /**
- * Calculates the hours worked between two dates and returns as a string with 2 decimal places
+ * Calculates the hours worked between two dates and returns as a string in the format 'Xh Ym'
  */
 export const getHoursWorked = (startTime: Date, endTime: Date): string => {
   const diffMs = endTime.getTime() - startTime.getTime();
   const diffHrs = diffMs / (1000 * 60 * 60);
-  return diffHrs.toFixed(2);
+  const hours = Math.floor(diffHrs);
+  const minutes = Math.round((diffHrs - hours) * 60);
+  return `${hours}h ${minutes}m`;
 }; 

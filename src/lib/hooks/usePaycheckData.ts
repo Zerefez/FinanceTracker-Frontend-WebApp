@@ -52,17 +52,12 @@ export const usePaycheckData = (companyName?: string, month?: number) => {
     return new Intl.NumberFormat('da-DK', { style: 'percent', maximumFractionDigits: 2 }).format(value);
   };
 
-  // Parse worked hours from the format "00:00:00.0000000"
-  const parseWorkedHours = (hoursString: string): string => {
-    if (!hoursString) return "0h 0m";
-    
-    const match = hoursString.match(/(\d+):(\d+):(\d+)/);
-    if (!match) return "0h 0m";
-    
-    const hours = parseInt(match[1]);
-    const minutes = parseInt(match[2]);
-    
-    return `${hours}h ${minutes}m`;
+  // Parse worked hours from a number (e.g., 10.89 hours)
+  const parseWorkedHours = (hours: number): string => {
+    if (!hours || isNaN(hours)) return "0h 0m";
+    const wholeHours = Math.floor(hours);
+    const minutes = Math.round((hours - wholeHours) * 60);
+    return `${wholeHours}h ${minutes}m`;
   };
 
   return {

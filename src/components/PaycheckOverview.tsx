@@ -1,5 +1,5 @@
 import { Clock, CreditCard, DollarSign, Percent, PiggyBank, Umbrella } from "lucide-react";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { usePaycheckData } from "../lib/hooks/usePaycheckData";
 import { Skeleton } from "./ui/skeleton";
 
@@ -28,6 +28,11 @@ const PaycheckOverview = forwardRef<PaycheckOverviewRef, PaycheckOverviewProps>(
     useImperativeHandle(ref, () => ({
       refresh: refreshPaycheckData
     }));
+
+    // Force refresh when company or month changes
+    useEffect(() => {
+      refreshPaycheckData();
+    }, [companyName, month, refreshPaycheckData]);
 
     const StatItem = ({ icon: Icon, label, value, className = "" }: { icon: any, label: string, value: string, className?: string }) => (
       <div className="flex items-start space-x-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
