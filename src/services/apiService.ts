@@ -165,14 +165,14 @@ logger.info('User action', { userId: '123', action: 'login' });
 })();
 
 async function fetchData() {
-  logger.logApiRequest('GET', '');
+  logger.logApiRequest('GET', '/example');
   try {
-    const response = await fetch('');
-    const data = await response.json();
-    logger.logApiResponse('GET', '', response.status, data);
+    // Use apiService instead of direct fetch
+    const data = await apiService.get('/example');
+    logger.logApiResponse('GET', '/example', 200, data);
     return data;
   } catch (error) {
-    logger.logApiError('GET', '', error);
+    logger.logApiError('GET', '/example', error);
     throw error;
   }
 } 

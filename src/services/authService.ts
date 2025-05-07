@@ -1,3 +1,5 @@
+import { apiService } from './apiService';
+
 interface User {
   id: string;
   email: string;
@@ -14,53 +16,10 @@ interface RegisterResponse {
   message: string;
 }
 
-// API URL - Use relative URL to leverage the Vite proxy
-const API_URL = "/api";
-
 // Security constants
 const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes (if token expires in 15 mins)
 const AUTH_TOKEN_KEY = "auth_token";
 const USER_DATA_KEY = "user_data";
-
-// Common fetch helper function to reduce redundancy
-const fetchWithAuth = async (
-  endpoint: string,
-  options: RequestInit = {},
-  parseAsJson = false,
-): Promise<any> => {
-  const url = `${API_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
-
-  // Default headers for all requests
-  const headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    ...(options.headers || {}),
-  };
-
-  const requestOptions = {
-    ...options,
-    headers,
-  };
-
-  const response = await fetch(url, requestOptions);
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    let errorMessage = "Request failed";
-
-    try {
-      const errorData = JSON.parse(errorText);
-      errorMessage = errorData.detail || errorData.message || errorMessage;
-    } catch (e) {
-      errorMessage = errorText || errorMessage;
-    }
-
-    throw new Error(errorMessage);
-  }
-
-  // Parse response based on content type or requested format
-  return parseAsJson ? response.json() : response.text();
-};
 
 // Helper function to parse user data from JWT token
 const parseUserFromToken = (token: string): User | null => {
@@ -89,36 +48,23 @@ const parseUserFromToken = (token: string): User | null => {
 };
 
 export const authService = {
+  // Get token from localStorage
+  getToken: (): string | null => {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  },
+
   // Login with username and password
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
       console.log("Attempting login for user:", username);
 
-      // Try using the API URL with proxy first
-      const url = `${API_URL}/Accounts/login`;
-      console.log(`Making login request to: ${url}`);
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "*/*",
-        },
-        credentials: "include", // Include cookies if server uses them
-        body: JSON.stringify({ username, password }),
+      // Use apiService with skipAuth option since this is a login endpoint
+      const token = await apiService.request<string>('/Accounts/login', {
+        method: 'POST',
+        body: { username, password },
+        skipAuth: true,
+        parseAsJson: false
       });
-
-      console.log("Login response status:", response.status);
-      console.log("Login response headers:", [...response.headers.entries()]);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Login failed with status:", response.status, errorText);
-        throw new Error(errorText || "Login failed");
-      }
-
-      // Get the raw token string
-      const token = await response.text();
 
       console.log("Received token length:", token ? token.length : 0);
       console.log("Received token preview:", token ? `${token.substring(0, 15)}...` : "No token");
@@ -164,14 +110,11 @@ export const authService = {
     }
 
     try {
-      const message = await fetchWithAuth("/Accounts/register", {
-        method: "POST",
-        body: JSON.stringify({
-          Email: email,
-          Password: password,
-          FullName: fullName,
-        }),
-      });
+      const message = await apiService.post<string>('/Accounts/register', {
+        Email: email,
+        Password: password,
+        FullName: fullName,
+      }, { skipAuth: true, parseAsJson: false });
 
       return { success: true, message };
     } catch (error) {
@@ -183,15 +126,7 @@ export const authService = {
   // Validate if user exists
   validateUser: async (email: string): Promise<boolean> => {
     try {
-      const data = await fetchWithAuth(
-        "/Account/validate",
-        {
-          method: "POST",
-          body: JSON.stringify({ Email: email }),
-        },
-        true,
-      );
-
+      const data = await apiService.post<{ success: boolean }>('/Account/validate', { Email: email });
       return data.success === true;
     } catch (error) {
       console.error("User validation failed:", error);
@@ -264,7 +199,4 @@ export const authService = {
       return false;
     }
   },
-
-  // Get the authentication token
-  getToken: (): string | null => localStorage.getItem(AUTH_TOKEN_KEY),
 };
