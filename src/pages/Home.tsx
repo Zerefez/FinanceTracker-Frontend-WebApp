@@ -26,9 +26,7 @@ export default function Home() {
           </div>
         </div>
         <div className="my-5 grid grid-cols-1 items-center gap-[100px] md:my-10 md:grid-cols-2 md:items-start md:gap-20">
-            <div className="flex justify-center">
-              <JobOverviewPage />
-            </div>
+          <JobOverviewPage />
           <SUSection />
         </div>
       </div>
