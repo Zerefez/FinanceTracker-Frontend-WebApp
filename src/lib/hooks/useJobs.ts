@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Job } from "../../components/Job";
 import { toastService } from "../../components/ui/toast";
+import { Job } from "../../pages/JobOverviewPage";
 import { jobService } from "../../services/jobService";
 import { localStorageService } from "../../services/localStorageService";
 

@@ -1,20 +1,20 @@
 // src/pages/jobs/[id].tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import AnimatedText from "../components/ui/animation/animatedText";
-import { Button } from "../components/ui/button";
-import { Checkbox } from "../components/ui/checkbox";
-import { Input } from "../components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../components/ui/select";
 import { useJobForm, useLocalization } from "../lib/hooks";
+import AnimatedText from "./ui/animation/animatedText";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
-export default function JobPage() {
+export default function JobDetail() {
   const navigate = useNavigate();
   const { t } = useLocalization();
 

@@ -1,4 +1,4 @@
-// src/components/JobList.tsx
+// src/components/JobOver.tsx
 import { Link } from "react-router-dom";
 
 export interface SupplementDetail {
@@ -27,11 +27,11 @@ export interface Job {
   supplementDetails?: SupplementDetail[];
 }
 
-interface JobListProps {
+interface JobOverviewProps {
   jobs: Job[];
 }
 
-export default function JobList({ jobs }: JobListProps) {
+export default function JobOverview({ jobs }: JobOverviewProps) {
   return (
     <div className="w-full rounded-lg border-2 border-gray-200 p-5">
       <h2 className="mb-4 text-center text-2xl font-bold text-accent md:text-3xl lg:text-4xl">

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Job } from "../components/Job";
 import SUSection from "../components/SU";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { useJobs, useLocalization } from "../lib/hooks";
+import { Job } from "./JobOverviewPage";
 
 // Weekday options for reference
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];

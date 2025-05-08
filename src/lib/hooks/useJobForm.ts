@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Job, SupplementDetail } from "../../components/Job";
 import { confirmationDialogService } from "../../components/ui/confirmation-dialog";
 import { toastService } from "../../components/ui/toast";
+import { Job, SupplementDetail } from "../../pages/JobOverviewPage";
 import { jobService } from "../../services/jobService";
 import { localStorageService } from "../../services/localStorageService";
 import { useLocalization } from "./useLocalization";

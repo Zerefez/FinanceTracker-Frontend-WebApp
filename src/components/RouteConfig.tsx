@@ -3,12 +3,12 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/hooks";
 import Contact from "../pages/Contact";
 import Home from "../pages/Home";
-import JobPage from "../pages/JobPage";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
 import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
+import JobPage from "./JobDetail";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const RouteConfig = () => {

@@ -1,4 +1,4 @@
-import { Job, SupplementDetail } from "../components/Job";
+import { Job, SupplementDetail } from "../pages/JobOverviewPage";
 import { apiService } from "./apiService";
 
 // Mock data for development without backend
