@@ -6,7 +6,7 @@ export interface PaycheckData {
   salaryBeforeTax: number;
   holidaySupplement: number;
   pension: number;
-  holidaycompensation: number;
+  vacationPay: number;
   salaryAfterTax: number;
   taxDeduction: number;
   amContribution: number;

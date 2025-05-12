@@ -1,13 +1,12 @@
 import {
-    DEFAULT_GRANT_AMOUNTS,
-    GRANT_STATUS,
-    HOUSING_STATUS,
-    MONTH_NAMES,
-    PERSON_STATUS,
-    TAX_RATES
+  DEFAULT_GRANT_AMOUNTS,
+  GRANT_STATUS,
+  HOUSING_STATUS,
+  MONTH_NAMES,
+  PERSON_STATUS,
+  TAX_RATES
 } from '../data/studentGrantData';
 import { SUMonthData } from '../lib/hooks/useStudentGrant';
-import { apiService } from './apiService';
 
 interface TaxRates {
   main: number;
@@ -37,18 +36,8 @@ export const calculateNetto = (brutto: number, tax: number): number => {
 /**
  * Generate default SU data for all months in a year
  */
-export const generateDefaultSUData = async (): Promise<SUMonthData[]> => {
-  try {
-    // Try to fetch SU data from the API
-    const apiData = await apiService.get<SUMonthData[]>('/StudentGrants');
-    if (apiData && apiData.length > 0) {
-      return apiData;
-    }
-  } catch (error) {
-    console.log('Could not fetch SU data from API, using local data', error);
-  }
-  
-  // Fallback to local data generation if API fails
+export const generateDefaultSUData = (): SUMonthData[] => {
+  // Generate local dummy data directly
   const defaultBrutto = DEFAULT_GRANT_AMOUNTS.LIVING_AWAY;
   const defaultTax = calculateTax(defaultBrutto, 'main');
   const defaultNetto = calculateNetto(defaultBrutto, defaultTax);
@@ -107,24 +96,10 @@ export const calculateYearlyTotals = (months: SUMonthData[]) => {
   return { totalBrutto, totalNetto };
 };
 
-/**
- * Save student grant data to the server
- */
-export const saveSUData = async (months: SUMonthData[]): Promise<boolean> => {
-  try {
-    await apiService.post('/StudentGrants', months);
-    return true;
-  } catch (error) {
-    console.error('Failed to save SU data to server', error);
-    return false;
-  }
-};
-
 export default {
   calculateTax,
   calculateNetto,
   generateDefaultSUData,
   updateAllMonths,
   calculateYearlyTotals,
-  saveSUData
 }; 

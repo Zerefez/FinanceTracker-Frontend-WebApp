@@ -104,8 +104,8 @@ const PaycheckOverview = forwardRef<PaycheckOverviewRef, PaycheckOverviewProps>(
             />
             <StatItem 
               icon={Umbrella} 
-              label="Holiday Compensation" 
-              value={formatCurrency(paycheckData.holidaycompensation)} 
+              label="Vacation Pay" 
+              value={formatCurrency(paycheckData.vacationPay)} 
               className="bg-indigo-500"
             />
             {paycheckData.pension > 0 && (

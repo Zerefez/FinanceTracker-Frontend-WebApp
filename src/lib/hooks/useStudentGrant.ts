@@ -27,6 +27,7 @@ export const useStudentGrant = () => {
   
   // Initialize data on component mount
   useEffect(() => {
+    // Get the dummy data from the service
     const initialMonths = suService.generateDefaultSUData();
     setMonthsData(initialMonths);
     
