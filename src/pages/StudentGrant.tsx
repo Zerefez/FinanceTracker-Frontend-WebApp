@@ -100,7 +100,10 @@ export default function StudentGrant() {
             value={suBrutto}
             onChange={(e) => handleSuBruttoChange(Number(e.target.value))}
             className="border rounded px-2 py-1 text-sm md:text-base w-24"
+            min="0"
+            step="1"
           />
+          <span className="ml-2 text-sm md:text-base">kr.</span>
         </div>
       </div>
       
@@ -148,7 +151,6 @@ export default function StudentGrant() {
           suBrutto={suBrutto} 
           taxCard={taxCard} 
           housingStatus={housingStatus}
-          onSuChange={handleSuBruttoChange} 
           onTaxCardChange={handleTaxCardChange}
           onHousingChange={handleHousingChange}
         />

@@ -43,6 +43,11 @@ export function SUSection({
     );
   };
 
+  // Calculate remaining earnings
+  const calculateRemainingEarnings = () => {
+    return Math.max(0, suData.incomeCeiling - suData.currentIncome);
+  };
+
   // Generate SVG path for dynamic progress
   const generateProgressPath = (percentage: number) => {
     const radius = 15.9155;
@@ -63,15 +68,16 @@ export function SUSection({
 
   const percentage = calculatePercentage();
   const progressPaths = generateProgressPath(percentage);
+  const remainingEarnings = calculateRemainingEarnings();
 
   // Handle SU brutto change from slider
   const handleSuDataChange = (value: number) => {
     setSUData(prev => ({
       ...prev, 
-      currentIncome: value
+      currentIncome: value,
     }));
     
-    // Notify parent component if callback provided
+    // Notify parent component if callback provided - but keep this separate from the suBrutto value
     if (onSuChange) {
       onSuChange(value);
     }
@@ -168,7 +174,7 @@ export function SUSection({
         <div className="bg-gray-100 rounded-lg p-3 flex justify-between items-center">
           <div>
             <p className="text-sm text-gray-600">{t('studentGrant.remainingEarnings')}</p>
-            <p className="font-semibold text-accent">{suData.maxEarnable.toLocaleString()} kr.</p>
+            <p className="font-semibold text-accent">{remainingEarnings.toLocaleString()} kr.</p>
             <p className="text-xs text-gray-500">
               {t('studentGrant.maxIncome')}: {suData.incomeCeiling.toLocaleString()} kr.
             </p>
