@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 .qodo
 .drawio
-
+.puml
 
 .FinanceTracker/*
 .AuthServer/*
