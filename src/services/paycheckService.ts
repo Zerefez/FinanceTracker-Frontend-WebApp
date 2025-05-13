@@ -13,6 +13,7 @@ export interface PaycheckData {
   workedHours: number;
 }
 
+
 export const paycheckService = {
   /**
    * Gets paycheck data for a specific company and month
@@ -30,5 +31,6 @@ export const paycheckService = {
     }
     
     return apiService.get<PaycheckData>(`/Paychecks?${queryParams.toString()}`);
-  }
+  },
+
 }; 

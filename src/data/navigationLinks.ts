@@ -6,6 +6,7 @@ export interface NavLink {
 export const mainLinks: NavLink[] = [
   { title: "HOME", href: "/" },
   { title: "PAYCHECK", href: "/paycheck" },
+  { title: "COMPARE PAYCHECK", href: "/paycheck-compare" },
   { title: "STUDENT GRANT", href: "/student-grant" },
   { title: "VACATION PAY", href: "/vacation-pay" }
 ];

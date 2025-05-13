@@ -131,15 +131,27 @@ export default function Paycheck() {
                     </SelectContent>
                   </Select>
                   
-                  {hasSelectedJob && (
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigate(`/jobs/${selectedJobId}`)}
-                      className="whitespace-nowrap"
-                    >
-                      Edit Job Details
-                    </Button>
-                  )}
+                  <div className="flex gap-2">
+                    {hasSelectedJob && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => navigate(`/jobs/${selectedJobId}`)}
+                        className="whitespace-nowrap"
+                      >
+                        Edit Job Details
+                      </Button>
+                    )}
+                    
+                    {hasSelectedJob && (
+                      <Button 
+                        variant="submit" 
+                        onClick={() => navigate(`/paycheck-compare/${selectedJobId}`)}
+                        className="whitespace-nowrap"
+                      >
+                        Compare With Actual Paycheck
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
               

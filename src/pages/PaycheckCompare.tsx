@@ -1,32 +1,36 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import VacationPayOverview, { VacationPayOverviewRef } from "../components/VacationPayOverview";
+import PaycheckCompare from "../components/PaycheckCompare";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "../components/ui/select";
 import { usePaycheck } from "../lib/hooks";
+import { usePaycheckData } from "../lib/hooks/usePaycheckData";
 
-export default function VacationPay() {
+export default function PaycheckComparePage() {
   const { companyName } = useParams<{ companyName: string }>();
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
-  const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   
-  // Reference to the vacation pay overview component for refreshing
-  const vacationPayOverviewRef = useRef<VacationPayOverviewRef>(null);
-  
-  // Function to refresh the vacation pay data
-  const refreshVacationPayData = () => {
-    vacationPayOverviewRef.current?.refresh();
+  // Use the paycheck data hook to get the generated paycheck
+  const { 
+    paycheckData, 
+    loading: loadingPaycheck, 
+    refreshPaycheckData 
+  } = usePaycheckData(selectedJobId, selectedMonth);
+
+  // Handle reset
+  const handleReset = () => {
+    refreshPaycheckData();
   };
-  
+
   // Set the selected job when URL param exists
   useEffect(() => {
     if (companyName && jobs.some((job) => job.companyName === companyName)) {
@@ -37,32 +41,35 @@ export default function VacationPay() {
   // Check if a job is selected
   const hasSelectedJob = selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
 
-  // Generate year options for the select dropdown (current year and 4 previous years)
-  const yearOptions = Array.from({ length: 5 }, (_, i) => ({
-    value: currentYear - i,
-    label: (currentYear - i).toString()
-  }));
-
-  // Refresh vacation pay data when selectedJobId or year changes
-  useEffect(() => {
-    if (hasSelectedJob) {
-      refreshVacationPayData();
-    }
-  }, [selectedYear, hasSelectedJob, selectedJobId]);
+  // Generate month options for the select dropdown
+  const monthOptions = [
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ];
 
   return (
     <section>
-      <div className="h-[100vh] px-4 sm:px-6 md:px-6 pb-8">
+      <div className="h-full px-4 sm:px-6 md:px-6 pb-8">
         <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-10 lg:gap-20">
           <div className="w-full">
             <AnimatedText
-              phrases={["Vacation Pay Overview"]}
-              accentWords={["Vacation Pay"]}
+              phrases={["Compare your actual paycheck with the generated paycheck."]}
+              accentWords={["Compare", "actual", "generated"]}
               className="mb-3 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl"
               accentClassName="text-accent"
             />
             <AnimatedText
-              phrases={["View your total vacation pay for a selected year."]}
+              phrases={["Input values from your real paycheck and see the difference."]}
               className="mb-4 text-xl font-normal sm:text-2xl md:text-3xl lg:text-4xl"
             />
           </div>
@@ -105,10 +112,10 @@ export default function VacationPay() {
                   {hasSelectedJob && (
                     <Button 
                       variant="outline" 
-                      onClick={() => navigate(`/jobs/${selectedJobId}`)}
+                      onClick={() => navigate(`/paycheck`)}
                       className="whitespace-nowrap"
                     >
-                      Edit Job Details
+                      View Paycheck
                     </Button>
                   )}
                 </div>
@@ -116,15 +123,15 @@ export default function VacationPay() {
               
               {hasSelectedJob && (
                 <div>
-                  <p className="mb-2 text-sm text-gray-600">Select Year</p>
-                  <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(Number(value))}>
+                  <p className="mb-2 text-sm text-gray-600">Select Month</p>
+                  <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(Number(value))}>
                     <SelectTrigger className="w-full max-w-[200px]">
-                      <SelectValue placeholder="Select year" />
+                      <SelectValue placeholder="Select month" />
                     </SelectTrigger>
                     <SelectContent>
-                      {yearOptions.map((year) => (
-                        <SelectItem key={year.value} value={year.value.toString()}>
-                          {year.label}
+                      {monthOptions.map((month) => (
+                        <SelectItem key={month.value} value={month.value.toString()}>
+                          {month.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -134,16 +141,14 @@ export default function VacationPay() {
             </div>
           </div>
 
-          <div className="max-w-2xl mx-auto">
-            {/* Vacation Pay Overview Component */}
-            <VacationPayOverview 
-              ref={vacationPayOverviewRef}
-              companyName={selectedJobId} 
-              initialYear={selectedYear}
-            />
-          </div>
+          {/* Paycheck Compare Component */}
+          <PaycheckCompare 
+            generatedPaycheck={paycheckData} 
+            onReset={handleReset}
+            loading={loadingPaycheck}
+          />
         </div>
       </div>
     </section>
   );
-}
+} 

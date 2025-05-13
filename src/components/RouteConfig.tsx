@@ -6,8 +6,10 @@ import Home from "../pages/Home";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import Paycheck from "../pages/Paycheck";
+import PaycheckComparePage from "../pages/PaycheckCompare";
 import { RegisterPage } from "../pages/RegisterPage";
 import StudentGrant from "../pages/StudentGrant";
+import VacationPay from "../pages/VacationPay";
 import JobPage from "./JobDetail";
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -55,6 +57,10 @@ const RouteConfig = () => {
           <Route index element={<Home />} />
           <Route path="paycheck" element={<Paycheck />} />
           <Route path="paycheck/:PaycheckId" element={<Paycheck />} />
+          <Route path="paycheck-compare" element={<PaycheckComparePage />} />
+          <Route path="paycheck-compare/:companyName" element={<PaycheckComparePage />} />
+          <Route path="vacation-pay" element={<VacationPay />} />
+          <Route path="vacation-pay/:companyName" element={<VacationPay />} />
           <Route path="student-grant" element={<StudentGrant />} />
           <Route path="jobs/:companyName" element={<JobPage />} />
           <Route path="jobs/new" element={<JobPage />} />
