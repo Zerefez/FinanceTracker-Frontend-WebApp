@@ -1,0 +1,99 @@
+@startuml Login Component Class Diagram
+
+' Define main components for Login only
+package "Pages" {
+  class LoginPage {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    + handleSubmit(): void
+    + useLoginForm()
+    + useAuth()
+  }
+}
+
+package "Components" {
+  class Login {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    + handleSubmit(): void
+    + onUsernameChange(): void
+    + onPasswordChange(): void
+    + onReset(): void
+  }
+  
+  class RouteConfig {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + renderRoutes(): ReactNode
+  }
+  
+  class ProtectedRoutes {
+    - isAuthenticated: boolean
+    - isVerifying: boolean
+    + checkAccess(): void
+    + useProtectedRoute()
+  }
+}
+
+package "Services" {
+  class authService {
+    + login(username: string, password: string): Promise<LoginResponse>
+    + isAuthenticated(): boolean
+    + getCurrentUser(): User | null
+    + getToken(): string | null
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + post<T>(endpoint: string, body, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class useAuth {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + login(username: string, password: string): Promise<LoginResponse>
+  }
+  
+  class useLoginForm {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    - successMessage: string
+    + setUsername(username: string): void
+    + setPassword(password: string): void
+    + handleLogin(): Promise<void>
+    + resetForm(): void
+  }
+  
+  class useProtectedRoute {
+    - isAuthenticated: boolean
+    - isVerifying: boolean
+    + location: Location
+  }
+}
+
+' Define relationships
+LoginPage --> Login : uses
+LoginPage --> useLoginForm : uses
+LoginPage --> useAuth : uses
+
+Login --> authService : uses
+
+RouteConfig --> LoginPage : routes to
+RouteConfig --> ProtectedRoutes : routes to
+RouteConfig --> useAuth : uses
+
+ProtectedRoutes --> useProtectedRoute : uses
+
+useLoginForm --> useAuth : uses
+useAuth --> authService : uses
+authService --> apiService : uses
+
+@enduml 

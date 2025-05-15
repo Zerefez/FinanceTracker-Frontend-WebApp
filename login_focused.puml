@@ -1,0 +1,118 @@
+@startuml Login Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "Login Component Class Diagram"
+
+' Define main components for Login only
+package "Pages" {
+  class LoginPage {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    + handleSubmit(): void
+    + useLoginForm()
+    + useAuth()
+  }
+}
+
+package "Components" {
+  class Login {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    + handleSubmit(): void
+    + onUsernameChange(): void
+    + onPasswordChange(): void
+    + onReset(): void
+  }
+  
+  class RouteConfig {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + renderRoutes(): ReactNode
+  }
+  
+  class ProtectedRoutes {
+    - isAuthenticated: boolean
+    - isVerifying: boolean
+    + checkAccess(): void
+    + useProtectedRoute()
+  }
+}
+
+package "Services" {
+  class authService {
+    + login(username: string, password: string): Promise<LoginResponse>
+    + isAuthenticated(): boolean
+    + getCurrentUser(): User | null
+    + getToken(): string | null
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + post<T>(endpoint: string, body, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class useAuth {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + login(username: string, password: string): Promise<LoginResponse>
+  }
+  
+  class useLoginForm {
+    - username: string
+    - password: string
+    - isLoading: boolean
+    - errorMessage: string
+    - successMessage: string
+    + setUsername(username: string): void
+    + setPassword(password: string): void
+    + handleLogin(): Promise<void>
+    + resetForm(): void
+  }
+  
+  class useProtectedRoute {
+    - isAuthenticated: boolean
+    - isVerifying: boolean
+    + location: Location
+  }
+}
+
+' Define relationships with proper UML notation as per the new image
+' Directed association → (solid line with arrow)
+' Inheritance ▷ (solid line with empty triangle)
+' Implementation → (dashed line with empty triangle)
+' Dependency → (dashed line with arrow)
+' Aggregation ◇ (solid line with empty diamond)
+' Composition ♦ (solid line with filled diamond)
+
+' Page to Component associations (directed association)
+LoginPage --> Login
+
+' Page to Hook dependencies (pages bruger hooks midlertidigt)
+LoginPage ..> useLoginForm
+LoginPage ..> useAuth
+
+' Service dependencies - dependency pilen peger mod den klasse der bliver brugt
+Login ..> authService
+authService o-- apiService
+
+' Routing associations
+RouteConfig --> LoginPage
+RouteConfig ..> useAuth
+ProtectedRoutes ..> useProtectedRoute
+
+' Hook associations
+useLoginForm ..> useAuth
+useAuth o-- authService
+
+@enduml 

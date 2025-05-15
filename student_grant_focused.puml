@@ -1,0 +1,97 @@
+@startuml StudentGrant Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "StudentGrant Component Class Diagram"
+
+' Define main components for StudentGrant functionality
+package "Pages" {
+  class StudentGrant {
+    + year: string
+    + messageNumber: string
+    + suBrutto: number
+    + taxCard: string
+    + housingStatus: string
+    + monthsData: array
+    + totalBrutto: number
+    + totalNetto: number
+    + handleSuBruttoChange(value: number): void
+    + handleTaxCardChange(card: string): void
+    + handleHousingChange(status: string): void
+    + handleYearChange(year: string): void
+    + handleMessageNumberChange(msgNumber: string): void
+  }
+}
+
+package "Components" {
+  class SUSection {
+    - suBrutto: number
+    - taxCard: string
+    - housingStatus: string
+    - selectedYear: string
+    - suData: SUData
+    + onSuChange(value: number): void
+    + onTaxCardChange(card: string): void
+    + onHousingChange(status: string): void
+    + handleYearChange(year: string): void
+    + calculatePercentage(): number
+    + calculateRemainingEarnings(): number
+  }
+}
+
+package "Services" {
+  class suService {
+    + calculateTax(brutto: number, taxCard: string): number
+    + calculateNetto(brutto: number, tax: number): number
+    + generateDefaultSUData(): array
+    + updateAllMonths(months: array, brutto: number, taxCard: string): array
+    + calculateYearlyTotals(months: array): { totalBrutto: number, totalNetto: number }
+  }
+  
+}
+
+package "Hooks" {
+  class useStudentGrant {
+    - year: string
+    - messageNumber: string
+    - totalMessages: string
+    - suBrutto: number
+    - suNetto: number
+    - taxAmount: number
+    - taxCard: string
+    - housingStatus: string
+    - monthsData: array
+    - totalBrutto: number
+    - totalNetto: number
+    + handleSuBruttoChange(value: number): void
+    + handleTaxCardChange(card: string): void
+    + handleHousingChange(status: string): void
+    + handleYearChange(year: string): void
+    + handleMessageNumberChange(msgNumber: string): void
+  }
+  
+  class useLocalization {
+    - locale: string
+    - translations: Record<string, any>
+    + t(key: string, params?: object): string
+    + setLocale(locale: string): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Page to Component associations
+StudentGrant --> SUSection
+
+' Component to Hook dependencies
+StudentGrant ..> useStudentGrant
+SUSection ..> useLocalization
+
+' Hook to Service dependencies
+useStudentGrant o-- suService
+
+
+@enduml 

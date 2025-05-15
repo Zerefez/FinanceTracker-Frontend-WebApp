@@ -1,0 +1,104 @@
+@startuml Workshift Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "Workshift Component Class Diagram"
+
+' Define main components for Workshift only
+package "Pages" {
+  class Paycheck {
+    - companyName: string
+    - month: number
+    - workshifts: Workshift[]
+    + selectJobAndMonth(): void
+    + editJobDetail(): void
+    + openWorkshiftModal(workshift?: Workshift): void
+  }
+}
+
+package "Components" {
+  class WorkshiftModal {
+    - isOpen: boolean
+    - workshift: Workshift
+    - jobId: string
+    - isLoading: boolean
+    - errorMessage: string
+    + handleSubmit(): void
+    + onClose(): void
+    + handleDelete(id: string): void
+    + useWorkshiftForm()
+  }
+  
+  class WorkshiftTable {
+    - workshifts: Workshift[]
+    - jobId: string
+    + handleEdit(workshiftId: string): void
+    + handleDelete(workshiftId: string): void
+    + useWorkshifts()
+  }
+}
+
+package "Services" {
+  class workshiftService {
+    + createWorkshift(workshift: Workshift): Promise<Workshift>
+    + updateWorkshift(id: string, workshift: Workshift): Promise<Workshift>
+    + deleteWorkshift(id: string): Promise<void>
+    + getUserWorkshifts(jobId: string): Promise<Workshift[]>
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + get<T>(endpoint: string, options): Promise<T>
+    + post<T>(endpoint: string, body, options): Promise<T>
+    + put<T>(endpoint: string, body, options): Promise<T>
+    + delete<T>(endpoint: string, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class useWorkshifts {
+    - workshifts: Workshift[]
+    - isLoading: boolean
+    - error: Error | null
+    + fetchWorkshifts(jobId: string): Promise<void>
+    + deleteWorkshift(id: string): Promise<void>
+  }
+  
+  class useWorkshiftForm {
+    - workshift: Workshift
+    - isLoading: boolean
+    - errorMessage: string
+    + setWorkshift(workshift: Workshift): void
+    + handleSubmit(): Promise<void>
+    + resetForm(): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Directed association → (solid line with arrow)
+' Inheritance ▷ (solid line with empty triangle)
+' Implementation → (dashed line with empty triangle)
+' Dependency → (dashed line with arrow)
+' Aggregation ◇ (solid line with empty diamond)
+' Composition ♦ (solid line with filled diamond)
+
+' Page to Component associations (directed association)
+Paycheck --> WorkshiftModal
+Paycheck --> WorkshiftTable
+
+' Service dependencies - dependency pilen peger mod den klasse der bliver brugt
+WorkshiftModal ..> workshiftService
+WorkshiftTable ..> workshiftService
+workshiftService o-- apiService
+
+' Hook associations - Component til Hook skal være dependency
+WorkshiftModal ..> useWorkshiftForm
+WorkshiftTable ..> useWorkshifts
+useWorkshiftForm o-- workshiftService
+useWorkshifts o-- workshiftService
+
+@enduml 

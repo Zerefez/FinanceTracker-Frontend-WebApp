@@ -1,0 +1,90 @@
+@startuml PaycheckCompare Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "PaycheckCompare Component Class Diagram"
+
+' Define main components for PaycheckCompare
+package "Pages" {
+  class PaycheckComparePage {
+    - companyName: string
+    - selectedJobId: string
+    - selectedMonth: number
+    + handleReset(): void
+    + setSelectedJobId(id: string): void
+    + setSelectedMonth(month: number): void
+  }
+}
+
+package "Components" {
+  class PaycheckCompare {
+    - generatedPaycheck: PaycheckData | null
+    - onReset: () => void
+    - loading: boolean
+    + formatCurrency(value: number): string
+    + formatPercentage(value: number): string
+    + formatWorkedHours(hours: number): string
+  }
+}
+
+package "Services" {
+  class paycheckService {
+    + getPaycheckData(companyName?: string, month?: number): Promise<PaycheckData>
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + get<T>(endpoint: string, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class usePaycheckCompare {
+    - manualData: ManualPaycheckData
+    + handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void
+    + formatCurrency(value: number): string
+    + calculateDifference(generatedValue: number, manualValue: number): number
+    + formatPercentage(value: number): string
+    + formatWorkedHours(hours: number): string
+    + loadGeneratedValues(): void
+  }
+  
+  class usePaycheckData {
+    - paycheckData: PaycheckData | null
+    - loading: boolean
+    - error: string | null
+    + formatCurrency(value: number): string
+    + formatPercentage(value: number): string
+    + parseWorkedHours(hours: number): string
+    + refreshPaycheckData(): void
+  }
+  
+  class usePaycheck {
+    - selectedJobId: string
+    - selectedJob: Job | null
+    - jobs: Job[]
+    - loading: boolean
+    + setSelectedJobId(id: string): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Page to Component associations
+PaycheckComparePage --> PaycheckCompare
+
+' Component to Hook dependencies
+PaycheckCompare ..> usePaycheckCompare
+
+' Hook dependencies
+PaycheckComparePage ..> usePaycheckData
+PaycheckComparePage ..> usePaycheck
+
+' Service dependencies
+usePaycheckData o-- paycheckService
+paycheckService o-- apiService
+
+@enduml 

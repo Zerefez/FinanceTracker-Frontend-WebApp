@@ -1,0 +1,75 @@
+@startuml VacationPay Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "VacationPay Component Class Diagram"
+
+' Define main components for VacationPay functionality
+package "Pages" {
+  class VacationPay {
+    - companyName: string
+    - selectedJobId: string
+    - selectedYear: number
+    - vacationPayOverviewRef: React.RefObject
+    + setSelectedJobId(id: string): void
+    + setSelectedYear(year: number): void
+    + refreshVacationPayData(): void
+  }
+}
+
+package "Components" {
+  class VacationPayOverview {
+    - companyName: string
+    - initialYear: number
+    - selectedYear: number
+    - ref: VacationPayOverviewRef
+    + refresh(): void
+  }
+}
+
+package "Services" {
+  class vacationPayService {
+    + getTotalVacationPay(companyName: string, year: number): Promise<VacationPayData>
+  }
+  
+  class apiService {
+    + get<T>(endpoint: string, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class useVacationPayData {
+    - vacationPayData: VacationPayData | null
+    - loading: boolean
+    - error: string | null
+    + formatCurrency(value: number): string
+    + refreshVacationPayData(): void
+  }
+  
+  class usePaycheck {
+    - selectedJobId: string
+    - jobs: Job[]
+    - loading: boolean
+    + setSelectedJobId(id: string): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Page to Component associations
+VacationPay --> VacationPayOverview
+
+' Component to Hook dependencies
+VacationPayOverview ..> useVacationPayData
+VacationPay ..> usePaycheck
+
+' Hook to Service dependencies
+useVacationPayData o-- vacationPayService
+
+' Service dependencies
+vacationPayService o-- apiService
+
+@enduml 

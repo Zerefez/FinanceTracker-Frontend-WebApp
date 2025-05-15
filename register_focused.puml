@@ -1,0 +1,84 @@
+@startuml Register Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "Register Component Class Diagram"
+
+' Define main components for Register only
+package "Pages" {
+  class RegisterPage {
+    - email: string
+    - fullName: string
+    - password: string
+    + handleRegister(): void
+    + useAuth()
+  }
+}
+
+package "Components" {
+  class Register {
+    - fullName: string
+    - email: string
+    - password: string
+    - confirm: string
+    + handleSubmit(): void
+    + validateForm(): boolean
+  }
+  
+  class RouteConfig {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + renderRoutes(): ReactNode
+  }
+}
+
+package "Services" {
+  class authService {
+    + register(email: string, password: string, fullName: string): Promise<RegisterResponse>
+    + isAuthenticated(): boolean
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + post<T>(endpoint: string, body, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class useAuth {
+    - isAuthenticated: boolean
+    - isInitializing: boolean
+    + register(email: string, password: string, fullName: string): Promise<RegisterResponse>
+  }
+}
+
+' Define relationships with proper UML notation as per the new image
+' Directed association → (solid line with arrow)
+' Inheritance ▷ (solid line with empty triangle)
+' Implementation → (dashed line with empty triangle)
+' Dependency → (dashed line with arrow)
+' Aggregation ◇ (solid line with empty diamond)
+' Composition ♦ (solid line with filled diamond)
+
+' Page to Component associations
+RegisterPage --> Register
+
+' Page to Hook dependencies (pages bruger hooks midlertidigt)
+RegisterPage ..> useAuth
+
+' Service dependencies/associations
+Register ..> authService
+authService o-- apiService
+
+' Routing associations
+RouteConfig --> RegisterPage
+RouteConfig ..> useAuth
+
+' Hook associations
+useAuth o-- authService
+
+@enduml 

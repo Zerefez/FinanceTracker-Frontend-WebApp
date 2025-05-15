@@ -1,0 +1,55 @@
+@startuml Register Sequence Diagram
+
+!define SD_FRAME_HEADER_BG_COLOR transparent
+!define SD_FRAME_BORDER_COLOR black
+!define LABEL_COLOR darkred
+
+skinparam sequenceMessageAlign center
+skinparam sequenceBoxBackgroundColor white
+skinparam sequenceBoxBorderColor black
+skinparam sequenceMessageAlignment center
+skinparam sequenceTitleFontSize 16
+
+title "sd Register component"
+
+actor User
+participant RegisterPage
+participant Register
+participant authService
+participant apiService
+
+User -> RegisterPage: "<color:darkred>User presses \"Register\"</color>"
+
+' Optional validation error section
+box "opt" #LightYellow
+  RegisterPage -> Register: "<color:darkred>handleSubmit()</color>"
+  Register -> Register: "<color:darkred>validateForm()</color>"
+  Register --> RegisterPage: <-- error message --
+  RegisterPage --> User: "<color:darkred>Show error message</color>"
+end box
+
+' Main registration flow
+RegisterPage -> Register: "<color:darkred>handleSubmit()</color>"
+Register -> Register: "<color:darkred>validateForm()</color>"
+Register -> authService: "<color:darkred>authService.register(email,\npassword, fullName)</color>"
+authService -> apiService: "<color:darkred>apiService.request\n('/Accounts/register', {...})</color>"
+
+' Alternative flows based on response
+box "alt" #LightYellow
+  ' Success path
+  apiService --> authService: <-- Register Response ----
+  authService --> Register: [Successful response]
+  Register --> RegisterPage: <-Succesfull registration--
+  RegisterPage --> User: "<color:darkred>\"Registration successfull!\nYou can now log in.\"</color>"
+  
+  ' Separate alternative path with a divider
+  |||
+  
+  ' Error path
+  apiService --> authService: <-- Register Response ----
+  authService --> Register: [else]
+  Register --> RegisterPage: <!= Succesfull registration --
+  RegisterPage --> User: "<color:darkred><-Show error message----</color>"
+end box
+
+@enduml 

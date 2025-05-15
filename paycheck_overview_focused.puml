@@ -1,0 +1,84 @@
+@startuml PaycheckOverview Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "PaycheckOverview Component Class Diagram"
+
+' Define main components for PaycheckOverview only
+package "Pages" {
+  class Paycheck {
+    - companyName: string
+    - month: number
+    - paycheckOverviewRef: React.RefObject
+    + selectJobAndMonth(): void
+    + refreshPaycheckData(): void
+  }
+}
+
+package "Components" {
+  class PaycheckOverview {
+    - companyName: string
+    - month: number
+    + refresh(): void
+    + StatItem(): JSX.Element
+    + usePaycheckData()
+  }
+}
+
+package "Services" {
+  class paycheckService {
+    + getPaycheckData(companyName?: string, month?: number): Promise<PaycheckData>
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + get<T>(endpoint: string, options): Promise<T>
+  }
+}
+
+package "Hooks" {
+  class usePaycheckData {
+    - paycheckData: PaycheckData | null
+    - loading: boolean
+    - error: string | null
+    + formatCurrency(value: number): string
+    + formatPercentage(value: number): string
+    + parseWorkedHours(hours: number): string
+    + refreshPaycheckData(): void
+  }
+  
+  class usePaycheck {
+    - selectedJobId: string
+    - selectedJob: Job | null
+    - jobs: Job[]
+    - loading: boolean
+    + setSelectedJobId(id: string): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Directed association → (solid line with arrow)
+' Inheritance ▷ (solid line with empty triangle)
+' Implementation → (dashed line with empty triangle)
+' Dependency → (dashed line with arrow)
+' Aggregation ◇ (solid line with empty diamond)
+' Composition ♦ (solid line with filled diamond)
+
+' Page to Component associations
+Paycheck --> PaycheckOverview
+
+' Component to Hook dependencies
+PaycheckOverview ..> usePaycheckData
+
+' Service dependencies
+usePaycheckData o-- paycheckService
+paycheckService o-- apiService
+
+' Hook dependencies
+Paycheck ..> usePaycheck
+
+@enduml 

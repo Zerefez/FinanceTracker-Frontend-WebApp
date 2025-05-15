@@ -1,0 +1,125 @@
+@startuml Job Component Class Diagram
+
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+title "Job Component Class Diagram"
+
+' Define main components for Job functionality
+package "Pages" {
+  class Home {
+    + useLocalization()
+    + displays JobOverviewPage
+  }
+
+  class JobOverviewPage {
+    + jobs: Job[]
+    + loading: boolean
+    + formatWeekdays(job: Job): string
+  }
+  
+  class JobDetailPage {
+    - companyName: string
+    + useJobForm()
+  }
+}
+
+package "Components" {
+  class JobDetail {
+    - job: Job
+    - isNewJob: boolean
+    - selectedWeekdays: string[]
+    - supplementDetails: SupplementDetail[]
+    + handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void
+    + handleSelectChange(name: string, value: string): void
+    + handleWeekdayChange(weekday: string): void
+    + handleSubmit(e: React.FormEvent): void
+    + handleDelete(companyName: string, e: React.FormEvent): void
+  }
+}
+
+package "Services" {
+  class jobService {
+    + getJobs(): Promise<Job[]>
+    + getJobByCompanyName(companyName: string): Promise<Job | null>
+    + registerJob(job: Job): Promise<Job>
+    + updateJob(job: Job): Promise<Job>
+    + deleteJob(companyName: string): Promise<void>
+    + addSupplementDetails(companyName: string, supplementDetails: SupplementDetail[]): Promise<void>
+  }
+  
+  class apiService {
+    + request<T>(endpoint: string, options): Promise<T>
+    + get<T>(endpoint: string, options): Promise<T>
+    + post<T>(endpoint: string, data): Promise<T>
+    + put<T>(endpoint: string, data): Promise<T>
+    + delete(endpoint: string): Promise<void>
+  }
+  
+  class localStorageService {
+    + getWorkdaysForJob(companyName: string): string[]
+    + saveWorkdaysForJob(companyName: string, weekdays: string[]): void
+    + removeWorkdaysForJob(companyName: string): void
+  }
+}
+
+package "Hooks" {
+  class useJobs {
+    - jobs: Job[]
+    - loading: boolean
+    - error: Error | null
+    + fetchJobs(): Promise<void>
+    + registerJob(job: Job): Promise<Job>
+    + updateJob(job: Job): Promise<Job>
+    + deleteJob(companyName: string): Promise<void>
+    + getJobByCompanyName(companyName: string): Promise<Job | null>
+  }
+  
+  class useJobForm {
+    - job: Job
+    - isNewJob: boolean
+    - isSaving: boolean
+    - isLoading: boolean
+    - selectedWeekdays: string[]
+    - supplementDetails: SupplementDetail[]
+    + handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void
+    + handleSelectChange(name: string, value: string): void
+    + handleWeekdayChange(weekday: string): void
+    + addSupplementDetail(): void
+    + removeSupplementDetail(index: number): void
+    + updateSupplementDetail(index: number, field: string, value: any): void
+    + handleSubmit(e: React.FormEvent): void
+    + handleDelete(companyName: string, e: React.FormEvent): void
+  }
+  
+  class useLocalization {
+    - locale: string
+    - translations: Record<string, any>
+    + t(key: string, params?: object): string
+    + setLocale(locale: string): void
+  }
+}
+
+' Define relationships with proper UML notation
+' Page to Component associations
+Home --> JobOverviewPage
+JobDetailPage --> JobDetail
+
+' Component to Hook dependencies
+JobDetail ..> useJobForm
+JobOverviewPage ..> useJobs
+Home ..> useLocalization
+
+' Hook to Service dependencies
+useJobs o-- jobService
+useJobForm o-- jobService
+useJobForm o-- localStorageService
+
+' Service dependencies
+jobService o-- apiService
+jobService o-- localStorageService
+
+@enduml 
