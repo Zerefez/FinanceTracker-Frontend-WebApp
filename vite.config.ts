@@ -7,8 +7,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-       //target: 'http://localhost:5140',
-        target: 'https://financetracker-bxf8bcb6hxdkg6c9.northeurope-01.azurewebsites.net/',
+
+       target: 'http://localhost:5140',
+       // target: 'https://financetracker-bxf8bcb6hxdkg6c9.northeurope-01.azurewebsites.net/',
+
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy, _options) => {
