@@ -8,8 +8,8 @@ export default defineConfig({
     proxy: {
       '/api': {
 
-       target: 'http://localhost:5140',
-       // target: 'https://financetracker-bxf8bcb6hxdkg6c9.northeurope-01.azurewebsites.net/',
+        //target: 'http://localhost:5140',
+        target: 'https://financetracker-backend-kf7p.onrender.com',
 
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
