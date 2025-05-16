@@ -11,6 +11,7 @@
   to = "https://financetracker-backend-kf7p.onrender.com/:splat"
   status = 200
   force = true
+  headers = {Access-Control-Allow-Origin = "*"}
 
 # This ensures that all routes are handled by the SPA
 [[redirects]]

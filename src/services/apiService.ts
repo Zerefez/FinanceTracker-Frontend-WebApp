@@ -31,10 +31,8 @@ export const apiService = {
       endpoint.includes('/Accounts/login') || 
       endpoint.includes('/Accounts/register');
 
-    // Build URL
-    const url = endpoint.startsWith('http') 
-      ? endpoint 
-      : `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    // Build URL - Always use the API_URL prefix for consistency
+    const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     
     console.log(`API request to: ${url}, method: ${method}`);
     
