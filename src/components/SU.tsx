@@ -107,7 +107,7 @@ export function SUSection({
   return (
     <div className="w-full rounded-lg border-2 border-gray-200 p-4 md:p-5 bg-white relative">
       <h2 className="mb-4 text-center text-xl md:text-2xl font-bold">
-        Student <span className="text-accent">Grant</span> {t('studentGrant.title')}
+        {t('studentGrant.title')}
       </h2>
       
       <div className="flex flex-wrap items-center justify-center mb-4 gap-2">
