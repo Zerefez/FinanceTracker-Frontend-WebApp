@@ -1,9 +1,9 @@
 import { logger } from '../services/logger';
 import { authService } from './authService';
 
-// API URL - Use relative URL to leverage the Vite proxy
-// This should match the proxy setup in your Vite config
-const API_URL = '/api';
+// API URL - Use environment variable if available or fallback to proxy path
+// This allows overriding the API URL in production environments like Netlify
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';

@@ -8,11 +8,11 @@
 # Redirect API calls to the backend
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:5140/:splat"
+  to = "https://financetracker-backend-kf7p.onrender.com/:splat"
   status = 200
   force = true
 
-# Handle SPA routing
+# This ensures that all routes are handled by the SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
