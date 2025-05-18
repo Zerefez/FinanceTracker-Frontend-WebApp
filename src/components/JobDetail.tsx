@@ -7,11 +7,11 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "./ui/select";
 
 export default function JobDetail() {
@@ -71,6 +71,7 @@ export default function JobDetail() {
     updateSupplementDetail,
     handleSubmit,
     handleDelete,
+    error,
   } = useJobForm();
 
   if (isLoading) {
@@ -118,7 +119,12 @@ export default function JobDetail() {
           )}
 
           <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="mb-4 rounded bg-red-100 p-2 text-red-700" data-testid="job-error">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-6" role="form">
               {/* Company Name as ID - Hidden */}
               <input type="hidden" name="CompanyName" value={job.companyName} />
 
