@@ -48,7 +48,7 @@ jobs:
           echo "========================================"
           echo "RUNNING COVERAGE REPORT FOR SOURCE FILES"
           echo "========================================"
-          node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.provider=istanbul --coverage.include="src/**/*.{ts,tsx}" --coverage.exclude="src/test/**/*" --coverage.reporter=text --coverage.perFile=true --coverage.reportClassesPerFile=true --coverage.lines=true --coverage.functions=true --coverage.branches=true --coverage.statements=true
+          node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage
           echo "========================================"
           echo "COVERAGE REPORT COMPLETE"
           echo "========================================"
