@@ -21,10 +21,11 @@
     "test:hooks": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/hooks/**/*.test.tsx",
     "test:pages": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/pages/**/*.test.tsx",
     "test:app": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/App.test.tsx",
-    "coverage": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.enabled --no-source-map",
+    "coverage": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage --reporter=text",
+    "coverage:ci": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.provider=istanbul --coverage.include=\"src/**/*.{ts,tsx}\" --coverage.exclude=\"src/test/**/*\" --coverage.reporter=text",
     "coverage:terminal": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage --provider=istanbul --reporter=text",
-    "coverage:simple": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.provider=v8 --coverage.reporter=text --no-source-map",
-    "coverage:v8text": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.enabled --coverage.reporter=text-summary --coverage.reporter=text --no-source-map"
+    "coverage:simple": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.provider=v8 --coverage.reporter=text",
+    "coverage:v8text": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.enabled --coverage.reporter=text-summary --coverage.reporter=text"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.1.6",

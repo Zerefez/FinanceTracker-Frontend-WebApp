@@ -8,22 +8,25 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 60000,
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        '**/node_modules/**', 
-        '**/dist/**', 
-        '**/coverage/**', 
-        '**/*.d.ts',
-        'src/test/setup.ts',
-        'src/test/**/*',
-        '**/*.config.ts',
-        '**/types.ts',
+      provider: 'istanbul',
+      reporter: ['text', 'json'],
+      include: [
+        'src/**/*.{ts,tsx}'
       ],
-      all: true,
+      exclude: [
+        'src/test/**/*',
+        'src/**/*.d.ts',
+        'src/**/*.test.{ts,tsx}'
+      ],
+      all: false,
       reportsDirectory: './coverage',
-      cleanOnRerun: true,
-      skipFull: true,
+      clean: true
     },
   },
+  resolve: {
+    conditions: ['development', 'browser'],
+  },
+  build: {
+    sourcemap: false
+  }
 }); 
