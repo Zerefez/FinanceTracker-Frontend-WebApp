@@ -48,7 +48,8 @@ jobs:
           echo "========================================"
           echo "RUNNING COVERAGE REPORT FOR SOURCE FILES"
           echo "========================================"
-          node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage
+          # Use --reporter=verbose to ensure the tabular format is shown
+          node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage --reporter=verbose
           echo "========================================"
           echo "COVERAGE REPORT COMPLETE"
           echo "========================================"
