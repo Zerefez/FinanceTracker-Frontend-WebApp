@@ -70,7 +70,7 @@ export default function PaycheckCompare({ generatedPaycheck, onReset, loading = 
               <span className="block text-sm text-gray-500">Salary Before Tax</span>
               <div className="flex items-center font-medium">
                 {calculateDifference(generatedPaycheck.salaryBeforeTax, manualData.salaryBeforeTax) === 0 ? (
-                  <Check size={16} className="text-green-500 mr-1" />
+                  <Check size={16} className="text-green-500 mr-1" data-testid="check-icon" />
                 ) : (
                   <X size={16} className="text-red-500 mr-1" />
                 )}
