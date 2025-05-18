@@ -22,7 +22,7 @@ export const vacationPayService = {
     queryParams.append('companyName', companyName);
     queryParams.append('year', year.toString());
     
-    return apiService.get<VacationPayData>(`/Paychecks/Total vacationPay?${queryParams.toString()}`);
+    return apiService.get<VacationPayData>(`/Paychecks/VacationPay?${queryParams.toString()}`);
   }
 
 };
