@@ -10,9 +10,17 @@
     "lint": "eslint src --fix && tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs",
+    "test:run": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs --run",
+    "test:coverage": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage",
+    "test:ui": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs --ui",
+    "test:verbose": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs --reporter=verbose",
+    "test:sequential": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs --run --single-thread",
+    "test:services": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/services/**/*.test.ts",
+    "test:components": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/components/**/*.test.tsx",
+    "test:hooks": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/hooks/**/*.test.tsx",
+    "test:pages": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/pages/**/*.test.tsx",
+    "test:app": "node --max-old-space-size=4096 node_modules/vitest/vitest.mjs src/test/App.test.tsx"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.1.6",
