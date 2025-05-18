@@ -44,7 +44,14 @@ jobs:
         id: regular_test
       
       - name: Generate coverage report
-        run: npm run coverage:ci
+        run: |
+          echo "========================================"
+          echo "RUNNING COVERAGE REPORT FOR SOURCE FILES"
+          echo "========================================"
+          node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.provider=istanbul --coverage.include="src/**/*.{ts,tsx}" --coverage.exclude="src/test/**/*" --coverage.reporter=text --coverage.reportClassesPerFile=true --coverage.lines=true --coverage.functions=true --coverage.branches=true --coverage.statements=true
+          echo "========================================"
+          echo "COVERAGE REPORT COMPLETE"
+          echo "========================================"
         continue-on-error: true
         id: coverage_test
 
@@ -56,6 +63,50 @@ jobs:
           fail_ci_if_error: false
           verbose: true
           flags: src-only
+
+      - name: Display Coverage Summary
+        run: |
+          echo "========================================"
+          echo "COVERAGE SUMMARY - LOW COVERAGE AREAS"
+          echo "========================================"
+          
+          if [ ! -f "./coverage/coverage-final.json" ]; then
+            echo "No coverage report found."
+            exit 0
+          fi
+          
+          node -e "
+            const coverage = require('./coverage/coverage-final.json');
+            let results = [];
+            
+            Object.keys(coverage).forEach(file => {
+              if (file.includes('src/') && !file.includes('src/test/')) {
+                const data = coverage[file];
+                const statements = data.statementMap ? 
+                  Object.keys(data.statementMap).length > 0 ? 
+                    Object.keys(data.s).filter(k => data.s[k] > 0).length / Object.keys(data.statementMap).length * 100 : 100 : 0;
+                
+                results.push({
+                  file: file.replace(/.*\/src\//, 'src/'),
+                  statements: statements.toFixed(2),
+                });
+              }
+            });
+            
+            // Sort by coverage (ascending)
+            results.sort((a, b) => parseFloat(a.statements) - parseFloat(b.statements));
+            
+            // Show low coverage files (below 50%)
+            console.log('Files with coverage below 50%:');
+            const lowCoverage = results.filter(r => parseFloat(r.statements) < 50);
+            lowCoverage.forEach(r => console.log(\`\${r.file}: \${r.statements}%\`));
+            
+            console.log('\\nOverall statistics:');
+            console.log(\`Total files analyzed: \${results.length}\`);
+            console.log(\`Files with <50% coverage: \${lowCoverage.length}\`);
+            console.log(\`Files with >80% coverage: \${results.filter(r => parseFloat(r.statements) > 80).length}\`);
+          "
+          echo "========================================"
 
       - name: Run tests sequentially (if prior steps failed)
         if: steps.regular_test.outcome != 'success'
