@@ -39,12 +39,17 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage --reporter=verbose
+        run: node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --reporter=verbose
+        continue-on-error: false
+        id: regular_test
+      
+      - name: Generate coverage report
+        run: node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run --coverage.enabled --no-source-map
         continue-on-error: true
         id: coverage_test
 
-      - name: Run tests sequentially (if coverage test failed)
-        if: steps.coverage_test.outcome != 'success'
+      - name: Run tests sequentially (if prior steps failed)
+        if: steps.regular_test.outcome != 'success'
         run: |
           echo "Running tests sequentially due to memory issues..."
           node --max-old-space-size=4096 node_modules/vitest/vitest.mjs --run --single-thread

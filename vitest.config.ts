@@ -20,6 +20,10 @@ export default defineConfig({
         '**/*.config.ts',
         '**/types.ts',
       ],
+      all: true,
+      reportsDirectory: './coverage',
+      cleanOnRerun: true,
+      skipFull: true,
     },
   },
 }); 
