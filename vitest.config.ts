@@ -22,6 +22,10 @@ export default defineConfig({
       reportsDirectory: './coverage',
       clean: true
     },
+    typecheck: {
+      enabled: true,
+      ignoreSourceErrors: false,
+    }
   },
   resolve: {
     conditions: ['development', 'browser'],

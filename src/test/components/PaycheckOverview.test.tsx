@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PaycheckOverview from '../../components/PaycheckOverview';
 import { usePaycheckData } from '../../lib/hooks/usePaycheckData';
 
@@ -139,13 +139,13 @@ describe('PaycheckOverview Component', () => {
   });
 
   it('exposes refresh method through ref', () => {
-    const ref = { current: null };
+    const ref = { current: null as any };
     render(<PaycheckOverview companyName="Test Company" ref={ref} />);
     
     expect(ref.current).toBeDefined();
-    expect(ref.current?.refresh).toBeDefined();
+    expect(ref.current.refresh).toBeDefined();
     
-    ref.current?.refresh();
+    ref.current.refresh();
     expect(mockRefreshPaycheckData).toHaveBeenCalled();
   });
 }); 
