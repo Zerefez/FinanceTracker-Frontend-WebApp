@@ -28,7 +28,7 @@ const AnimatedLink = ({
     >
       {children}
       <span 
-        className="absolute bottom-0 right-0 w-0 h-0.5 bg-[#02de95] 
+        className="absolute bottom-0 right-0 w-0 h-0.5 bg-accent 
         transition-all duration-300 
         group-hover:left-0 group-hover:right-auto group-hover:w-full
         group-hover:origin-right"
