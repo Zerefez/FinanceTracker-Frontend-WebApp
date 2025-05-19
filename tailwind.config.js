@@ -62,7 +62,7 @@ module.exports = {
         },
         primary: "#000000",
         secondary: "#f5f5f5",
-        accent: "#02de95", // Orange accent color for the profession text
+        accent: "#02de95",
         muted: "#7c7c7c",
       },
       keyframes: {

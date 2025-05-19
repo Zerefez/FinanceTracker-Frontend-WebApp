@@ -235,7 +235,7 @@ describe('SU Component', () => {
       
       // Verify the progress path exists
       const progressPath = paths[1];
-      expect(progressPath).toHaveAttribute('stroke', '#FF6B6B');
+      expect(progressPath).toHaveAttribute('stroke', '#02de95');
       expect(progressPath).toHaveAttribute('stroke-dasharray');
       expect(progressPath).toHaveAttribute('stroke-dashoffset');
     });
