@@ -157,7 +157,7 @@ export function SUSection({
             <path 
               d={progressPaths.backgroundPath}
               fill="none"
-              stroke="#FF6B6B"
+              stroke="#02de95"
               strokeWidth="3"
               strokeDasharray={progressPaths.strokeDasharray}
               strokeDashoffset={progressPaths.strokeDashoffset}
@@ -214,7 +214,7 @@ export function SUSection({
           value={suData.currentIncome}
           onChange={(e) => handleSuDataChange(parseInt(e.target.value))}
           style={{
-            background: `linear-gradient(to right, #FF6B6B 0%, #FF6B6B ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`
+            background: `linear-gradient(to right, #02de95 0%, #02de95 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`
           }}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer 
           [&::-webkit-slider-thumb]:appearance-none 
