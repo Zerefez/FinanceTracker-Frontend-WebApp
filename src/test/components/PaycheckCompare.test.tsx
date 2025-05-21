@@ -8,6 +8,16 @@ vi.mock('../../lib/hooks/usePaycheckCompare', () => ({
   usePaycheckCompare: vi.fn(),
 }));
 
+// Mock the @react-pdf/renderer package
+vi.mock('@react-pdf/renderer', () => ({
+  PDFDownloadLink: ({ children }: any) => <div>{children}</div>,
+}));
+
+// Mock the PaycheckPDF component
+vi.mock('../../components/PaycheckPDF', () => ({
+  default: () => <div data-testid="paycheck-pdf" />,
+}));
+
 // Mock the Input component
 vi.mock('../../components/ui/input', () => ({
   Input: ({ value, onChange, ...props }: any) => (
@@ -76,17 +86,17 @@ describe('PaycheckCompare Component', () => {
   });
 
   it('renders loading state', () => {
-    render(<PaycheckCompare generatedPaycheck={null} onReset={() => {}} loading={true} />);
+    render(<PaycheckCompare generatedPaycheck={null} onReset={() => {}} loading={true} hasSelectedJob={false} />);
     expect(screen.getByText('Loading paycheck data...')).toBeInTheDocument();
   });
 
   it('renders empty state when no paycheck is provided', () => {
-    render(<PaycheckCompare generatedPaycheck={null} onReset={() => {}} loading={false} />);
+    render(<PaycheckCompare generatedPaycheck={null} onReset={() => {}} loading={false} hasSelectedJob={false} />);
     expect(screen.getByText('Please select a job to compare paycheck details')).toBeInTheDocument();
   });
 
   it('renders comparison table with correct data', () => {
-    render(<PaycheckCompare generatedPaycheck={mockGeneratedPaycheck} onReset={() => {}} />);
+    render(<PaycheckCompare generatedPaycheck={mockGeneratedPaycheck} onReset={() => {}} hasSelectedJob={true} />);
     
     // Check headers
     expect(screen.getByText('Your Actual Paycheck')).toBeInTheDocument();
@@ -111,7 +121,7 @@ describe('PaycheckCompare Component', () => {
   });
 
   it('handles input changes correctly', () => {
-    render(<PaycheckCompare generatedPaycheck={mockGeneratedPaycheck} onReset={() => {}} />);
+    render(<PaycheckCompare generatedPaycheck={mockGeneratedPaycheck} onReset={() => {}} hasSelectedJob={true} />);
     
     const salaryInput = screen.getByTestId('salaryBeforeTax');
     fireEvent.change(salaryInput, { target: { value: '35000' } });
@@ -125,7 +135,7 @@ describe('PaycheckCompare Component', () => {
       salaryBeforeTax: 35000, // Different from manual data
     };
 
-    render(<PaycheckCompare generatedPaycheck={differentPaycheck} onReset={() => {}} />);
+    render(<PaycheckCompare generatedPaycheck={differentPaycheck} onReset={() => {}} hasSelectedJob={true} />);
     
     // Check for red X icon and difference amount
     const differenceElement = screen.getByText('DKK 5000.00');
@@ -138,6 +148,7 @@ describe('PaycheckCompare Component', () => {
         generatedPaycheck={mockGeneratedPaycheck} 
         onReset={() => {}} 
         loading={false}
+        hasSelectedJob={true}
       />
     );
 

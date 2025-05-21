@@ -1,10 +1,10 @@
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Check, X } from "lucide-react";
 import { usePaycheckCompare } from "../lib/hooks/usePaycheckCompare";
 import { PaycheckData } from "../services/paycheckService";
+import PaycheckPdf from "./PaycheckPDF";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import PaycheckPdf from "./PaycheckPDF";
 
 interface PaycheckCompareProps {
   generatedPaycheck: PaycheckData | null;
