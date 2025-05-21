@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { toastService } from "./ui/toast";
 import {
   AVAILABLE_YEARS,
   HOUSING_STATUS,
@@ -8,6 +7,7 @@ import {
   TAX_CARD_OPTIONS,
 } from "../data/studentGrantData";
 import { useLocalization } from "../lib/hooks";
+import { toastService } from "./ui/toast";
 
 interface SUData {
   incomeCeiling: number;
@@ -166,7 +166,7 @@ export function SUSection({
             <path
               d={progressPaths.backgroundPath}
               fill="none"
-              stroke="#0844bd"
+              stroke="#0844BD"
               strokeWidth="3"
               strokeDasharray={progressPaths.strokeDasharray}
               strokeDashoffset={progressPaths.strokeDashoffset}
@@ -257,7 +257,7 @@ export function SUSection({
           value={suData.currentIncome}
           onChange={(e) => handleSuDataChange(parseInt(e.target.value))}
           style={{
-            background: `linear-gradient(to right, #0844bd 0%, #0844bd ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`,
+            background: `linear-gradient(to right, #0844BD 0%, #0844BD ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`,
           }}
           className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-track]:h-2 [&::-webkit-slider-track]:w-full [&::-webkit-slider-track]:bg-transparent"
         />
