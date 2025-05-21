@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { loginLink, logoutLink, mainLinks, userLinks } from "../../data/navigationLinks";
 import { useAuth, useNavigation } from "../../lib/hooks";
 import { perspective, slideIn } from "./animation/animNav";
@@ -56,12 +57,12 @@ export default function Nav() {
                       animate="enter"
                       exit="exit"
                     >
-                      <a
-                        href={href}
+                      <Link
+                        to={href}
                         className={`block ${isSmallMobile ? "text-xl" : "text-2xl"} font-semibold`}
                       >
                         {title}
-                      </a>
+                      </Link>
                     </motion.div>
                   </div>
                 );
@@ -91,13 +92,13 @@ export default function Nav() {
                     animate="enter"
                     exit="exit"
                   >
-                    <a
+                    <Link
                       onClick={handleLogout}
-                      href="#"
+                      to="#"
                       className={`block ${isSmallMobile ? "text-xl" : "text-2xl"} font-semibold`}
                     >
                       {logoutLink.title}
-                    </a>
+                    </Link>
                   </motion.div>
                 </div>
               ) : (
@@ -109,12 +110,12 @@ export default function Nav() {
                     animate="enter"
                     exit="exit"
                   >
-                    <a
-                      href={loginLink.href}
+                    <Link
+                      to={loginLink.href}
                       className={`block ${isSmallMobile ? "text-xl" : "text-2xl"} font-semibold`}
                     >
                       {loginLink.title}
-                    </a>
+                    </Link>
                   </motion.div>
                 </div>
               )}
@@ -132,12 +133,12 @@ export default function Nav() {
                       animate="enter"
                       exit="exit"
                     >
-                      <a
-                        href={href}
+                      <Link
+                        to={href}
                         className={`block ${isSmallMobile ? "text-xl" : "text-2xl"} font-semibold`}
                       >
                         {title}
-                      </a>
+                      </Link>
                     </motion.div>
                   </div>
                 );
