@@ -62,7 +62,7 @@ module.exports = {
         },
         primary: "#000000",
         secondary: "#f5f5f5",
-        accent: "#02de95",
+        accent: "#0844bd",
         muted: "#7c7c7c",
       },
       keyframes: {
@@ -90,18 +90,18 @@ module.exports = {
       container: {
         center: true,
         padding: {
-          DEFAULT: '1rem',
-          sm: '2rem',
-          lg: '4rem',
-          xl: '5rem',
-          '2xl': '6rem',
+          DEFAULT: "1rem",
+          sm: "2rem",
+          lg: "4rem",
+          xl: "5rem",
+          "2xl": "6rem",
         },
         screens: {
-          sm: '640px',
-          md: '768px',
-          lg: '1024px',
-          xl: '1280px',
-          '2xl': '1536px',
+          sm: "640px",
+          md: "768px",
+          lg: "1024px",
+          xl: "1280px",
+          "2xl": "1536px",
         },
       },
       fontFamily: {

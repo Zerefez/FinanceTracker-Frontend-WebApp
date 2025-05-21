@@ -4,11 +4,11 @@ import PaycheckCompare from "../components/PaycheckCompare";
 import AnimatedText from "../components/ui/animation/animatedText";
 import { Button } from "../components/ui/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../components/ui/select";
 import { usePaycheck } from "../lib/hooks";
 import { usePaycheckData } from "../lib/hooks/usePaycheckData";
@@ -18,12 +18,12 @@ export default function PaycheckComparePage() {
   const navigate = useNavigate();
   const { jobs, selectedJobId, setSelectedJobId, loading } = usePaycheck();
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
-  
+
   // Use the paycheck data hook to get the generated paycheck
-  const { 
-    paycheckData, 
-    loading: loadingPaycheck, 
-    refreshPaycheckData 
+  const {
+    paycheckData,
+    loading: loadingPaycheck,
+    refreshPaycheckData,
   } = usePaycheckData(selectedJobId, selectedMonth);
 
   // Handle reset
@@ -39,7 +39,8 @@ export default function PaycheckComparePage() {
   }, [companyName, jobs, setSelectedJobId]);
 
   // Check if a job is selected
-  const hasSelectedJob = selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
+  const hasSelectedJob =
+    selectedJobId !== undefined && selectedJobId !== null && selectedJobId !== "";
 
   // Generate month options for the select dropdown
   const monthOptions = [
@@ -59,7 +60,7 @@ export default function PaycheckComparePage() {
 
   return (
     <section>
-      <div className="h-full px-4 sm:px-6 md:px-6 pb-8">
+      <div className="h-full px-4 pb-8 sm:px-6 md:px-6">
         <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-10 lg:gap-20">
           <div className="w-full">
             <AnimatedText
@@ -75,17 +76,17 @@ export default function PaycheckComparePage() {
           </div>
         </div>
         <div className="my-4 sm:my-5">
-          <div className="mb-6 sm:mb-8 border-b border-black pb-6 sm:pb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mb-6 border-b border-black pb-6 sm:mb-8 sm:pb-8">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
               <div>
                 <AnimatedText
                   phrases={["Select Job"]}
                   accentWords={["Select", "Job"]}
-                  className="mb-3 sm:mb-4 block text-xl font-semibold sm:text-2xl md:text-3xl lg:text-4xl"
+                  className="mb-3 block text-xl font-semibold sm:mb-4 sm:text-2xl md:text-3xl lg:text-4xl"
                   accentClassName="text-accent"
                 />
 
-                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                   <Select value={selectedJobId} onValueChange={setSelectedJobId}>
                     <SelectTrigger className="w-full max-w-[300px]">
                       <SelectValue placeholder="Select a job" />
@@ -108,10 +109,10 @@ export default function PaycheckComparePage() {
                       )}
                     </SelectContent>
                   </Select>
-                  
+
                   {hasSelectedJob && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => navigate(`/paycheck`)}
                       className="whitespace-nowrap"
                     >
@@ -120,11 +121,14 @@ export default function PaycheckComparePage() {
                   )}
                 </div>
               </div>
-              
+
               {hasSelectedJob && (
                 <div>
                   <p className="mb-2 text-sm text-gray-600">Select Month</p>
-                  <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(Number(value))}>
+                  <Select
+                    value={selectedMonth.toString()}
+                    onValueChange={(value) => setSelectedMonth(Number(value))}
+                  >
                     <SelectTrigger className="w-full max-w-[200px]">
                       <SelectValue placeholder="Select month" />
                     </SelectTrigger>
@@ -142,13 +146,14 @@ export default function PaycheckComparePage() {
           </div>
 
           {/* Paycheck Compare Component */}
-          <PaycheckCompare 
-            generatedPaycheck={paycheckData} 
+          <PaycheckCompare
+            generatedPaycheck={paycheckData}
             onReset={handleReset}
             loading={loadingPaycheck}
+            hasSelectedJob={hasSelectedJob}
           />
         </div>
       </div>
     </section>
   );
-} 
+}
