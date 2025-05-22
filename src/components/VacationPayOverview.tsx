@@ -1,4 +1,4 @@
-import { Umbrella } from "lucide-react";
+import { AlertCircle, Umbrella } from "lucide-react";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useVacationPayData } from "../lib/hooks";
 import { Skeleton } from "./ui/skeleton";
@@ -51,6 +51,7 @@ const VacationPayOverview = forwardRef<VacationPayOverviewRef, VacationPayOvervi
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
               disabled={loading || !companyName}
+              aria-label="Select year"
             >
               {yearOptions.map(year => (
                 <option key={year} value={year}>{year}</option>
@@ -68,8 +69,18 @@ const VacationPayOverview = forwardRef<VacationPayOverviewRef, VacationPayOvervi
             <Skeleton className="h-20 w-full" />
           </div>
         ) : error ? (
-          <div className="p-4 text-center text-red-500">
-            {error}
+          <div className="p-4 text-center text-red-500 rounded-md border border-red-200 bg-red-50">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <AlertCircle size={18} />
+              <span className="font-semibold">Error</span>
+            </div>
+            <p>{error}</p>
+            <button 
+              onClick={refreshVacationPayData} 
+              className="mt-3 px-3 py-1 text-sm bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         ) : !vacationPayData ? (
           <div className="text-center p-6 text-gray-500">

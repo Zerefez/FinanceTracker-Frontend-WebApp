@@ -5,14 +5,30 @@
   command = "npm run typecheck && npm run build"
   publish = "dist"
 
-# Redirect API calls to the backend
+# Handle preflight requests
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:5140/:splat"
+  to = "https://financetracker-backend-kf7p.onrender.com/:splat"
   status = 200
   force = true
+  method = "OPTIONS"
+  [redirects.headers]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
 
-# Handle SPA routing
+# Handle actual API requests
+[[redirects]]
+  from = "/api/*"
+  to = "https://financetracker-backend-kf7p.onrender.com/:splat"
+  status = 200
+  force = true
+  [redirects.headers]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+
+# This ensures that all routes are handled by the SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"

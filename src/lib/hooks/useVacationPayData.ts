@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { toastService } from '../../components/ui/toast';
 import { VacationPayData, vacationPayService } from '../../services/vacationPayService';
 
+/**
+ * Hook to fetch and manage vacation pay data for a specific company and year
+ */
 export const useVacationPayData = (companyName?: string, year?: number) => {
   const [vacationPayData, setVacationPayData] = useState<VacationPayData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,12 +23,19 @@ export const useVacationPayData = (companyName?: string, year?: number) => {
 
     setLoading(true);
     setError(null);
+    
     try {
       const data = await vacationPayService.getTotalVacationPay(companyName, currentYear);
       setVacationPayData(data);
     } catch (error) {
       console.error("Error fetching vacation pay data:", error);
-      setError("Failed to load vacation pay data. Please try again.");
+      
+      // Set more specific error message depending on the error
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Failed to load vacation pay data. Please try again.";
+        
+      setError(errorMessage);
       toastService.error("Could not retrieve vacation pay data");
     } finally {
       setLoading(false);

@@ -73,4 +73,63 @@ npm run dev
 
 ```bash
 npm run build
-``` 
+```
+
+## Testing
+
+The project includes comprehensive tests for components, hooks, services, and pages. Due to the extensive test suite, we've implemented optimized testing commands to prevent memory issues.
+
+### Running Tests
+
+For standard testing during development:
+
+```bash
+npm test
+```
+
+For a one-time test run with improved memory handling:
+
+```bash
+npm run test:run
+```
+
+For running tests with coverage:
+
+```bash
+npm run test:coverage
+```
+
+### Optimized Memory Testing
+
+To avoid JavaScript heap memory issues during testing, use these specialized commands:
+
+#### Sequential Testing (Recommended for CI)
+
+```bash
+npm run test:sequential
+```
+
+Or run tests by category:
+
+```bash
+npm run test:services    # Test services only
+npm run test:components  # Test components only
+npm run test:hooks       # Test hooks only
+npm run test:pages       # Test pages only
+npm run test:app         # Test App component only
+```
+
+#### Batch Testing Scripts
+
+For Windows:
+```bash
+./run-tests.bat
+```
+
+For macOS/Linux:
+```bash
+chmod +x ./run-tests.sh
+./run-tests.sh
+```
+
+These scripts run each test category sequentially to minimize memory usage. 

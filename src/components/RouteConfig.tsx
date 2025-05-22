@@ -5,11 +5,11 @@ import Contact from "../pages/Contact";
 import Home from "../pages/Home";
 import { LoginPage } from "../pages/LoginPage";
 import { LogoutPage } from "../pages/LogoutPage";
-import Paycheck from "../pages/Paycheck";
-import PaycheckComparePage from "../pages/PaycheckCompare";
+import PaycheckComparePage from "../pages/PaycheckComparePage";
+import Paycheck from "../pages/PaycheckPage";
 import { RegisterPage } from "../pages/RegisterPage";
-import StudentGrant from "../pages/StudentGrant";
-import VacationPay from "../pages/VacationPay";
+import StudentGrant from "../pages/StudentGrantPage";
+import VacationPay from "../pages/VacationPayPage";
 import JobPage from "./JobDetail";
 import ProtectedRoutes from "./ProtectedRoutes";
 

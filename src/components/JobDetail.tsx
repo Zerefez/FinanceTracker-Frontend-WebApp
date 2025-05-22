@@ -71,6 +71,7 @@ export default function JobDetail() {
     updateSupplementDetail,
     handleSubmit,
     handleDelete,
+    error,
   } = useJobForm();
 
   if (isLoading) {
@@ -118,7 +119,12 @@ export default function JobDetail() {
           )}
 
           <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="mb-4 rounded bg-red-100 p-2 text-red-700" data-testid="job-error">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-6" role="form">
               {/* Company Name as ID - Hidden */}
               <input type="hidden" name="CompanyName" value={job.companyName} />
 
@@ -317,29 +323,30 @@ export default function JobDetail() {
               </div>
 
               {/* Submit Button */}
-              <div className="flex items-center justify-between space-x-4">
-                <div>
+              <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 md:space-x-4">
+                <div className="w-full md:w-auto">
                   {!isNewJob && job.companyName && (
                     <Button
                       type="button"
                       variant="outline"
+                      className="w-full md:w-auto"
                       onClick={() => navigate(`/paycheck/${job.companyName}`)}
                     >
                       {t('jobPage.goToPaycheck')}
                     </Button>
                   )}
                 </div>
-                <div className="flex space-x-4">
-                  <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+                <div className="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-4 md:w-auto">
+                  <Button type="button" variant="outline" className="w-full md:w-auto" onClick={() => navigate(-1)}>
                     {t('jobPage.cancel')}
                   </Button>
-                  <Button type="submit" variant="submit" disabled={isSaving}>
+                  <Button type="submit" variant="submit" className="w-full md:w-auto" disabled={isSaving}>
                     {isSaving ? t('jobPage.saving') : isNewJob ? t('jobPage.createJob') : t('jobPage.updateJob')}
                   </Button>
 
                   {!isNewJob && (
                     <button
-                      className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="w-full md:w-auto rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                       onClick={(e) => handleDelete(job.companyName, e)}
                     >
                       {t('jobPage.delete')}

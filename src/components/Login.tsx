@@ -35,7 +35,7 @@ export function Login({
         <CardDescription>Enter your credentials to access your account</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4" role="form">
           {errorMessage && (
             <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {errorMessage}

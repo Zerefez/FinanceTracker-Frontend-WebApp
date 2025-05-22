@@ -1,9 +1,9 @@
 import { logger } from '../services/logger';
 import { authService } from './authService';
 
-// API URL - Use relative URL to leverage the Vite proxy
-// This should match the proxy setup in your Vite config
-const API_URL = '/api';
+// API URL - Use environment variable if available or fallback to proxy path
+// This allows overriding the API URL in production environments like Netlify
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -31,10 +31,8 @@ export const apiService = {
       endpoint.includes('/Accounts/login') || 
       endpoint.includes('/Accounts/register');
 
-    // Build URL
-    const url = endpoint.startsWith('http') 
-      ? endpoint 
-      : `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    // Build URL - Always use the API_URL prefix for consistency
+    const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     
     console.log(`API request to: ${url}, method: ${method}`);
     
@@ -46,7 +44,8 @@ export const apiService = {
     };
     
     if (!skipAuth && !isAuthEndpoint) {
-      const token = authService.getToken();
+      // Add null check for authService to handle circular dependency issues
+      const token = authService?.getToken?.();
       if (token) {
         requestHeaders['Authorization'] = `Bearer ${token}`;
         console.log(`Added auth token to request for ${endpoint}`);
@@ -82,7 +81,7 @@ export const apiService = {
             !window.location.pathname.includes('/logout') &&
             !window.location.pathname.includes('/register')) {
           console.log('Unauthorized access, logging out');
-          authService.logout();
+          authService?.logout?.();
           window.location.href = `/login?t=${Date.now()}&error=session_expired`;
           return Promise.reject(new Error('Session expired'));
         }

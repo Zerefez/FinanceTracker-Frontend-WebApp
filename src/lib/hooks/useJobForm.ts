@@ -27,6 +27,7 @@ export function useJobForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
   const [supplementDetails, setSupplementDetails] = useState<SupplementDetail[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Get job display name from Company Name
   const getJobDisplayName = (): string => {
@@ -36,6 +37,7 @@ export function useJobForm() {
   useEffect(() => {
     const fetchJob = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         if (!companyName || companyName === "new") {
           // Initialize empty job for new job form
@@ -69,19 +71,20 @@ export function useJobForm() {
               }
             }
           } else {
-            console.error(`Job with company name ${companyName} not found`);
+            setError(t('jobPage.jobNotFound'));
             navigate("/");
           }
         }
       } catch (error) {
         console.error("Error fetching job:", error);
+        setError(t('jobPage.fetchError'));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchJob();
-  }, [companyName, navigate]);
+  }, [companyName, navigate, t]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -182,6 +185,7 @@ export function useJobForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setError(null);
 
     try {
       // Create a copy of the job for saving to backend (without workdays)
@@ -221,9 +225,8 @@ export function useJobForm() {
       navigate("/");
     } catch (error) {
       console.error("Error saving job:", error);
-      toastService.error(isNewJob 
-        ? t('jobPage.createError')
-        : t('jobPage.updateError'));
+      setError(isNewJob ? t('jobPage.createError') : t('jobPage.updateError'));
+      toastService.error(isNewJob ? t('jobPage.createError') : t('jobPage.updateError'));
     } finally {
       setIsSaving(false);
     }
@@ -236,6 +239,7 @@ export function useJobForm() {
     isLoading,
     selectedWeekdays,
     supplementDetails,
+    error,
     getJobDisplayName,
     handleInputChange,
     handleSelectChange,

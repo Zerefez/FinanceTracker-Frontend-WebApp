@@ -49,9 +49,9 @@ export function useNavigation() {
     // Clear auth data
     authUtils.logout();
     
-    // Add a timestamp to force a fresh load of the logout page
-    // This prevents any animation caching issues
-    window.location.href = '/logout?t=' + Date.now();
+    // Use React Router navigation instead of direct window.location change
+    // This preserves the animation context
+    navigate(`/logout?t=${Date.now()}`, { replace: true });
   };
 
   const navigateAfterLogin = (currentLocation: Location, defaultPath = '/') => {

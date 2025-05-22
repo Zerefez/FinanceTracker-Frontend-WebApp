@@ -13,7 +13,7 @@ function App() {
     <LanguageProvider>
       <Router>
         <div className="bg-white w-full min-h-screen">
-          <div className="main min-h-screen bg-white text-primary font-sans">
+          <div className="main min-h-screen bg-white text-primary font-sans" role="main">
             <RouteConfig />
             <ToastContainer />
             <ConfirmationDialogContainer />

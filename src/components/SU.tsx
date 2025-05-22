@@ -1,6 +1,13 @@
-import { useState } from 'react';
-import { AVAILABLE_YEARS, HOUSING_STATUS, INCOME_CEILING, MAX_EARNABLE, TAX_CARD_OPTIONS } from '../data/studentGrantData';
-import { useLocalization } from '../lib/hooks';
+import { useState } from "react";
+import {
+  AVAILABLE_YEARS,
+  HOUSING_STATUS,
+  INCOME_CEILING,
+  MAX_EARNABLE,
+  TAX_CARD_OPTIONS,
+} from "../data/studentGrantData";
+import { useLocalization } from "../lib/hooks";
+import { toastService } from "./ui/toast";
 
 interface SUData {
   incomeCeiling: number;
@@ -18,13 +25,13 @@ interface SUProps {
   onHousingChange?: (status: string) => void;
 }
 
-export function SUSection({ 
-  suBrutto, 
-  taxCard = TAX_CARD_OPTIONS.MAIN.value, 
+export function SUSection({
+  suBrutto,
+  taxCard = TAX_CARD_OPTIONS.MAIN.value,
   housingStatus = HOUSING_STATUS.AWAY.value,
-  onSuChange, 
+  onSuChange,
   onTaxCardChange,
-  onHousingChange 
+  onHousingChange,
 }: SUProps) {
   const { t } = useLocalization();
   const [selectedYear, setSelectedYear] = useState(AVAILABLE_YEARS[0]);
@@ -32,15 +39,12 @@ export function SUSection({
     incomeCeiling: INCOME_CEILING,
     currentIncome: 10000,
     maxEarnable: MAX_EARNABLE,
-    updatedDate: '17/03-2025'
+    updatedDate: "17/03-2025",
   });
 
   // Calculate percentage dynamically
   const calculatePercentage = () => {
-    return Math.min(
-      Math.round((suData.currentIncome / suData.incomeCeiling) * 100), 
-      100
-    );
+    return Math.min(Math.round((suData.currentIncome / suData.incomeCeiling) * 100), 100);
   };
 
   // Calculate remaining earnings
@@ -62,7 +66,7 @@ export function SUSection({
         a ${radius} ${radius} 0 0 1 0 31.831
         a ${radius} ${radius} 0 0 1 0 -31.831`,
       strokeDasharray: `${circumference}`,
-      strokeDashoffset: dashOffset
+      strokeDashoffset: dashOffset,
     };
   };
 
@@ -72,21 +76,25 @@ export function SUSection({
 
   // Handle SU brutto change from slider
   const handleSuDataChange = (value: number) => {
-    setSUData(prev => ({
-      ...prev, 
+    setSUData((prev) => ({
+      ...prev,
       currentIncome: value,
     }));
-    
+
     // Notify parent component if callback provided - but keep this separate from the suBrutto value
     if (onSuChange) {
       onSuChange(value);
+    }
+
+    if (INCOME_CEILING <= suData.currentIncome + (value - suData.currentIncome)) {
+      toastService.error("YOU HAVE USED 100% OF YOUR LIMIT");
     }
   };
 
   // Handle year change
   const handleYearChange = (year: string) => {
     setSelectedYear(year);
-    
+
     // Add any year-specific logic here
   };
 
@@ -96,7 +104,7 @@ export function SUSection({
       onTaxCardChange(cardType);
     }
   };
-  
+
   // Handle housing status change
   const handleHousingChange = (status: string) => {
     if (onHousingChange) {
@@ -105,104 +113,139 @@ export function SUSection({
   };
 
   return (
-    <div className="w-full rounded-lg border-2 border-gray-200 p-4 md:p-5 bg-white relative">
-      <h2 className="mb-4 text-center text-xl md:text-2xl font-bold">
-        Student <span className="text-accent">Grant</span> {t('studentGrant.title')}
-      </h2>
-      
-      <div className="flex flex-wrap items-center justify-center mb-4 gap-2">
-        <select 
-          value={selectedYear} 
+    <div className="relative w-full rounded-lg border-2 border-gray-200 bg-white p-4 md:p-5">
+      <h2 className="mb-4 text-center text-xl font-bold md:text-2xl">{t("studentGrant.title")}</h2>
+
+      <div className="mb-4 flex flex-wrap items-center justify-center gap-2">
+        <select
+          value={selectedYear}
           onChange={(e) => handleYearChange(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
+          className="rounded border px-2 py-1 text-sm"
         >
-          {AVAILABLE_YEARS.map(year => (
-            <option key={year} value={year}>{year}</option>
+          {AVAILABLE_YEARS.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
           ))}
         </select>
-        
-        <select 
-          value={housingStatus} 
+
+        <select
+          value={housingStatus}
           onChange={(e) => handleHousingChange(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
+          className="rounded border px-2 py-1 text-sm"
         >
-          <option value={HOUSING_STATUS.AWAY.value}>{t('studentGrant.housingStatus.away')}</option>
-          <option value={HOUSING_STATUS.WITH_PARENTS.value}>{t('studentGrant.housingStatus.withParents')}</option>
+          <option value={HOUSING_STATUS.AWAY.value}>{t("studentGrant.housingStatus.away")}</option>
+          <option value={HOUSING_STATUS.WITH_PARENTS.value}>
+            {t("studentGrant.housingStatus.withParents")}
+          </option>
         </select>
-        
-        <select 
-          value={taxCard} 
+
+        <select
+          value={taxCard}
           onChange={(e) => handleTaxCardChange(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
+          className="rounded border px-2 py-1 text-sm"
         >
-          <option value={TAX_CARD_OPTIONS.MAIN.value}>{t('studentGrant.taxCardOptions.main')}</option>
-          <option value={TAX_CARD_OPTIONS.SECONDARY.value}>{t('studentGrant.taxCardOptions.secondary')}</option>
+          <option value={TAX_CARD_OPTIONS.MAIN.value}>
+            {t("studentGrant.taxCardOptions.main")}
+          </option>
+          <option value={TAX_CARD_OPTIONS.SECONDARY.value}>
+            {t("studentGrant.taxCardOptions.secondary")}
+          </option>
         </select>
       </div>
-      
-      <div className="relative flex justify-center items-center mb-6">
-        <div className="absolute inset-0 flex justify-center items-center">
-          <div className="w-36 h-36 md:w-48 md:h-48 bg-white rounded-full shadow-sm"></div>
+
+      <div className="relative mb-6 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-36 w-36 rounded-full bg-white shadow-sm md:h-48 md:w-48"></div>
         </div>
-        <div className="w-44 h-44 md:w-56 md:h-56 relative">
-          <svg viewBox="0 0 36 36" className="w-full h-full">
+        <div className="relative h-44 w-44 md:h-56 md:w-56">
+          <svg viewBox="0 0 36 36" className="h-full w-full">
             {/* Background circle */}
-            <path 
-              d={progressPaths.backgroundPath}
-              fill="none"
-              stroke="#f1f1f1"
-              strokeWidth="3"
-            />
+            <path d={progressPaths.backgroundPath} fill="none" stroke="#f1f1f1" strokeWidth="3" />
             {/* Progress arc */}
-            <path 
+            <path
               d={progressPaths.backgroundPath}
               fill="none"
-              stroke="#FF6B6B"
+              stroke="#0844BD"
               strokeWidth="3"
               strokeDasharray={progressPaths.strokeDasharray}
               strokeDashoffset={progressPaths.strokeDashoffset}
             />
           </svg>
-          <div className="absolute inset-0 flex flex-col justify-center items-center">
-            <span className="text-3xl md:text-4xl font-bold">{percentage}%</span>
-            <p className="text-sm text-gray-500">{t('studentGrant.incomeCeiling')}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold md:text-4xl">{percentage}%</span>
+            <p className="text-sm text-gray-500">{t("studentGrant.incomeCeiling")}</p>
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-3">
-        <div className="bg-gray-100 rounded-lg p-3 flex justify-between items-center">
+        <div className="flex items-center justify-between rounded-lg bg-gray-100 p-3">
           <div>
-            <p className="text-sm text-gray-600">{t('studentGrant.remainingEarnings')}</p>
+            <p className="text-sm text-gray-600">{t("studentGrant.remainingEarnings")}</p>
             <p className="font-semibold text-accent">{remainingEarnings.toLocaleString()} kr.</p>
             <p className="text-xs text-gray-500">
-              {t('studentGrant.maxIncome')}: {suData.incomeCeiling.toLocaleString()} kr.
+              {t("studentGrant.maxIncome")}: {suData.incomeCeiling.toLocaleString()} kr.
             </p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
-            <path d="m9 18 6-6-6-6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-gray-400"
+          >
+            <path d="m9 18 6-6-6-6" />
           </svg>
         </div>
-        
-        <div className="bg-gray-100 rounded-lg p-3 flex justify-between items-center">
+
+        <div className="flex items-center justify-between rounded-lg bg-gray-100 p-3">
           <div>
-            <p className="text-sm text-gray-600">{t('studentGrant.monthlyGrant')}</p>
-            <p className="font-semibold">{suBrutto?.toLocaleString() || '7,086'} kr. ({t('studentGrant.gross')})</p>
+            <p className="text-sm text-gray-600">{t("studentGrant.monthlyGrant")}</p>
+            <p className="font-semibold">
+              {suBrutto?.toLocaleString() || "7,086"} kr. ({t("studentGrant.gross")})
+            </p>
             <div className="text-xs text-gray-500">
-              <p>{t('studentGrant.taxCard')}: {taxCard === TAX_CARD_OPTIONS.MAIN.value ? t('studentGrant.taxCardOptions.main') : t('studentGrant.taxCardOptions.secondary')}</p>
-              <p>{t('studentGrant.housing')}: {housingStatus === HOUSING_STATUS.AWAY.value ? t('studentGrant.housingStatus.away') : t('studentGrant.housingStatus.withParents')}</p>
+              <p>
+                {t("studentGrant.taxCard")}:{" "}
+                {taxCard === TAX_CARD_OPTIONS.MAIN.value
+                  ? t("studentGrant.taxCardOptions.main")
+                  : t("studentGrant.taxCardOptions.secondary")}
+              </p>
+              <p>
+                {t("studentGrant.housing")}:{" "}
+                {housingStatus === HOUSING_STATUS.AWAY.value
+                  ? t("studentGrant.housingStatus.away")
+                  : t("studentGrant.housingStatus.withParents")}
+              </p>
             </div>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
-            <path d="m9 18 6-6-6-6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-gray-400"
+          >
+            <path d="m9 18 6-6-6-6" />
           </svg>
         </div>
       </div>
 
       {/* Slider with accent styling and filled progress */}
       <div className="mt-4">
-        <div className="flex justify-between items-center mb-1">
-          <label className="text-sm text-gray-700">{t('studentGrant.currentIncome')}</label>
+        <div className="mb-1 flex items-center justify-between">
+          <label className="text-sm text-gray-700">{t("studentGrant.currentIncome")}</label>
           <span className="text-sm font-semibold text-accent">
             {suData.currentIncome.toLocaleString()} kr.
           </span>
@@ -214,17 +257,9 @@ export function SUSection({
           value={suData.currentIncome}
           onChange={(e) => handleSuDataChange(parseInt(e.target.value))}
           style={{
-            background: `linear-gradient(to right, #FF6B6B 0%, #FF6B6B ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`
+            background: `linear-gradient(to right, #0844BD 0%, #0844BD ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`,
           }}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer 
-          [&::-webkit-slider-thumb]:appearance-none 
-          [&::-webkit-slider-thumb]:w-4 
-          [&::-webkit-slider-thumb]:h-4 
-          [&::-webkit-slider-thumb]:bg-accent 
-          [&::-webkit-slider-thumb]:rounded-full 
-          [&::-webkit-slider-track]:w-full 
-          [&::-webkit-slider-track]:h-2 
-          [&::-webkit-slider-track]:bg-transparent"
+          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-track]:h-2 [&::-webkit-slider-track]:w-full [&::-webkit-slider-track]:bg-transparent"
         />
       </div>
     </div>

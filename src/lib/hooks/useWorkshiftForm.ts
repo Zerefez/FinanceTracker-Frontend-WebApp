@@ -17,10 +17,10 @@ export function useWorkshiftForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedJobId } = usePaycheck();
-  
+
   // Extract jobId from query parameters if present
   const query = new URLSearchParams(location.search);
-  const jobIdFromUrl = query.get('jobId');
+  const jobIdFromUrl = query.get("jobId");
 
   // Use jobId from URL if available, otherwise try to use the one from context
   const effectiveJobId = jobIdFromUrl || selectedJobId || "";
@@ -41,9 +41,9 @@ export function useWorkshiftForm() {
   // Update jobId when effectiveJobId changes
   useEffect(() => {
     if (effectiveJobId) {
-      setWorkshift(prev => ({
+      setWorkshift((prev) => ({
         ...prev,
-        jobId: effectiveJobId
+        jobId: effectiveJobId,
       }));
     }
   }, [effectiveJobId]);
@@ -131,7 +131,7 @@ export function useWorkshiftForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate that a job is selected
     if (!hasSelectedJob) {
       toastService.error("Please select a job before saving the workshift");
@@ -139,7 +139,7 @@ export function useWorkshiftForm() {
       navigate("/paycheck");
       return;
     }
-    
+
     setIsSaving(true);
 
     try {
@@ -155,9 +155,11 @@ export function useWorkshiftForm() {
       navigate("/paycheck");
     } catch (error) {
       console.error("Error saving workshift:", error);
-      toastService.error(isNewWorkshift 
-        ? "Failed to create workshift. Please try again."
-        : "Failed to update workshift. Please try again.");
+      toastService.error(
+        isNewWorkshift
+          ? "Failed to create workshift. Please try again."
+          : "Failed to update workshift. Please try again.",
+      );
     } finally {
       setIsSaving(false);
     }
