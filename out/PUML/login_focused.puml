@@ -1,7 +1,14 @@
 @startuml Login Component Class Diagram
 
+!define FONT_SIZE 12
+!define TITLE_SIZE 20
+skinparam defaultFontSize $FONT_SIZE
+skinparam titleFontSize $TITLE_SIZE
+skinparam classFontSize $FONT_SIZE
+
+package "cd: Login Feature" {
+
 ' Define main components for Login only
-package "Pages" {
   class LoginPage {
     - username: string
     - password: string
@@ -11,9 +18,8 @@ package "Pages" {
     + useLoginForm()
     + useAuth()
   }
-}
 
-package "Components" {
+
   class Login {
     - username: string
     - password: string
@@ -37,9 +43,8 @@ package "Components" {
     + checkAccess(): void
     + useProtectedRoute()
   }
-}
 
-package "Services" {
+
   class authService {
     + login(username: string, password: string): Promise<LoginResponse>
     + isAuthenticated(): boolean
@@ -51,9 +56,8 @@ package "Services" {
     + request<T>(endpoint: string, options): Promise<T>
     + post<T>(endpoint: string, body, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class useAuth {
     - isAuthenticated: boolean
     - isInitializing: boolean
@@ -79,21 +83,32 @@ package "Hooks" {
   }
 }
 
-' Define relationships
-LoginPage --> Login : uses
-LoginPage --> useLoginForm : uses
-LoginPage --> useAuth : uses
+' Define relationships with proper UML notation as per the new image
+' Directed association → (solid line with arrow)
+' Inheritance ▷ (solid line with empty triangle)
+' Implementation → (dashed line with empty triangle)
+' Dependency → (dashed line with arrow)
+' Aggregation ◇ (solid line with empty diamond)
+' Composition ♦ (solid line with filled diamond)
 
-Login --> authService : uses
+' Page to Component associations (directed association)
+LoginPage --> Login
 
-RouteConfig --> LoginPage : routes to
-RouteConfig --> ProtectedRoutes : routes to
-RouteConfig --> useAuth : uses
+' Page to Hook dependencies (pages bruger hooks midlertidigt)
+LoginPage ..> useLoginForm
+LoginPage ..> useAuth
 
-ProtectedRoutes --> useProtectedRoute : uses
+' Service dependencies - dependency pilen peger mod den klasse der bliver brugt
+Login ..> authService
+authService o-- apiService
 
-useLoginForm --> useAuth : uses
-useAuth --> authService : uses
-authService --> apiService : uses
+' Routing associations
+RouteConfig --> LoginPage
+RouteConfig ..> useAuth
+ProtectedRoutes ..> useProtectedRoute
+
+' Hook associations
+useLoginForm ..> useAuth
+useAuth o-- authService
 
 @enduml 

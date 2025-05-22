@@ -6,10 +6,9 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "Workshift Component Class Diagram"
+package "cd: Workshift Feature" {
 
 ' Define main components for Workshift only
-package "Pages" {
   class Paycheck {
     - companyName: string
     - month: number
@@ -18,9 +17,8 @@ package "Pages" {
     + editJobDetail(): void
     + openWorkshiftModal(workshift?: Workshift): void
   }
-}
 
-package "Components" {
+
   class WorkshiftModal {
     - isOpen: boolean
     - workshift: Workshift
@@ -40,9 +38,8 @@ package "Components" {
     + handleDelete(workshiftId: string): void
     + useWorkshifts()
   }
-}
 
-package "Services" {
+
   class workshiftService {
     + createWorkshift(workshift: Workshift): Promise<Workshift>
     + updateWorkshift(id: string, workshift: Workshift): Promise<Workshift>
@@ -57,9 +54,8 @@ package "Services" {
     + put<T>(endpoint: string, body, options): Promise<T>
     + delete<T>(endpoint: string, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class useWorkshifts {
     - workshifts: Workshift[]
     - isLoading: boolean
@@ -76,8 +72,8 @@ package "Hooks" {
     + handleSubmit(): Promise<void>
     + resetForm(): void
   }
-}
 
+}
 ' Define relationships with proper UML notation
 ' Directed association → (solid line with arrow)
 ' Inheritance ▷ (solid line with empty triangle)

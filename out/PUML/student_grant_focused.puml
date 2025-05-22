@@ -6,10 +6,8 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "StudentGrant Component Class Diagram"
-
+package "cd: Student Grant Feature" {
 ' Define main components for StudentGrant functionality
-package "Pages" {
   class StudentGrant {
     + year: string
     + messageNumber: string
@@ -25,9 +23,8 @@ package "Pages" {
     + handleYearChange(year: string): void
     + handleMessageNumberChange(msgNumber: string): void
   }
-}
 
-package "Components" {
+
   class SUSection {
     - suBrutto: number
     - taxCard: string
@@ -41,9 +38,7 @@ package "Components" {
     + calculatePercentage(): number
     + calculateRemainingEarnings(): number
   }
-}
 
-package "Services" {
   class suService {
     + calculateTax(brutto: number, taxCard: string): number
     + calculateNetto(brutto: number, tax: number): number
@@ -52,9 +47,8 @@ package "Services" {
     + calculateYearlyTotals(months: array): { totalBrutto: number, totalNetto: number }
   }
   
-}
 
-package "Hooks" {
+
   class useStudentGrant {
     - year: string
     - messageNumber: string
@@ -80,8 +74,8 @@ package "Hooks" {
     + t(key: string, params?: object): string
     + setLocale(locale: string): void
   }
-}
 
+}
 ' Define relationships with proper UML notation
 ' Page to Component associations
 StudentGrant --> SUSection

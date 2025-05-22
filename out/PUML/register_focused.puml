@@ -6,10 +6,9 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "Register Component Class Diagram"
+package "cd: Register Feature" {
 
 ' Define main components for Register only
-package "Pages" {
   class RegisterPage {
     - email: string
     - fullName: string
@@ -17,9 +16,8 @@ package "Pages" {
     + handleRegister(): void
     + useAuth()
   }
-}
 
-package "Components" {
+
   class Register {
     - fullName: string
     - email: string
@@ -34,9 +32,8 @@ package "Components" {
     - isInitializing: boolean
     + renderRoutes(): ReactNode
   }
-}
 
-package "Services" {
+
   class authService {
     + register(email: string, password: string, fullName: string): Promise<RegisterResponse>
     + isAuthenticated(): boolean
@@ -46,9 +43,8 @@ package "Services" {
     + request<T>(endpoint: string, options): Promise<T>
     + post<T>(endpoint: string, body, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class useAuth {
     - isAuthenticated: boolean
     - isInitializing: boolean

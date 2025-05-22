@@ -6,10 +6,9 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "Job Component Class Diagram"
+package "cd: Job Feature" {
 
 ' Define main components for Job functionality
-package "Pages" {
   class Home {
     + useLocalization()
     + displays JobOverviewPage
@@ -25,9 +24,8 @@ package "Pages" {
     - companyName: string
     + useJobForm()
   }
-}
 
-package "Components" {
+
   class JobDetail {
     - job: Job
     - isNewJob: boolean
@@ -39,9 +37,8 @@ package "Components" {
     + handleSubmit(e: React.FormEvent): void
     + handleDelete(companyName: string, e: React.FormEvent): void
   }
-}
 
-package "Services" {
+
   class jobService {
     + getJobs(): Promise<Job[]>
     + getJobByCompanyName(companyName: string): Promise<Job | null>
@@ -64,9 +61,8 @@ package "Services" {
     + saveWorkdaysForJob(companyName: string, weekdays: string[]): void
     + removeWorkdaysForJob(companyName: string): void
   }
-}
 
-package "Hooks" {
+
   class useJobs {
     - jobs: Job[]
     - loading: boolean

@@ -1,15 +1,13 @@
 @startuml VacationPay Component Class Diagram
+package "cd: Vacation Pay Feature" {
+  !define FONT_SIZE 12
+  !define TITLE_SIZE 20
+  skinparam defaultFontSize $FONT_SIZE
+  skinparam titleFontSize $TITLE_SIZE
+  skinparam classFontSize $FONT_SIZE
 
-!define FONT_SIZE 12
-!define TITLE_SIZE 20
-skinparam defaultFontSize $FONT_SIZE
-skinparam titleFontSize $TITLE_SIZE
-skinparam classFontSize $FONT_SIZE
 
-title "VacationPay Component Class Diagram"
-
-' Define main components for VacationPay functionality
-package "Pages" {
+  ' Define main components for VacationPay functionality
   class VacationPay {
     - companyName: string
     - selectedJobId: string
@@ -19,9 +17,8 @@ package "Pages" {
     + setSelectedYear(year: number): void
     + refreshVacationPayData(): void
   }
-}
 
-package "Components" {
+
   class VacationPayOverview {
     - companyName: string
     - initialYear: number
@@ -29,9 +26,8 @@ package "Components" {
     - ref: VacationPayOverviewRef
     + refresh(): void
   }
-}
 
-package "Services" {
+
   class vacationPayService {
     + getTotalVacationPay(companyName: string, year: number): Promise<VacationPayData>
   }
@@ -39,9 +35,8 @@ package "Services" {
   class apiService {
     + get<T>(endpoint: string, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class useVacationPayData {
     - vacationPayData: VacationPayData | null
     - loading: boolean
@@ -56,20 +51,22 @@ package "Hooks" {
     - loading: boolean
     + setSelectedJobId(id: string): void
   }
+
+
+  ' Define relationships with proper UML notation
+  ' Page to Component associations
+  VacationPay --> VacationPayOverview
+
+  ' Component to Hook dependencies
+  VacationPayOverview ..> useVacationPayData
+  VacationPay ..> usePaycheck
+
+  ' Hook to Service dependencies
+  useVacationPayData o-- vacationPayService
+
+  ' Service dependencies
+  vacationPayService o-- apiService
+
 }
-
-' Define relationships with proper UML notation
-' Page to Component associations
-VacationPay --> VacationPayOverview
-
-' Component to Hook dependencies
-VacationPayOverview ..> useVacationPayData
-VacationPay ..> usePaycheck
-
-' Hook to Service dependencies
-useVacationPayData o-- vacationPayService
-
-' Service dependencies
-vacationPayService o-- apiService
 
 @enduml 

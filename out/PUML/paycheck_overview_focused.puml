@@ -6,10 +6,9 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "PaycheckOverview Component Class Diagram"
+package "cd: Paycheck Overview Feature" {
 
 ' Define main components for PaycheckOverview only
-package "Pages" {
   class Paycheck {
     - companyName: string
     - month: number
@@ -17,9 +16,8 @@ package "Pages" {
     + selectJobAndMonth(): void
     + refreshPaycheckData(): void
   }
-}
 
-package "Components" {
+
   class PaycheckOverview {
     - companyName: string
     - month: number
@@ -27,9 +25,8 @@ package "Components" {
     + StatItem(): JSX.Element
     + usePaycheckData()
   }
-}
 
-package "Services" {
+
   class paycheckService {
     + getPaycheckData(companyName?: string, month?: number): Promise<PaycheckData>
   }
@@ -38,9 +35,8 @@ package "Services" {
     + request<T>(endpoint: string, options): Promise<T>
     + get<T>(endpoint: string, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class usePaycheckData {
     - paycheckData: PaycheckData | null
     - loading: boolean
@@ -58,8 +54,8 @@ package "Hooks" {
     - loading: boolean
     + setSelectedJobId(id: string): void
   }
-}
 
+}
 ' Define relationships with proper UML notation
 ' Directed association → (solid line with arrow)
 ' Inheritance ▷ (solid line with empty triangle)

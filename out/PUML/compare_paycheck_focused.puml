@@ -1,4 +1,4 @@
-@startuml PaycheckCompare Component Class Diagram
+@startuml 
 
 !define FONT_SIZE 12
 !define TITLE_SIZE 20
@@ -6,10 +6,9 @@ skinparam defaultFontSize $FONT_SIZE
 skinparam titleFontSize $TITLE_SIZE
 skinparam classFontSize $FONT_SIZE
 
-title "PaycheckCompare Component Class Diagram"
+package "cd: Compare Paycheck Feature" {
 
 ' Define main components for PaycheckCompare
-package "Pages" {
   class PaycheckComparePage {
     - companyName: string
     - selectedJobId: string
@@ -18,9 +17,8 @@ package "Pages" {
     + setSelectedJobId(id: string): void
     + setSelectedMonth(month: number): void
   }
-}
 
-package "Components" {
+
   class PaycheckCompare {
     - generatedPaycheck: PaycheckData | null
     - onReset: () => void
@@ -29,9 +27,8 @@ package "Components" {
     + formatPercentage(value: number): string
     + formatWorkedHours(hours: number): string
   }
-}
 
-package "Services" {
+
   class paycheckService {
     + getPaycheckData(companyName?: string, month?: number): Promise<PaycheckData>
   }
@@ -40,9 +37,8 @@ package "Services" {
     + request<T>(endpoint: string, options): Promise<T>
     + get<T>(endpoint: string, options): Promise<T>
   }
-}
 
-package "Hooks" {
+
   class usePaycheckCompare {
     - manualData: ManualPaycheckData
     + handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void
@@ -70,8 +66,8 @@ package "Hooks" {
     - loading: boolean
     + setSelectedJobId(id: string): void
   }
-}
 
+}
 ' Define relationships with proper UML notation
 ' Page to Component associations
 PaycheckComparePage --> PaycheckCompare
